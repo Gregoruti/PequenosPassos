@@ -1,0 +1,33 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+*.log
+
+# Arquivos gerados pelo Android Studio
+/app/build/
+.idea/
+*.iws
+*.ipr
+output.json
+
+# Arquivos gerados pelo Gradle
+.gradle/
+build/
+
+# Arquivos de configuração local
+local.properties
+gradle.properties
+
+# Arquivos de log
+*.log
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db

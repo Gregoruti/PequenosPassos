@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">PequenosPassos</string>
+
+    <!-- HomeScreen Buttons -->
+    <string name="home_button_professional_patient">Cadastro/Seleção de Profissional e Paciente</string>
+    <string name="home_button_quick_test">Teste Rápido</string>
+    <string name="home_button_debug">Debug</string>
+
+    <!-- Screen Titles -->
+    <string name="title_activity_main">Pequenos Passos</string>
+    <string name="title_screen_home">Pequenos Passos</string>
+    <string name="title_screen_debug">Tela de Depuração</string>
+    <string name="title_screen_tts_test">Teste de TTS</string>
+    <string name="title_screen_asr_test">Teste de ASR</string>
+
+    <!-- HomeScreen Additional Info -->
+    <string name="home_project_integrator_info">TCC-540 - 2025</string>
+
+    <!-- DebugScreen Buttons -->
+    <string name="debug_button_test_tts">Testar TTS</string>
+    <string name="debug_button_test_asr">Testar ASR (Reconhecimento de Fala)</string>
+
+    <!-- TtsTestScreen -->
+    <string name="tts_test_input_label">Texto para Falar</string>
+    <string name="tts_test_button_speak">Falar Texto</string>
+    <string name="tts_initialization_error">Erro ao inicializar TTS: %s</string>
+    <string name="tts_speak_error_not_initialized">TTS não inicializado.</string>
+    <string name="tts_speak_error_language_unavailable">Idioma Português (Brasil) não disponível para TTS.</string>
+    <string name="tts_speaking">Falando...</string>
+
+    <!-- ASR (Automatic Speech Recognition) Errors -->
+    <string name="asr_model_load_error">Erro ao carregar modelo de fala: %1$s</string>
+    <string name="asr_start_listening_error">Erro ao iniciar reconhecimento de fala: %1$s</string>
+    <string name="asr_recognition_error">Erro durante o reconhecimento de fala: %1$s</string>
+    <string name="asr_timeout_error">Tempo limite no reconhecimento de fala.</string>
+
+    <!-- AsrTestScreen Placeholder (agora a tela real) -->
+    <string name="asr_test_placeholder_message">Tela de Teste ASR em desenvolvimento.</string> <!-- Esta pode ser removida se não for usada em outro lugar -->
+
+    <!-- AsrTestScreen -->
+    <string name="asr_test_button_listen">Escutar</string>
+    <string name="asr_test_status_label">Status:</string>
+    <string name="asr_test_partial_result_label">Última Palavra Reconhecida:</string>
+    <string name="asr_test_final_result_label">Frase Completa Reconhecida:</string>
+
+    <!-- Strings para Exercício de Reconhecimento -->
+    <string name="exercise_recognition_title">Escolha o exercício</string>
+    <string name="exercise_select_syllables">Selecione o número de sílabas:</string>
+    <string name="exercise_listen_example">Ouvir Exemplo</string>
+    <string name="exercise_start_listening">Iniciar Gravação</string>
+    <string name="exercise_listening">Escutando...</string>
+    <string name="exercise_next_word">Próxima Palavra</string>
+    <string name="exercise_finish">Finalizar Exercício</string>
+
+    <!-- Status do Exercício -->
+    <string name="exercise_status_idle">Aguardando início da gravação</string>
+    <string name="exercise_status_starting">Iniciando gravação...</string>
+    <string name="exercise_status_listening">Escutando sua pronúncia...</string>
+    <string name="exercise_status_error">Erro na gravação</string>
+
+    <!-- Resultado do Exercício -->
+    <string name="exercise_result_title">Resultado do Exercício</string>
+    <string name="exercise_result_summary">Resumo do Exercício</string>
+    <string name="exercise_result_retry">Tentar Novamente</string>
+    <string name="exercise_result_home">Voltar ao Início</string>
+</resources>
