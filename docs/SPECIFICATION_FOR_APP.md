@@ -1,1072 +1,1445 @@
-# SPECIFICATION_FOR_APP.MD
+# ESPECIFICAÇÃO COMPLETA - APP PEQUENOS PASSOS
 
-**Propósito**: Especificações técnicas completas e detalhadas exclusivamente
-para o projeto Pequenos Passos. Define arquitetura, funcionalidades, regras de
-negócio, status de desenvolvimento e roadmap específico da aplicação de apoio a
-Atividades da Vida Diária para crianças com TEA.
+## 📋 Visão Geral do Projeto
 
-**Escopo**: Detalhamento técnico específico do projeto Pequenos Passos
-(funcionalidades + arquitetura + progresso)
+**Aplicativo de Atividades de Vida Diária (AVDs) para crianças com TEA até 6 anos**
 
-**Interconexões da Documentação**:
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    GUIDELINES.md                           │
-│              (Framework Universal de Desenvolvimento)       │
-└──────────────────┬──────────────────────────────────────────┘
-                   │ (Aplica Metodologia)
-                   ▼
-┌─────────────────────────────────────────────────────────────┐
-│              SPECIFICATION_FOR_APP.md (ESTE)               │
-│              Especificações do Pequenos Passos             │
-│         (Funcionalidades | Arquitetura | Status)           │
-└──────────────────┬──────────────────────────────────────────┘
-                   │ (Implementa Detalhes)
-                   ▼
-┌──────────────────┬──────────────────┬──────────────────────┐
-│    PATHS.md      │   CHANGELOG.md   │      README.md       │
-│  (Estrutura)     │  (Histórico)     │   (Documentação)     │
-└──────────────────┴──────────────────┴──────────────────────┘
-```
+Sistema de rotinas gamificado com perfis múltiplos, tarefas visuais e sistema de
+recompensas, desenvolvido para auxiliar no desenvolvimento de autonomia e
+habilidades sociais.
 
-**Versão**: 0.1.0 | **Data**: 07/10/2025 | **Status**: Especificação Inicial
+## 🔄 Contexto do Projeto
+
+### Evolução do FonoVirtual
+Este projeto representa a evolução do aplicativo "FonoVirtual", sendo renomeado
+para "Pequenos Passos" com foco específico em crianças com TEA (Transtorno do
+Espectro Autista).
+
+### Funcionalidades Mantidas
+- Módulos ASR (Automatic Speech Recognition) usando Vosk
+- Módulos TTS (Text-to-Speech) nativo do Android
+- Arquitetura base com MVVM e Clean Architecture
+- SplashScreen e navegação básica
+
+### Funcionalidades Removidas
+- Telas de exercícios fonoaudiológicos gerais
+- Módulos não relacionados ao público TEA
+- Interfaces complexas inadequadas para crianças
+- Sistema de "Teste Rápido" com exercícios de pronúncia
+
+### 🎯 Objetivo Principal
+Facilitar o desenvolvimento de autonomia em crianças com TEA através de rotinas
+estruturadas, feedback visual e sistema de recompensas motivador.
+
+### 🧩 Requisitos Específicos para TEA
+
+#### Interface Adaptada:
+- Cores suaves e não estimulantes excessivamente
+- Botões grandes (mínimo 48dp) para facilitar toque
+- Animações sutis (evitar estímulos excessivos)
+- Feedback visual claro e imediato
+- Navegação linear e previsível
+- Consistência visual entre telas
+
+#### Comunicação:
+- Suporte a pictogramas (PECS)
+- Text-to-Speech com velocidade controlável
+- Instruções visuais complementando áudios
+- Linguagem simples e direta
+- Feedback positivo constante
+
+#### Comportamento:
+- Tempo de resposta estendido para interações
+- Redução de elementos distrativos
+- Estrutura previsível e repetitiva
+- Reforço positivo imediato
 
 ---
 
-**Instruções para Code Assistant**: Sempre responda em Português do Brasil.
-Você é um Code Assistant que deve manter atualizado este arquivo de
-especificações do App "Pequenos Passos". Sua tarefa é **adicionar, remover ou
-atualizar** seções sempre que novos módulos, funcionalidades, regras ou
-decisões arquiteturais específicas deste projeto forem criadas. Respeite a
-estrutura em tópicos e escreva de forma clara e organizada.
+## 🏗️ FASE 1: CONFIGURAÇÃO E ARQUITETURA BASE
 
-## Visão Geral e Objetivos do Projeto "Pequenos Passos"
-
-Este projeto é um aplicativo Android voltado para auxiliar crianças de 0 a 6
-anos com Transtorno do Espectro Autista (TEA) na execução de Atividades da
-Vida Diária (AVDs) de higiene, promovendo maior autonomia infantil e reduzindo
-a sobrecarga familiar. O aplicativo atua como recurso complementar ao
-acompanhamento terapêutico profissional.
-
-### Objetivos Principais
-
--   **Reduzir Ansiedade Relacionada à Rotina**: Fornecer estrutura previsível,
-    clara e visual para atividades diárias
--   **Aprimorar Aquisição de Habilidades**: Desmembrar AVDs complexas em
-    etapas simples e visualmente guiadas
--   **Capacitar Cuidadores**: Fornecer ferramenta eficaz para criar, gerenciar
-    e implementar rotinas diárias consistentemente
--   **Melhorar Colaboração Família-Terapeuta**: Criar plataforma compartilhada
-    onde rotinas terapêuticas podem ser implementadas em casa
-
-### Público-Alvo
-
-**Usuários Primários:**
--   Crianças de 0 a 6 anos com Transtorno do Espectro Autista (TEA)
--   Características: Aprendizes visuais, desafios com funções executivas,
-    afinidade natural por dispositivos móveis
-
-**Usuários Secundários:**
--   **Pais e Cuidadores**: Administradores do aplicativo, responsáveis por
-    criar e gerenciar rotinas
--   **Profissionais Terapêuticos**: Terapeutas ocupacionais, psicólogos que
-    prescrevem rotinas e monitoram progresso
-
-## Fundamentação Teórica
-
-### Metodologias de Base
-
--   **TEACCH (Treatment and Education of Autistic and Communication
-    Handicapped Children)**: Uso de suporte visual estruturado
--   **PECS (Picture Exchange Communication System)**: Comunicação através de
-    pictogramas
--   **ABA (Applied Behavior Analysis)**: Análise Comportamental Aplicada com
-    ênfase em reforço positivo
--   **Gamificação**: Elementos de jogo para engajamento e motivação
-
-### Princípios de Design
-
--   **Aprendizagem Visual**: Pessoas com TEA respondem melhor a pistas visuais
-    que a mensagens escritas ou faladas
--   **Simplicidade e Previsibilidade**: Interface minimalista com poucos
-    botões e elementos claros
--   **Reforço Positivo Imediato**: Feedback curto e eficaz após conclusão de
-    etapas
--   **Personalização**: Cada criança possui necessidades únicas que devem ser
-    contempladas
-
-## Funcionalidades Planejadas (FINAL_TARGET)
-
-### F1. Apoio Visual e Sequencial para AVDs (ESSENCIAL)
-
-**História de Usuário**: Como criança com TEA, eu quero que o aplicativo me
-mostre o passo a passo de uma atividade de higiene de forma clara e visual,
-para que eu possa entender e realizar a tarefa com mais autonomia.
-
-**Componentes Essenciais:**
--   Mapas de rotina visuais (Visual Schedules)
--   Sequências ilustradas passo a passo para AVDs de higiene:
-    * Escovação dos dentes
-    * Lavagem das mãos
-    * Uso do vaso sanitário
-    * Banho
--   Ícones grandes e comandos por toque simples
--   Duas versões de personagens (menino e menina) para identificação
--   Priorização de acessibilidade para primeira infância (0-6 anos)
-
-**Requisitos Funcionais Associados:**
--   RF 04: Cadastrar rotina
--   RF 05: Editar rotina
--   RF 06: Remover rotina
--   RF 07: Pesquisar rotina
--   RF 19: Cadastrar atividade
--   RF 20: Editar atividade
--   RF 21: Pesquisar atividade
--   RF 22: Remover atividade
-
-### F2. Sistema de Reforço e Engajamento (ESSENCIAL)
-
-**História de Usuário**: Como criança com TEA, eu quero receber reforço
-positivo imediato após completar uma etapa da atividade, para que eu me sinta
-motivada a continuar e repetir o comportamento correto.
-
-**Componentes Essenciais:**
--   Feedbacks positivos com mensagens de elogio e motivação
--   Personagens com semblante alegre
--   Feedback curto (tempo de exibição otimizado)
--   Narração e sons de apoio (aplausos)
--   Cores atrativas e elementos claros
--   Interface com poucos botões para evitar confusão
-
-**Requisitos Funcionais Associados:**
--   RF 24: Enviar feedback sobre atividade
-
-### F3. Antecipação de Imprevistos e Rotina Flexível (INOVADOR)
-
-**História de Usuário**: Como pai/cuidador, eu quero uma ferramenta que me
-permita notificar mudanças e preparar visualmente a criança para imprevistos
-ou alterações na rotina de higiene, a fim de minimizar a ansiedade e
-desorganização.
-
-**Componentes Inovadores:**
--   Notificação de mudanças na rotina (RF 09)
--   Suporte visual para antecipação (37.5% estratégia mais usada)
--   Organização de "Imprevistos" e viagens como dia normal de rotina
--   Uso de fotos pré-cadastradas para antecipação
--   Arquitetura de dois módulos:
-    * Módulo Administrativo para Profissionais
-    * Aplicativo Móvel para Pais/Pacientes
--   Garantia de carry-over entre ambiente clínico e domiciliar
-
-**Requisitos Funcionais Associados:**
--   RF 09: Notificar mudanças na rotina (ESSENCIAL)
--   RF 08: Compartilhar rotina (IMPORTANTE)
--   RF 23: Notificar usuário de atividade (ESSENCIAL)
-
-### F4. Interação por Fala e Escuta (INOVADOR)
-
-**História de Usuário**: Como criança com TEA na fase de pré-alfabetização, eu
-quero interagir com o aplicativo usando minha voz para confirmar que realizei
-uma etapa da atividade, para que eu não precise usar botões complexos.
-
-**Componentes Inovadores:**
--   Reconhecimento por voz para atividade (RF 25)
--   Narração e dublagens pré-gravadas para todo o texto
--   Instruções e narrativas com reforço de áudio
--   Interação vocal como alternativa ao toque
--   Suporte para crianças em fase de pré-alfabetização
--   Implementação de estratégia "Primeiro isso e Depois aquilo" via voz
-
-**Requisitos Funcionais Associados:**
--   RF 25: Ativar reconhecimento por voz (IMPORTANTE)
-
-### F5. Personalização e Hiperfoco (INOVADOR)
-
-**História de Usuário**: Como pai/cuidador, eu quero usar os interesses
-específicos (Hiperfoco) do meu filho no aplicativo, associando-os às
-atividades de higiene, para aumentar o engajamento dele nas tarefas mais
-resistentes.
-
-**Componentes Inovadores:**
--   Módulo completo de gestão de Hiperfoco (RF 26 a RF 30)
--   Cadastro de hiperfoco com categoria, nome, descrição e intensidade
--   Associação de hiperfoco às atividades (RF 30)
--   Personalização do quadro de rotina (cores/fontes) (RF 10)
--   Inclusão de fotos e áudios personalizáveis
--   Alinhamento com interesses específicos da criança
-
-**Requisitos Funcionais Associados:**
--   RF 26: Cadastrar hiperfoco (IMPORTANTE)
--   RF 27: Editar hiperfoco (IMPORTANTE)
--   RF 28: Pesquisar hiperfoco (IMPORTANTE)
--   RF 29: Remover hiperfoco (IMPORTANTE)
--   RF 30: Associar hiperfoco às atividades (IMPORTANTE)
--   RF 10: Personalizar quadro de rotinas (IMPORTANTE)
-
-## Requisitos Funcionais Completos (31 RFs)
-
-### Módulo de Autenticação e Acesso
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 01 | Efetuar login | Essencial |
-| RF 02 | Recuperar senha | Essencial |
-| RF 03 | Realizar logout | Essencial |
-
-### Módulo de Gestão de Rotinas
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 04 | Cadastrar rotina | Essencial |
-| RF 05 | Editar rotina | Essencial |
-| RF 06 | Remover rotina | Essencial |
-| RF 07 | Pesquisar rotina | Essencial |
-| RF 08 | Compartilhar rotina | Importante |
-| RF 09 | Notificar mudanças na rotina | Essencial |
-| RF 10 | Personalizar quadro de rotinas | Importante |
-| RF 31 | Inserir datas comemorativas | Desejável |
-
-### Módulo de Gestão de Usuários
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 11 | Cadastrar pessoa com TEA | Essencial |
-| RF 12 | Pesquisar pessoa com TEA | Essencial |
-| RF 13 | Editar pessoa com TEA | Essencial |
-| RF 14 | Remover pessoa com TEA | Essencial |
-| RF 15 | Cadastrar profissional | Essencial |
-| RF 16 | Pesquisar profissional | Essencial |
-| RF 17 | Editar profissional | Essencial |
-| RF 18 | Remover profissional | Essencial |
-
-### Módulo de Gestão de Atividades
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 19 | Cadastrar atividade | Essencial |
-| RF 20 | Editar atividade | Essencial |
-| RF 21 | Pesquisar atividade | Essencial |
-| RF 22 | Remover atividade | Essencial |
-| RF 23 | Notificar usuário de atividade | Essencial |
-| RF 24 | Enviar feedback sobre atividade | Importante |
-
-### Módulo de Acessibilidade e Interação
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 25 | Ativar reconhecimento por voz | Importante |
-
-### Módulo de Hiperfoco
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 26 | Cadastrar hiperfoco | Importante |
-| RF 27 | Editar hiperfoco | Importante |
-| RF 28 | Pesquisar hiperfoco | Importante |
-| RF 29 | Remover hiperfoco | Importante |
-| RF 30 | Associar hiperfoco às atividades | Importante |
-
-## Escopo do Projeto
-
-### Funcionalidades In-Scope (MVP - Versão Inicial)
-
-Baseado na pesquisa de usuário que identificou higiene pessoal como a rotina
-mais problemática, o escopo inicial focará em:
-
-**Templates Pré-Estruturados:**
--   Rotina de Higiene Matinal (Escovar Dentes, Lavar Mãos)
--   Rotina de Uso do Banheiro
--   Rotina de Hora de Dormir (relacionada à higiene)
-
-**Funcionalidades Essenciais do MVP:**
--   Sistema de autenticação básico (RF 01, RF 02, RF 03)
--   Cadastro e gestão de pessoas com TEA (RF 11, RF 12, RF 13, RF 14)
--   Cadastro e gestão de rotinas (RF 04, RF 05, RF 06, RF 07)
--   Cadastro e gestão de atividades (RF 19, RF 20, RF 21, RF 22)
--   Cronograma visual com sequências passo a passo
--   Sistema básico de reforço positivo (feedback visual e sonoro)
--   Notificações de atividades (RF 23)
--   Biblioteca de conteúdo com fotos e ícones pré-definidos
--   Capacidade de upload de fotos personalizadas
--   Interface com duas versões de personagens (menino/menina)
-
-### Funcionalidades Out-of-Scope (Versões Futuras)
-
-**Versão 1.1 - Funcionalidades Avançadas:**
--   Reconhecimento por voz (RF 25)
--   Áudios personalizados e narração
--   Módulo completo de Hiperfoco (RF 26-30)
--   Personalização avançada de quadro de rotinas (RF 10)
-
-**Versão 1.2 - Colaboração e Gestão:**
--   Cadastro e gestão de profissionais (RF 15-18)
--   Compartilhamento de rotinas (RF 08)
--   Notificação de mudanças na rotina (RF 09)
--   Sistema de feedback sobre atividades (RF 24)
-
-**Versão 1.3 - Recursos Adicionais:**
--   Datas comemorativas (RF 31)
--   Análise de progresso e relatórios
--   Integração com prontuários (fora do escopo inicial)
--   Gamificação avançada
-
-**Explicitamente Fora do Escopo:**
--   Atividades Instrumentais Complexas da Vida Diária (AIVDs)
--   Conteúdo curricular acadêmico
--   Integração com Prontuários Eletrônicos de Saúde (EHRs)
--   Chat multiusuário em tempo real
--   Gerenciamento financeiro ou de medicação
-
-## Arquitetura e Especificações Técnicas
-
-### Stack Tecnológico
-
--   **Plataforma**: Android (nativo)
--   **Linguagem**: Kotlin
--   **Arquitetura**: MVVM (Model-View-ViewModel)
--   **UI Framework**: Jetpack Compose
--   **Build System**: Gradle com Kotlin DSL
--   **Injeção de Dependências**: Hilt/Dagger
--   **Banco de Dados Local**: Room Database
--   **Armazenamento de Mídia**: Armazenamento local no dispositivo
--   **Versionamento**: Semântico (MAJOR.MINOR.PATCH)
-
-### Arquitetura de Camadas
+### Prompt 1.1 - Splash Screen e Ícone
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Camada de Apresentação                  │
-│         (UI - Jetpack Compose, ViewModels, Navigation)     │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-┌──────────────────────┴──────────────────────────────────────┐
-│                   Camada de Aplicação                      │
-│              (Use Cases, Orquestração, DTOs)               │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-┌──────────────────────┴──────────────────────────────────────┐
-│                    Camada de Domínio                       │
-│        (Entidades, Regras de Negócio, Interfaces)          │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-┌──────────────────────┴──────────────────────────────────────┐
-│                 Camada de Infraestrutura                   │
-│      (Repositórios, Room DB, File Storage, Services)       │
-└─────────────────────────────────────────────────────────────┘
+Crie a splash screen e recursos visuais finais:
+
+SplashScreen:
+- Exibe logo do "Pequenos Passos" centralizado
+- Animação de loading sutil (pulso ou rotação)
+- Gradiente de fundo com cores do tema
+- Duração: 2-3 segundos
+- Transição suave para Home ou Onboarding
+
+Durante o splash:
+- Inicializar banco de dados
+- Verificar se é primeira execução
+- Carregar configurações padrão
+- Preparar TTS se habilitado
+
+Design do Ícone do App:
+- Elementos visuais:
+  * Pegadas pequenas (simbolizando "passos")
+  * Cores vibrantes mas suaves
+  * Forma circular ou quadrada com cantos arredondados
+- Versões adaptativas para Android
+- Tamanhos: 48dp, 72dp, 96dp, 144dp, 192dp
+
+Adaptive Icon:
+- Foreground: símbolo principal (pegadas)
+- Background: gradiente das cores do tema
+- Monochrome: versão em preto/branco
+
+SplashScreenTheme:
+- windowSplashScreenBackground: cor do tema
+- windowSplashScreenAnimatedIcon: ícone animado
+- postSplashScreenTheme: tema principal
+
+Configure no AndroidManifest.xml e styles.xml.
 ```
 
-### Requisitos Não-Funcionais
-
-| Aspecto | Especificação |
-|---------|---------------|
-| **Compatibilidade** | Android 8.0 (API 26) ou superior |
-| **Usabilidade** | Interface intuitiva com carga cognitiva mínima, pistas visuais claras, navegação direta |
-| **Privacidade e Segurança** | Armazenamento local no dispositivo, sem transmissão de dados sensíveis para servidores remotos, conformidade com LGPD |
-| **Performance** | Tempos de resposta < 3s para funções centrais, transições suaves, sem lag perceptível |
-| **Acessibilidade** | Suporte a TalkBack, contraste adequado (WCAG AA), fontes ajustáveis, ícones grandes |
-| **Offline-First** | Funcionalidade completa sem conexão com internet |
-| **Armazenamento** | Dados de usuário, fotos e áudios armazenados localmente |
-
-### Estrutura de Módulos
+### Prompt 1.2 - Configuração Inicial do Projeto
 
 ```
-app/
-├── data/                    # Camada de Dados
-│   ├── local/              # Banco de dados local (Room)
-│   ├── repository/         # Implementação de repositórios
-│   └── model/              # Modelos de dados
-├── domain/                  # Camada de Domínio
-│   ├── entity/             # Entidades de negócio
-│   ├── usecase/            # Casos de uso
-│   └── repository/         # Interfaces de repositório
-├── presentation/            # Camada de Apresentação
-│   ├── ui/                 # Telas Compose
-│   ├── viewmodel/          # ViewModels
-│   ├── navigation/         # Navegação
-│   └── theme/              # Tema e design system
-└── di/                      # Injeção de Dependências (Hilt)
+Crie a estrutura inicial de um projeto Android com as seguintes especificações:
+
+- Linguagem: Kotlin
+- Minimum SDK: API 24 (Android 7.0)
+- Target SDK: API 34
+- Arquitetura: MVVM com Clean Architecture
+- Build System: Gradle com Kotlin DSL
+
+Configure o build.gradle.kts (Module: app) com dependências específicas:
+
+```kotlin
+dependencies {
+    // Core Android
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.activity:activity-compose:1.8.2")
+    
+    // Compose BOM
+    implementation(platform("androidx.compose:compose-bom:2024.02.00"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+    
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+    
+    // Room Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
+    kapt("com.google.dagger:hilt-compiler:2.48")
+    
+    // DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    
+    // Work Manager
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    
+    // Coil (imagens)
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    
+    // Serialization (para backup)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    
+    // Testing
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("com.google.truth:truth:1.1.4")
+    testImplementation("io.mockk:mockk:1.13.8")
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    
+    // Debug
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
 ```
 
-## Metodologia de Desenvolvimento
+Configure também:
+- proguard-rules.pro para release
+- Permissões no AndroidManifest.xml:
+    * RECORD_AUDIO (para ASR)
+    * READ_EXTERNAL_STORAGE (para backup)
+    * WRITE_EXTERNAL_STORAGE (para backup)
+    * POST_NOTIFICATIONS (Android 13+)
 
-### Design Thinking Aplicado
+Organize a estrutura de pacotes seguindo Clean Architecture:
+- data (database, repositories)
+- domain (models, usecases)
+- presentation (screens, viewmodels)
+- di (módulos Hilt)
+- utils
+```
 
-**Fase 1 - Empatizar:**
--   Entrevistas com pais, terapeutas ocupacionais e psicólogos
--   Questionários qualitativos com cuidadores
--   Identificação de pontos problemáticos e recursos desejados
+### Prompt 1.3 - Estrutura de Dados Base
 
-**Fase 2 - Definir:**
--   Análise de transcrições e dados de questionários
--   Desenvolvimento de personas detalhadas (criança, pai, terapeuta)
--   Formulação de declaração de problema concisa
+```
+Crie as entidades do Room Database para o app de rotinas infantis:
 
-**Fase 3 - Idear:**
--   Sessões colaborativas de brainstorming
--   Desenvolvimento de histórias de usuário
--   Priorização de funcionalidades (MoSCoW)
+1. Entidade Profile (Perfil/Dependente):
+    - id (autoincrement)
+    - name (String)
+    - birthDate (Long - timestamp)
+    - gender (enum: MALE, FEMALE)
+    - photoUri (String - nullable)
+    - createdAt (Long)
 
-**Fase 4 - Prototipar:**
--   Protótipos de baixa fidelidade em papel
--   Protótipos digitais interativos (Figma/Balsamiq)
--   Validação de fluxos de navegação
+2. Entidade Routine (Rotina):
+    - id (autoincrement)
+    - name (String)
+    - description (String - nullable)
+    - createdAt (Long)
 
-**Fase 5 - Testar:**
--   Sessões de teste de usabilidade com crianças com TEA e pais
--   Coleta de métricas quantitativas e qualitativas
--   Iteração baseada em feedback antes do desenvolvimento em escala
+3. Entidade Task (Tarefa):
+    - id (autoincrement)
+    - routineId (Foreign Key)
+    - title (String)
+    - iconRes (Int - recurso drawable)
+    - time (String - formato HH:mm)
+    - stars (Int - 1 a 5)
+    - observation (String - nullable)
+    - daysOfWeek (List<DayOfWeek>)
+    - isActive (Boolean)
 
-### Abordagem de Desenvolvimento
+4. Entidade TaskCompletion (Conclusão de Tarefa):
+    - id (autoincrement)
+    - taskId (Foreign Key)
+    - profileId (Foreign Key)
+    - completedAt (Long)
+    - status (enum: TODO, DONE, CANCELLED)
+    - earnedStars (Int)
 
--   **Metodologia Ágil**: Sprints de 2 semanas
--   **Modularidade First**: Entrega incremental de valor
--   **TDD (Test-Driven Development)**: Testes unitários antes da implementação
--   **Code Review**: Revisão obrigatória de código
--   **CI/CD**: Integração e deployment contínuos
--   **Documentação Contínua**: Sincronização em tempo real
+Inclua os TypeConverters necessários para List e Enum.
+Crie o AppDatabase abstrato com versão 1.
+```
 
-## Funcionalidades Desenvolvidas e Validadas (DEVELOPED)
+### Prompt 1.4 - DAOs (Data Access Objects)
 
-Atualmente não há funcionalidades desenvolvidas. O projeto está em fase de
-especificação inicial.
+```
+Crie os DAOs para as entidades do banco de dados:
 
-## Funcionalidades em Desenvolvimento (UNDER_DEVELOPMENT)
+ProfileDao:
+- insert, update, delete
+- getAllProfiles(): Flow<List<Profile>>
+- getProfileById(id): Flow<Profile?>
+- getProfileCount(): Flow<Int>
 
-Atualmente não há funcionalidades em desenvolvimento ativo. O projeto está em
-fase de planejamento.
+RoutineDao:
+- insert, update, delete
+- getAllRoutines(): Flow<List<Routine>>
+- getRoutineById(id): Flow<Routine?>
 
-## Roadmap de Desenvolvimento
+TaskDao:
+- insert, update, delete
+- getTasksByRoutine(routineId): Flow<List<Task>>
+- getTasksByDayOfWeek(day): Flow<List<Task>>
+- getTaskById(id): Flow<Task?>
 
-### Versão 0.1.0 - Setup Inicial (Sprint 1-2)
--   [ ] Configuração do projeto Android
--   [ ] Estrutura de módulos e camadas
--   [ ] Configuração de build e dependências
--   [ ] Sistema de tema e design tokens
--   [ ] Tela de splash e navegação básica
+TaskCompletionDao:
+- insert, update
+- getCompletionsByProfile(profileId, startDate, endDate): Flow<List<TaskCompletion>>
+- getCompletionsByTask(taskId, date): Flow<TaskCompletion?>
+- getTotalStarsByProfile(profileId): Flow<Int>
 
-### Versão 0.2.0 - Autenticação e Cadastros Básicos (Sprint 3-4)
--   [ ] RF 01: Efetuar login
--   [ ] RF 02: Recuperar senha
--   [ ] RF 03: Realizar logout
--   [ ] RF 11-14: CRUD de Pessoa com TEA
--   [ ] Banco de dados local (Room)
-
-### Versão 0.3.0 - Gestão de Rotinas e Atividades (Sprint 5-6)
--   [ ] RF 04-07: CRUD de Rotinas
--   [ ] RF 19-22: CRUD de Atividades
--   [ ] Biblioteca de ícones e imagens padrão
--   [ ] Sistema de upload de fotos personalizadas
-
-### Versão 0.4.0 - Visualização e Execução de Rotinas (Sprint 7-8)
--   [ ] Cronograma visual com sequências passo a passo
--   [ ] Navegação entre etapas de atividades
--   [ ] Personagens (menino/menina)
--   [ ] Interface acessível para crianças
-
-### Versão 0.5.0 - Sistema de Reforço Positivo (Sprint 9-10)
--   [ ] Feedback visual (estrelas, checkmarks)
--   [ ] Feedback sonoro (aplausos, elogios)
--   [ ] Animações de celebração
--   [ ] Sistema de conquistas simples
-
-### Versão 1.0.0 - MVP Release (Sprint 11-12)
--   [ ] RF 23: Notificar usuário de atividade
--   [ ] Templates pré-estruturados completos
--   [ ] Testes de usabilidade finalizados
--   [ ] Documentação completa
--   [ ] Deploy em beta teste
-
-### Versão 1.1.0 - Funcionalidades Avançadas
--   [ ] RF 25: Reconhecimento por voz
--   [ ] Áudios personalizados e narração
--   [ ] RF 26-30: Módulo de Hiperfoco
--   [ ] RF 10: Personalização avançada
-
-### Versão 1.2.0 - Colaboração Profissional
--   [ ] RF 15-18: CRUD de Profissionais
--   [ ] RF 08: Compartilhar rotina
--   [ ] RF 09: Notificar mudanças
--   [ ] RF 24: Feedback sobre atividades
-
-### Versão 1.3.0 - Recursos Complementares
--   [ ] RF 31: Datas comemorativas
--   [ ] Sistema de relatórios e progresso
--   [ ] Gamificação avançada
--   [ ] Integração com backup em nuvem (opcional)
-
-## Referências e Aplicativos Similares
-
-### Benchmarking de Mercado
-
-1. **AuTime**: Agenda digital para rotina de crianças com autismo
-2. **Rotina Divertida (Fun Routine)**: Gestão de rotinas com suporte visual
-3. **Goally**: Visual Schedule Planner para Autismo
-4. **PictogramAgenda**: Agenda com pictogramas
-5. **Thruday**: Visual Daily Planning App para ADHD, Autismo e Epilepsia
-6. **Tarefas de Casa para Crianças**: Gestão de tarefas com gamificação
-
-### Diferenciais do Pequenos Passos
-
--   **Foco Específico**: AVDs de higiene para primeira infância (0-6 anos)
--   **Fundamentação Científica**: Baseado em TEACCH, PECS, ABA
--   **Inovações Tecnológicas**: Reconhecimento de voz, gestão de hiperfoco
--   **Antecipação de Mudanças**: Sistema proativo de notificações
--   **Privacidade Total**: Armazenamento local, sem servidores remotos
--   **Colaboração Família-Terapeuta**: Arquitetura dual com módulos separados
+Use coroutines e Flow para operações assíncronas.
+```
 
 ---
 
-**Versão**: 0.1.0 (Especificação Inicial)  
-**Data**: 07/10/2025  
-**Status**: Em Planejamento - Aguardando Início de Desenvolvimento
+## 🎨 FASE 2: UI/UX - SISTEMA DE DESIGN
 
-## Reaproveitamento de Base Tecnológica (FonoVirtual_V2)
-
-### Contexto do Reaproveitamento
-
-O projeto **Pequenos Passos** reutiliza a base tecnológica desenvolvida no 
-projeto anterior **FonoVirtual_V2**, aproveitando componentes validados e 
-funcionalidades já implementadas que são compatíveis com os objetivos da nova 
-aplicação. Esta abordagem permite acelerar o desenvolvimento e focar nos 
-recursos específicos para crianças com TEA.
-
-### Componentes Reutilizados da Base FonoVirtual_V2
-
-#### 1. Interface Base e Navegação
-**Status**: ✅ Validado e Mantido
-
-- **SplashScreen**: Tela inicial com logo UNIVESP
-  - Duração: 3 segundos ou toque do usuário
-  - Transição suave para tela principal
-  - Identidade visual acadêmica mantida
-  
-- **HomeScreen**: Estrutura base da tela principal
-  - Layout com botões centralizados e responsivos
-  - Sistema de versioning dinâmico (BuildConfig.VERSION_NAME)
-  - Modo claro implementado (fundo branco, textos pretos)
-  - **Adaptação Futura**: Botões serão renomeados e redirecionados para 
-    funcionalidades específicas do Pequenos Passos
-
-#### 2. Módulos de Reconhecimento de Voz (ASR) e Síntese de Fala (TTS)
-**Status**: ✅ Validado e Diretamente Aplicável
-
-**Módulo ASR (Automatic Speech Recognition)**:
-- **VoskAsrModule.kt**: Implementação completa do reconhecimento de voz offline
-- **Tecnologia**: Vosk PT-BR (vosk-model-small-pt-0.3)
-- **Funcionalidades**:
-  - Reconhecimento contínuo sem necessidade de botões
-  - Processamento local (offline-first)
-  - Tratamento de permissões de microfone
-  - Feedback em tempo real
-- **Aplicação no Pequenos Passos**: Essencial para RF 25 (Ativar 
-  reconhecimento por voz) e interações vocais com crianças em 
-  pré-alfabetização
-
-**Módulo TTS (Text-to-Speech)**:
-- **TextToSpeechModule.kt**: Síntese de fala nativa Android
-- **Funcionalidades**:
-  - Narração em português brasileiro (pt-BR)
-  - Controle de velocidade e tom
-  - Inicialização e gerenciamento de estado
-  - Tratamento de erros de áudio
-- **Aplicação no Pequenos Passos**: Fundamental para narração de instruções, 
-  reforço positivo por áudio e suporte a crianças não-alfabetizadas
-
-#### 3. Sistema de Debug e Testes
-**Status**: ✅ Validado e Mantido para Desenvolvimento
-
-**DebugScreen e Funcionalidades**:
-- **DebugScreen.kt**: Tela de acesso a ferramentas de desenvolvimento
-- **TtsTestScreen.kt**: Teste isolado de síntese de fala
-- **AsrTestScreen.kt**: Teste isolado de reconhecimento de voz
-- **Justificativa**: Mantido para facilitar desenvolvimento e validação dos 
-  módulos de voz durante implementação das funcionalidades específicas para TEA
-
-#### 4. Arquitetura Base
-**Status**: ✅ Validado e Expandido
-
-**Componentes Arquiteturais Reutilizados**:
-- **MainActivity.kt**: Sistema de navegação com Jetpack Compose Navigation
-- **Estrutura MVVM**: ViewModels, StateFlow, e padrões reativo
-- **Sistema de Tema**: Theme.kt com Material Design 3
-- **Build Configuration**: Gradle KTS, Java 17, dependências validadas
-
-**Adaptações Necessárias**:
-- Namespace atualizado: `com.example.pequenospassos`
-- ApplicationId ajustado para nova identidade
-- Configurações específicas para módulos de TEA
-
-### Benefícios do Reaproveitamento
-
-#### 1. Aceleração do Desenvolvimento
-- **Time-to-Market Reduzido**: Módulos de voz prontos e validados
-- **Foco na Especialização**: Concentrar esforços nas funcionalidades 
-  específicas para TEA
-- **Infraestrutura Testada**: Base arquitetural comprovadamente funcional
-
-#### 2. Qualidade Garantida
-- **Componentes Validados**: ASR e TTS com 95%+ de funcionalidade testada
-- **Padrões Estabelecidos**: Arquitetura limpa já implementada
-- **Performance Otimizada**: Build system e dependências já otimizadas
-
-#### 3. Consistency Tecnológica
-- **Stack Unificado**: Kotlin, Jetpack Compose, Material Design 3
-- **Padrões de Código**: Nomenclatura e estrutura consistentes
-- **Documentação Sincronizada**: Metodologia de documentação já estabelecida
-
-### Roadmap de Integração
-
-#### Fase 1: Adaptação da Base (Versão 0.1.0)
-- [x] Renomeação completa do projeto (FonoVirtual_V2 → PequenosPassos)
-- [x] Ajuste de namespace e configurações
-- [x] Validação de build e funcionamento básico
-- [ ] Adaptação visual para público infantil (cores, ícones, fontes)
-
-#### Fase 2: Especialização TEA (Versão 0.2.0)
-- [ ] Implementação de rotinas visuais usando base ASR/TTS
-- [ ] Integração de módulos de voz com atividades de higiene
-- [ ] Adaptação da HomeScreen para botões específicos do Pequenos Passos
-- [ ] Implementação de feedback positivo com áudio
-
-#### Fase 3: Funcionalidades Avançadas (Versão 0.3.0+)
-- [ ] Módulo de Hiperfoco usando reconhecimento de voz
-- [ ] Personalização de rotinas com narração TTS
-- [ ] Sistema completo de reforço positivo audiovisual
-
-### Considerações Técnicas
-
-#### Compatibilidade e Migração
-- **Versioning**: Iniciando do 0.1.0 para nova identidade do projeto
-- **Dependencies**: Mantidas as dependências validadas (Vosk, Compose, etc.)
-- **Target SDK**: Mantido Android 34 (API Level 34)
-- **Min SDK**: Mantido Android 24 (API Level 24) para compatibilidade
-
-#### Qualidade e Validação
-- **Testes Existentes**: Aproveitamento de testes dos módulos de voz
-- **Documentação**: Sincronização com nova especificação Pequenos Passos
-- **Performance**: Baseline já estabelecida (BUILD SUCCESSFUL < 30s)
-
-## Funcionalidades Planejadas (FINAL_TARGET)
-
-### F1. Apoio Visual e Sequencial para AVDs (ESSENCIAL)
-
-**História de Usuário**: Como criança com TEA, eu quero que o aplicativo me
-mostre o passo a passo de uma atividade de higiene de forma clara e visual,
-para que eu possa entender e realizar a tarefa com mais autonomia.
-
-**Componentes Essenciais:**
--   Mapas de rotina visuais (Visual Schedules)
--   Sequências ilustradas passo a passo para AVDs de higiene:
-    * Escovação dos dentes
-    * Lavagem das mãos
-    * Uso do vaso sanitário
-    * Banho
--   Ícones grandes e comandos por toque simples
--   Duas versões de personagens (menino e menina) para identificação
--   Priorização de acessibilidade para primeira infância (0-6 anos)
-
-**Requisitos Funcionais Associados:**
--   RF 04: Cadastrar rotina
--   RF 05: Editar rotina
--   RF 06: Remover rotina
--   RF 07: Pesquisar rotina
--   RF 19: Cadastrar atividade
--   RF 20: Editar atividade
--   RF 21: Pesquisar atividade
--   RF 22: Remover atividade
-
-### F2. Sistema de Reforço e Engajamento (ESSENCIAL)
-
-**História de Usuário**: Como criança com TEA, eu quero receber reforço
-positivo imediato após completar uma etapa da atividade, para que eu me sinta
-motivada a continuar e repetir o comportamento correto.
-
-**Componentes Essenciais:**
--   Feedbacks positivos com mensagens de elogio e motivação
--   Personagens com semblante alegre
--   Feedback curto (tempo de exibição otimizado)
--   Narração e sons de apoio (aplausos)
--   Cores atrativas e elementos claros
--   Interface com poucos botões para evitar confusão
-
-**Requisitos Funcionais Associados:**
--   RF 24: Enviar feedback sobre atividade
-
-### F3. Antecipação de Imprevistos e Rotina Flexível (INOVADOR)
-
-**História de Usuário**: Como pai/cuidador, eu quero uma ferramenta que me
-permita notificar mudanças e preparar visualmente a criança para imprevistos
-ou alterações na rotina de higiene, a fim de minimizar a ansiedade e
-desorganização.
-
-**Componentes Inovadores:**
--   Notificação de mudanças na rotina (RF 09)
--   Suporte visual para antecipação (37.5% estratégia mais usada)
--   Organização de "Imprevistos" e viagens como dia normal de rotina
--   Uso de fotos pré-cadastradas para antecipação
--   Arquitetura de dois módulos:
-    * Módulo Administrativo para Profissionais
-    * Aplicativo Móvel para Pais/Pacientes
--   Garantia de carry-over entre ambiente clínico e domiciliar
-
-**Requisitos Funcionais Associados:**
--   RF 09: Notificar mudanças na rotina (ESSENCIAL)
--   RF 08: Compartilhar rotina (IMPORTANTE)
--   RF 23: Notificar usuário de atividade (ESSENCIAL)
-
-### F4. Interação por Fala e Escuta (INOVADOR)
-
-**História de Usuário**: Como criança com TEA na fase de pré-alfabetização, eu
-quero interagir com o aplicativo usando minha voz para confirmar que realizei
-uma etapa da atividade, para que eu não precise usar botões complexos.
-
-**Componentes Inovadores:**
--   Reconhecimento por voz para atividade (RF 25)
--   Narração e dublagens pré-gravadas para todo o texto
--   Instruções e narrativas com reforço de áudio
--   Interação vocal como alternativa ao toque
--   Suporte para crianças em fase de pré-alfabetização
--   Implementação de estratégia "Primeiro isso e Depois aquilo" via voz
-
-**Requisitos Funcionais Associados:**
--   RF 25: Ativar reconhecimento por voz (IMPORTANTE)
-
-### F5. Personalização e Hiperfoco (INOVADOR)
-
-**História de Usuário**: Como pai/cuidador, eu quero usar os interesses
-específicos (Hiperfoco) do meu filho no aplicativo, associando-os às
-atividades de higiene, para aumentar o engajamento dele nas tarefas mais
-resistentes.
-
-**Componentes Inovadores:**
--   Módulo completo de gestão de Hiperfoco (RF 26 a RF 30)
--   Cadastro de hiperfoco com categoria, nome, descrição e intensidade
--   Associação de hiperfoco às atividades (RF 30)
--   Personalização do quadro de rotina (cores/fontes) (RF 10)
--   Inclusão de fotos e áudios personalizáveis
--   Alinhamento com interesses específicos da criança
-
-**Requisitos Funcionais Associados:**
--   RF 26: Cadastrar hiperfoco (IMPORTANTE)
--   RF 27: Editar hiperfoco (IMPORTANTE)
--   RF 28: Pesquisar hiperfoco (IMPORTANTE)
--   RF 29: Remover hiperfoco (IMPORTANTE)
--   RF 30: Associar hiperfoco às atividades (IMPORTANTE)
--   RF 10: Personalizar quadro de rotinas (IMPORTANTE)
-
-## Requisitos Funcionais Completos (31 RFs)
-
-### Módulo de Autenticação e Acesso
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 01 | Efetuar login | Essencial |
-| RF 02 | Recuperar senha | Essencial |
-| RF 03 | Realizar logout | Essencial |
-
-### Módulo de Gestão de Rotinas
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 04 | Cadastrar rotina | Essencial |
-| RF 05 | Editar rotina | Essencial |
-| RF 06 | Remover rotina | Essencial |
-| RF 07 | Pesquisar rotina | Essencial |
-| RF 08 | Compartilhar rotina | Importante |
-| RF 09 | Notificar mudanças na rotina | Essencial |
-| RF 10 | Personalizar quadro de rotinas | Importante |
-| RF 31 | Inserir datas comemorativas | Desejável |
-
-### Módulo de Gestão de Usuários
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 11 | Cadastrar pessoa com TEA | Essencial |
-| RF 12 | Pesquisar pessoa com TEA | Essencial |
-| RF 13 | Editar pessoa com TEA | Essencial |
-| RF 14 | Remover pessoa com TEA | Essencial |
-| RF 15 | Cadastrar profissional | Essencial |
-| RF 16 | Pesquisar profissional | Essencial |
-| RF 17 | Editar profissional | Essencial |
-| RF 18 | Remover profissional | Essencial |
-
-### Módulo de Gestão de Atividades
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 19 | Cadastrar atividade | Essencial |
-| RF 20 | Editar atividade | Essencial |
-| RF 21 | Pesquisar atividade | Essencial |
-| RF 22 | Remover atividade | Essencial |
-| RF 23 | Notificar usuário de atividade | Essencial |
-| RF 24 | Enviar feedback sobre atividade | Importante |
-
-### Módulo de Acessibilidade e Interação
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 25 | Ativar reconhecimento por voz | Importante |
-
-### Módulo de Hiperfoco
-
-| ID | Funcionalidade | Prioridade |
-|----|----------------|-----------|
-| RF 26 | Cadastrar hiperfoco | Importante |
-| RF 27 | Editar hiperfoco | Importante |
-| RF 28 | Pesquisar hiperfoco | Importante |
-| RF 29 | Remover hiperfoco | Importante |
-| RF 30 | Associar hiperfoco às atividades | Importante |
-
-## Escopo do Projeto
-
-### Funcionalidades In-Scope (MVP - Versão Inicial)
-
-Baseado na pesquisa de usuário que identificou higiene pessoal como a rotina
-mais problemática, o escopo inicial focará em:
-
-**Templates Pré-Estruturados:**
--   Rotina de Higiene Matinal (Escovar Dentes, Lavar Mãos)
--   Rotina de Uso do Banheiro
--   Rotina de Hora de Dormir (relacionada à higiene)
-
-**Funcionalidades Essenciais do MVP:**
--   Sistema de autenticação básico (RF 01, RF 02, RF 03)
--   Cadastro e gestão de pessoas com TEA (RF 11, RF 12, RF 13, RF 14)
--   Cadastro e gestão de rotinas (RF 04, RF 05, RF 06, RF 07)
--   Cadastro e gestão de atividades (RF 19, RF 20, RF 21, RF 22)
--   Cronograma visual com sequências passo a passo
--   Sistema básico de reforço positivo (feedback visual e sonoro)
--   Notificações de atividades (RF 23)
--   Biblioteca de conteúdo com fotos e ícones pré-definidos
--   Capacidade de upload de fotos personalizadas
--   Interface com duas versões de personagens (menino/menina)
-
-### Funcionalidades Out-of-Scope (Versões Futuras)
-
-**Versão 1.1 - Funcionalidades Avançadas:**
--   Reconhecimento por voz (RF 25)
--   Áudios personalizados e narração
--   Módulo completo de Hiperfoco (RF 26-30)
--   Personalização avançada de quadro de rotinas (RF 10)
-
-**Versão 1.2 - Colaboração e Gestão:**
--   Cadastro e gestão de profissionais (RF 15-18)
--   Compartilhamento de rotinas (RF 08)
--   Notificação de mudanças na rotina (RF 09)
--   Sistema de feedback sobre atividades (RF 24)
-
-**Versão 1.3 - Recursos Adicionais:**
--   Datas comemorativas (RF 31)
--   Análise de progresso e relatórios
--   Integração com prontuários (fora do escopo inicial)
--   Gamificação avançada
-
-**Explicitamente Fora do Escopo:**
--   Atividades Instrumentais Complexas da Vida Diária (AIVDs)
--   Conteúdo curricular acadêmico
--   Integração com Prontuários Eletrônicos de Saúde (EHRs)
--   Chat multiusuário em tempo real
--   Gerenciamento financeiro ou de medicação
-
-## Arquitetura e Especificações Técnicas
-
-### Stack Tecnológico
-
--   **Plataforma**: Android (nativo)
--   **Linguagem**: Kotlin
--   **Arquitetura**: MVVM (Model-View-ViewModel)
--   **UI Framework**: Jetpack Compose
--   **Build System**: Gradle com Kotlin DSL
--   **Injeção de Dependências**: Hilt/Dagger
--   **Banco de Dados Local**: Room Database
--   **Armazenamento de Mídia**: Armazenamento local no dispositivo
--   **Versionamento**: Semântico (MAJOR.MINOR.PATCH)
-
-### Arquitetura de Camadas
+### Prompt 2.1 - Theme e Cores
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Camada de Apresentação                  │
-│         (UI - Jetpack Compose, ViewModels, Navigation)     │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-┌──────────────────────┴──────────────────────────────────────┐
-│                   Camada de Aplicação                      │
-│              (Use Cases, Orquestração, DTOs)               │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-┌──────────────────────┴──────────────────────────────────────┐
-│                    Camada de Domínio                       │
-│        (Entidades, Regras de Negócio, Interfaces)          │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-┌──────────────────────┴──────────────────────────────────────┐
-│                 Camada de Infraestrutura                   │
-│      (Repositórios, Room DB, File Storage, Services)       │
-└─────────────────────────────────────────────────────────────┘
+Crie um sistema de design em Jetpack Compose para app infantil:
+
+Theme.kt:
+- Paleta de cores vibrantes e amigáveis:
+    * Primary: Azul suave (#4A90E2)
+    * Secondary: Laranja alegre (#FF9500)
+    * Success: Verde (#4CAF50)
+    * Warning: Amarelo (#FFC107)
+    * Error: Vermelho suave (#FF5252)
+    * Background: Branco (#FFFFFF)
+    * Surface: Cinza claro (#F5F5F5)
+
+- Typography apropriada para crianças:
+    * Fontes arredondadas e legíveis
+    * Tamanhos grandes para facilitar leitura
+
+- Shapes com cantos arredondados (16dp, 24dp)
+
+Crie também um arquivo Colors.kt com cores adicionais para gamificação.
 ```
 
-### Requisitos Não-Funcionais
-
-| Aspecto | Especificação |
-|---------|---------------|
-| **Compatibilidade** | Android 8.0 (API 26) ou superior |
-| **Usabilidade** | Interface intuitiva com carga cognitiva mínima, pistas visuais claras, navegação direta |
-| **Privacidade e Segurança** | Armazenamento local no dispositivo, sem transmissão de dados sensíveis para servidores remotos, conformidade com LGPD |
-| **Performance** | Tempos de resposta < 3s para funções centrais, transições suaves, sem lag perceptível |
-| **Acessibilidade** | Suporte a TalkBack, contraste adequado (WCAG AA), fontes ajustáveis, ícones grandes |
-| **Offline-First** | Funcionalidade completa sem conexão com internet |
-| **Armazenamento** | Dados de usuário, fotos e áudios armazenados localmente |
-
-### Estrutura de Módulos
+### Prompt 2.2 - Componentes Reutilizáveis
 
 ```
-app/
-├── data/                    # Camada de Dados
-│   ├── local/              # Banco de dados local (Room)
-│   ├── repository/         # Implementação de repositórios
-│   └── model/              # Modelos de dados
-├── domain/                  # Camada de Domínio
-│   ├── entity/             # Entidades de negócio
-│   ├── usecase/            # Casos de uso
-│   └── repository/         # Interfaces de repositório
-├── presentation/            # Camada de Apresentação
-│   ├── ui/                 # Telas Compose
-│   ├── viewmodel/          # ViewModels
-│   ├── navigation/         # Navegação
-│   └── theme/              # Tema e design system
-└── di/                      # Injeção de Dependências (Hilt)
+Crie componentes Compose reutilizáveis para o app:
+
+1. ProfileCard:
+    - Exibe foto, nome e idade
+    - Card clicável com elevation
+    - Indicador de rotinas ativas
+
+2. TaskCard:
+    - Ícone ilustrativo
+    - Título da tarefa
+    - Horário
+    - Sistema de estrelas (1-5)
+    - Status visual (A fazer, Feito, Cancelado)
+    - Botões de ação (concluir, cancelar, editar, deletar)
+
+3. StarRating:
+    - Exibição de 1-5 estrelas
+    - Versão interativa e read-only
+    - Animação ao marcar
+
+4. DayOfWeekSelector:
+    - Chips para cada dia da semana (Dom-Sáb)
+    - Seleção múltipla
+    - Estado visual para dias selecionados
+
+5. TimePickerButton:
+    - Botão que abre time picker
+    - Exibe horário selecionado
+
+6. CustomButton:
+    - Botão primário e secundário
+    - Versões com ícone
+    - Estados de loading
+
+Todos os componentes devem seguir o theme criado anteriormente.
 ```
 
-## Metodologia de Desenvolvimento
+### Prompt 2.3 - Acessibilidade para TEA
 
-### Design Thinking Aplicado
+```
+Implemente recursos de acessibilidade específicos para TEA:
 
-**Fase 1 - Empatizar:**
--   Entrevistas com pais, terapeutas ocupacionais e psicólogos
--   Questionários qualitativos com cuidadores
--   Identificação de pontos problemáticos e recursos desejados
+AccessibilityHelper:
+- Configuração de semantics para screen readers
+- Suporte a TalkBack com descrições claras
+- Navegação por foco otimizada
+- Contraste de cores ajustável
 
-**Fase 2 - Definir:**
--   Análise de transcrições e dados de questionários
--   Desenvolvimento de personas detalhadas (criança, pai, terapeuta)
--   Formulação de declaração de problema concisa
+Recursos TEA específicos:
+- Modo de alto contraste
+- Redução de animações (configurável)
+- Tempo de resposta estendido para interações
+- Feedback háptico controlável
+- Indicadores visuais de carregamento
 
-**Fase 3 - Idear:**
--   Sessões colaborativas de brainstorming
--   Desenvolvimento de histórias de usuário
--   Priorização de funcionalidades (MoSCoW)
+ContentDescription padrões:
+- Botões: "Botão [ação], toque para [resultado]"
+- Imagens: Descrição clara e concisa
+- Estados: "Selecionado", "Não selecionado", "Carregando"
 
-**Fase 4 - Prototipar:**
--   Protótipos de baixa fidelidade em papel
--   Protótipos digitais interativos (Figma/Balsamiq)
--   Validação de fluxos de navegação
+Teste com:
+- TalkBack ativado
+- Navegação apenas por teclado
+- Diferentes tamanhos de fonte
+- Modo escuro/claro
 
-**Fase 5 - Testar:**
--   Sessões de teste de usabilidade com crianças com TEA e pais
--   Coleta de métricas quantitativas e qualitativas
--   Iteração baseada em feedback antes do desenvolvimento em escala
+Configurações de Acessibilidade:
+- Velocidade de animações (lenta, normal, desabilitada)
+- Tamanho de elementos interativos (48dp mínimo)
+- Tempo limite para interações (5s, 10s, sem limite)
+- Feedback sonoro para todas as ações
+- Confirmação dupla para ações importantes
 
-### Abordagem de Desenvolvimento
-
--   **Metodologia Ágil**: Sprints de 2 semanas
--   **Modularidade First**: Entrega incremental de valor
--   **TDD (Test-Driven Development)**: Testes unitários antes da implementação
--   **Code Review**: Revisão obrigatória de código
--   **CI/CD**: Integração e deployment contínuos
--   **Documentação Contínua**: Sincronização em tempo real
-
-## Funcionalidades Desenvolvidas e Validadas (DEVELOPED)
-
-Atualmente não há funcionalidades desenvolvidas. O projeto está em fase de
-especificação inicial.
-
-## Funcionalidades em Desenvolvimento (UNDER_DEVELOPMENT)
-
-Atualmente não há funcionalidades em desenvolvimento ativo. O projeto está em
-fase de planejamento.
-
-## Roadmap de Desenvolvimento
-
-### Versão 0.1.0 - Setup Inicial (Sprint 1-2)
--   [ ] Configuração do projeto Android
--   [ ] Estrutura de módulos e camadas
--   [ ] Configuração de build e dependências
--   [ ] Sistema de tema e design tokens
--   [ ] Tela de splash e navegação básica
-
-### Versão 0.2.0 - Autenticação e Cadastros Básicos (Sprint 3-4)
--   [ ] RF 01: Efetuar login
--   [ ] RF 02: Recuperar senha
--   [ ] RF 03: Realizar logout
--   [ ] RF 11-14: CRUD de Pessoa com TEA
--   [ ] Banco de dados local (Room)
-
-### Versão 0.3.0 - Gestão de Rotinas e Atividades (Sprint 5-6)
--   [ ] RF 04-07: CRUD de Rotinas
--   [ ] RF 19-22: CRUD de Atividades
--   [ ] Biblioteca de ícones e imagens padrão
--   [ ] Sistema de upload de fotos personalizadas
-
-### Versão 0.4.0 - Visualização e Execução de Rotinas (Sprint 7-8)
--   [ ] Cronograma visual com sequências passo a passo
--   [ ] Navegação entre etapas de atividades
--   [ ] Personagens (menino/menina)
--   [ ] Interface acessível para crianças
-
-### Versão 0.5.0 - Sistema de Reforço Positivo (Sprint 9-10)
--   [ ] Feedback visual (estrelas, checkmarks)
--   [ ] Feedback sonoro (aplausos, elogios)
--   [ ] Animações de celebração
--   [ ] Sistema de conquistas simples
-
-### Versão 1.0.0 - MVP Release (Sprint 11-12)
--   [ ] RF 23: Notificar usuário de atividade
--   [ ] Templates pré-estruturados completos
--   [ ] Testes de usabilidade finalizados
--   [ ] Documentação completa
--   [ ] Deploy em beta teste
-
-### Versão 1.1.0 - Funcionalidades Avançadas
--   [ ] RF 25: Reconhecimento por voz
--   [ ] Áudios personalizados e narração
--   [ ] RF 26-30: Módulo de Hiperfoco
--   [ ] RF 10: Personalização avançada
-
-### Versão 1.2.0 - Colaboração Profissional
--   [ ] RF 15-18: CRUD de Profissionais
--   [ ] RF 08: Compartilhar rotina
--   [ ] RF 09: Notificar mudanças
--   [ ] RF 24: Feedback sobre atividades
-
-### Versão 1.3.0 - Recursos Complementares
--   [ ] RF 31: Datas comemorativas
--   [ ] Sistema de relatórios e progresso
--   [ ] Gamificação avançada
--   [ ] Integração com backup em nuvem (opcional)
-
-## Referências e Aplicativos Similares
-
-### Benchmarking de Mercado
-
-1. **AuTime**: Agenda digital para rotina de crianças com autismo
-2. **Rotina Divertida (Fun Routine)**: Gestão de rotinas com suporte visual
-3. **Goally**: Visual Schedule Planner para Autismo
-4. **PictogramAgenda**: Agenda com pictogramas
-5. **Thruday**: Visual Daily Planning App para ADHD, Autismo e Epilepsia
-6. **Tarefas de Casa para Crianças**: Gestão de tarefas com gamificação
-
-### Diferenciais do Pequenos Passos
-
--   **Foco Específico**: AVDs de higiene para primeira infância (0-6 anos)
--   **Fundamentação Científica**: Baseado em TEACCH, PECS, ABA
--   **Inovações Tecnológicas**: Reconhecimento de voz, gestão de hiperfoco
--   **Antecipação de Mudanças**: Sistema proativo de notificações
--   **Privacidade Total**: Armazenamento local, sem servidores remotos
--   **Colaboração Família-Terapeuta**: Arquitetura dual com módulos separados
+Implementação:
+- Use Modifier.semantics para todos os elementos
+- Configure clearAndSetSemantics quando necessário
+- Adicione contentDescription em todas as imagens
+- Use role apropriado (Button, Checkbox, etc.)
+- Implemente onFocusChanged para elementos customizados
+```
 
 ---
 
-**Versão**: 0.1.0 (Especificação Inicial)  
-**Data**: 07/10/2025  
-**Status**: Em Planejamento - Aguardando Início de Desenvolvimento
+## 👤 FASE 3: MÓDULO DE PERFIS
+
+### 🎯 Objetivos do Módulo
+- Gerenciar múltiplos perfis de crianças
+- Permitir personalização individual
+- Controlar acesso por perfil
+
+### Prompt 3.1 - Repository e UseCases de Perfis
+
+```
+Crie a camada de domínio para Perfis:
+
+ProfileRepository (interface):
+- getAllProfiles(): Flow<List<Profile>>
+- getProfileById(id): Flow<Profile?>
+- insertProfile(profile): Result<Long>
+- updateProfile(profile): Result<Unit>
+- deleteProfile(id): Result<Unit>
+- getProfileCount(): Flow<Int>
+
+ProfileRepositoryImpl (implementação com Room)
+
+UseCases:
+- GetAllProfilesUseCase
+- GetProfileByIdUseCase
+- SaveProfileUseCase (insert/update)
+- DeleteProfileUseCase
+- ValidateProfileUseCase (validações de nome, idade, etc)
+
+Implemente tratamento de erros com sealed class Result<T>.
+```
+
+### Prompt 3.2 - Tela de Listagem de Perfis
+
+```
+Crie a tela de listagem de perfis (ProfilesScreen) com Jetpack Compose:
+
+ProfilesViewModel:
+- StateFlow com lista de perfis
+- Função para deletar perfil com confirmação
+- Função para navegar para edição
+- Loading state
+
+ProfilesScreen:
+- TopAppBar com título "Perfis" e botão adicionar
+- LazyColumn com ProfileCards
+- FloatingActionButton para adicionar novo perfil
+- Dialog de confirmação para deletar
+- Estado vazio (quando não há perfis)
+- Loading indicator
+
+Implemente navegação para tela de adicionar/editar perfil.
+```
+
+### Prompt 3.3 - Tela de Adicionar/Editar Perfil
+
+```
+Crie a tela de formulário de perfil (ProfileFormScreen):
+
+ProfileFormViewModel:
+- State para nome, data de nascimento, gênero, foto
+- Validação de campos
+- Função para salvar (insert ou update)
+- Função para selecionar foto (URI)
+- Loading e error states
+
+ProfileFormScreen:
+- Campo de foto (círculo clicável para selecionar imagem)
+- TextField para nome (obrigatório)
+- Botão para selecionar data de nascimento (DatePicker)
+- RadioButtons para gênero (Masculino/Feminino)
+- Cálculo e exibição automática da idade
+- Botão SALVAR
+- Validações visuais (erros em vermelho)
+
+Integre com Activity Result API para seleção de foto da galeria.
+```
+
+---
+
+## 📅 FASE 4: MÓDULO DE ROTINAS
+
+### 🎯 Funcionalidades Principais
+- Criação de rotinas personalizadas
+- Organização por dias da semana
+- Estruturação hierárquica de atividades
+
+### Prompt 4.1 - Repository e UseCases de Rotinas
+
+```
+Crie a camada de domínio para Rotinas:
+
+RoutineRepository (interface):
+- getAllRoutines(): Flow<List<Routine>>
+- getRoutineById(id): Flow<Routine?>
+- insertRoutine(routine): Result<Long>
+- updateRoutine(routine): Result<Unit>
+- deleteRoutine(id): Result<Unit>
+
+RoutineRepositoryImpl
+
+UseCases:
+- GetAllRoutinesUseCase
+- GetRoutineByIdUseCase
+- SaveRoutineUseCase
+- DeleteRoutineUseCase
+
+Implemente tratamento de erros.
+```
+
+### Prompt 4.2 - Tela de Gerenciamento de Rotinas
+
+```
+Crie a tela de gerenciamento de rotinas (RoutinesScreen):
+
+RoutinesViewModel:
+- StateFlow com lista de rotinas
+- Função para deletar rotina
+- Navegação para edição
+
+RoutinesScreen:
+- TopAppBar com título "Gerenciar Rotinas"
+- TabRow com dias da semana (Dom-Sáb)
+- LazyColumn com cards de rotinas
+- Cada card mostra:
+    * Nome da rotina
+    * Quantidade de tarefas
+    * Botões editar e deletar
+- FloatingActionButton para adicionar rotina
+- Estado vazio
+
+Implemente filtro por dia da semana.
+```
+
+### Prompt 4.3 - Tela de Formulário de Rotina
+
+```
+Crie a tela de criar/editar rotina (RoutineFormScreen):
+
+RoutineFormViewModel:
+- State para nome e descrição
+- Validação
+- Função salvar
+
+RoutineFormScreen:
+- TextField para nome da rotina (obrigatório)
+- TextField para descrição (opcional)
+- Botão SALVAR
+- Navegação de volta após salvar
+
+Design simples e intuitivo.
+```
+
+---
+
+## ✅ FASE 5: MÓDULO DE TAREFAS
+
+### 🎯 Características Especiais
+- Interface visual amigável para TEA
+- Horários estruturados
+- Sistema de dificuldade por estrelas
+- Feedback imediato
+
+### Prompt 5.1 - Repository e UseCases de Tarefas
+
+```
+Crie a camada de domínio para Tarefas:
+
+TaskRepository (interface):
+- getTasksByRoutine(routineId): Flow<List<Task>>
+- getTasksByDayOfWeek(day): Flow<List<Task>>
+- getTaskById(id): Flow<Task?>
+- insertTask(task): Result<Long>
+- updateTask(task): Result<Unit>
+- deleteTask(id): Result<Unit>
+
+TaskRepositoryImpl
+
+UseCases:
+- GetTasksByRoutineUseCase
+- GetTasksByDayUseCase
+- SaveTaskUseCase
+- DeleteTaskUseCase
+- ValidateTaskUseCase
+
+Inclua validações de horário, estrelas (1-5), dias da semana.
+```
+
+### Prompt 5.2 - Tela de Listagem de Tarefas
+
+```
+Crie a tela de listagem de tarefas por rotina (TasksScreen):
+
+TasksViewModel:
+- StateFlow com lista de tarefas
+- Filtro por dia da semana
+- Função deletar tarefa
+- Ordenação por horário
+
+TasksScreen:
+- TopAppBar com nome da rotina
+- TabRow com dias da semana
+- LazyColumn com TaskCards
+- Cada TaskCard mostra:
+    * Ícone ilustrativo
+    * Nome da tarefa
+    * Horário
+    * Estrelas
+    * Botões de ação (editar, deletar)
+- FloatingActionButton para adicionar tarefa
+
+Implemente animações nas transições.
+```
+
+### Prompt 5.3 - Formulário de Tarefa Multi-Step
+
+```
+Crie o formulário multi-step de tarefa (TaskFormScreen):
+
+TaskFormViewModel:
+- Multi-step form state (wizard)
+- State para: rotina, título, ícone, horário, estrelas, observação, dias
+- Validações por step
+- Navegação entre steps
+
+Steps do Formulário:
+1. Selecionar Rotina
+2. Escolher Tipo de Tarefa (ícone e nome)
+3. Definir Horário
+4. Selecionar Dificuldade (estrelas 1-5)
+5. Adicionar Observação (opcional)
+6. Escolher Dias da Semana
+7. Confirmar e Salvar
+
+Implemente indicador de progresso e navegação Voltar/Próximo.
+```
+
+---
+
+## 🎮 FASE 6: SISTEMA DE GAMIFICAÇÃO
+
+### 🎯 Elementos Motivacionais
+- Sistema de estrelas baseado em dificuldade
+- Feedback visual imediato
+- Recompensas desbloqueáveis
+- Progresso visual
+
+### Prompt 6.1 - Repository e UseCases de Conclusão
+
+```
+Crie a camada de domínio para Conclusão de Tarefas:
+
+TaskCompletionRepository (interface):
+- getCompletionsByProfile(profileId, date): Flow<List<TaskCompletion>>
+- getCompletionByTask(taskId, date): Flow<TaskCompletion?>
+- completeTask(taskId, profileId, status): Result<Unit>
+- getTotalStars(profileId): Flow<Int>
+- getStarsByPeriod(profileId, start, end): Flow<Int>
+
+TaskCompletionRepositoryImpl
+
+UseCases:
+- CompleteTaskUseCase
+- CancelTaskUseCase
+- GetDailyTasksUseCase
+- CalculateStarsUseCase
+- GetTaskCompletionStatsUseCase
+
+Implemente lógica de pontuação (estrelas ganhas = estrelas da tarefa).
+```
+
+### Prompt 6.2 - Tela de Rotina Diária Principal
+
+```
+Crie a tela principal de rotina diária (DailyRoutineScreen):
+
+DailyRoutineViewModel:
+- StateFlow com perfil selecionado
+- StateFlow com tarefas do dia agrupadas por horário
+- Função para completar tarefa
+- Função para cancelar tarefa
+- Total de estrelas do dia/perfil
+
+DailyRoutineScreen:
+- TopAppBar com:
+    * Foto e nome do perfil
+    * Data atual (navegável: anterior/próximo)
+    * Total de estrelas
+- TabRow com horários (Manhã, Tarde, Noite)
+- LazyColumn com tarefas do período
+- Cada tarefa mostra:
+    * Ícone grande e colorido
+    * Nome da tarefa
+    * Horário
+    * Estrelas possíveis
+    * Botões: ✓ Concluir | ✗ Cancelar | Detalhes
+- Dialog ao clicar na tarefa com:
+    * Imagem maior
+    * Todas as informações
+    * Botões de ação maiores (acessibilidade)
+    * Opção de ouvir áudio (TTS)
+
+Implemente animações de confete ao concluir tarefa.
+```
+
+---
+
+## 📊 FASE 7: RELATÓRIOS E ANÁLISES
+
+### 🎯 Monitoramento de Progresso
+- Estatísticas visuais de conclusão
+- Identificação de padrões
+- Relatórios para cuidadores
+
+### Prompt 7.1 - Tela de Relatórios
+
+```
+Crie a tela de relatórios (ReportsScreen):
+
+ReportsViewModel:
+- StateFlow com dados de conclusão
+- Filtros: perfil, período (semana/mês)
+- Cálculos:
+    * Total de tarefas concluídas
+    * Total de tarefas canceladas
+    * Total de tarefas pendentes
+    * Total de estrelas ganhas
+    * Taxa de conclusão (%)
+    * Tarefa mais realizada
+    * Melhor dia da semana
+
+ReportsScreen:
+- Seletor de perfil (dropdown)
+- Seletor de período
+- Cards com estatísticas:
+    * Card de estrelas total (destaque visual)
+    * Card de conclusão (gráfico circular)
+    * Card de tendências
+- Lista com detalhamento por dia:
+    * Data
+    * Tarefas concluídas/total
+    * Estrelas do dia
+    * Indicador visual de progresso
+
+Use gráficos simples e visuais (barras, pizza).
+Cores condicionais (verde para bom desempenho, amarelo para médio).
+```
+
+---
+
+## 🎁 FASE 8: SISTEMA DE RECOMPENSAS
+
+### 🎯 Motivação Continuada
+- Recompensas virtuais desbloqueáveis
+- Sistema de custo em estrelas
+- Histórico de conquistas
+
+### Prompt 8.1 - Entidade e Lógica de Recompensas
+
+```
+Crie o sistema de recompensas:
+
+Entidade Reward:
+- id
+- title (String)
+- description (String)
+- starsCost (Int)
+- iconRes (Int)
+- isActive (Boolean)
+
+Entidade RewardRedemption:
+- id
+- rewardId (Foreign Key)
+- profileId (Foreign Key)
+- redeemedAt (Long)
+- starsSpent (Int)
+
+RewardDao:
+- CRUD de recompensas
+- getActiveRewards()
+- getRedemptionsByProfile()
+
+RewardRepository e UseCases:
+- GetAvailableRewardsUseCase
+- RedeemRewardUseCase (valida se tem estrelas suficientes)
+- GetRedemptionHistoryUseCase
+
+Lógica: deduzir estrelas do perfil ao resgatar recompensa.
+```
+
+### Prompt 8.2 - Tela de Recompensas
+
+```
+Crie a tela de recompensas (RewardsScreen):
+
+RewardsViewModel:
+- StateFlow com recompensas disponíveis
+- StateFlow com estrelas do perfil
+- Fun��ão para resgatar recompensa
+
+RewardsScreen:
+- Header com:
+    * Perfil selecionado
+    * Total de estrelas disponíveis (destaque)
+- Grid com cards de recompensas:
+    * Ícone grande
+    * Nome da recompensa
+    * Custo em estrelas
+    * Botão RESGATAR (desabilitado se não tiver estrelas)
+- Ao resgatar:
+    * Animação de celebração
+    * Dialog de confirmação
+    * Atualização do saldo de estrelas
+- Tab "Histórico" com recompensas já resgatadas
+
+Design colorido e motivador para crianças.
+```
+
+---
+
+## 🏠 FASE 9: TELA INICIAL E NAVEGAÇÃO
+
+### 🎯 Hub Central do Aplicativo
+- Acesso rápido a todas as funcionalidades
+- Seleção de perfil ativo
+- Dashboard de status
+
+### Prompt 9.1 - Tela Principal (Home)
+
+```
+Crie a tela principal do app (HomeScreen):
+
+HomeViewModel:
+- StateFlow com perfil ativo selecionado
+- Função para trocar perfil ativo
+- Resumo do dia: tarefas pendentes, concluídas, estrelas
+
+HomeScreen:
+- TopAppBar com usuário logado e configurações
+- Card do perfil ativo:
+    * Foto e nome
+    * Botão para trocar perfil
+- Grid com menu de opções:
+    * Rotina do Dia (destaque)
+    * Gerenciar Rotinas
+    * Perfis/Dependentes
+    * Recompensas
+    * Relatórios
+    * PECS (básico)
+    * Configurações
+- BottomNavigationBar:
+    * Home
+    * Rotina do Dia
+    * Perfis
+
+Design amigável e intuitivo, ícones grandes e coloridos.
+```
+
+### Prompt 9.2 - Navegação Completa
+
+```
+Configure a navegação completa do app com Navigation Compose:
+
+NavGraph:
+- Splash Screen (opcional)
+- Home Screen (tela principal)
+- Profiles Screen (lista de perfis)
+- Profile Form Screen (add/edit perfil)
+- Routines Screen (gerenciar rotinas)
+- Routine Form Screen (add/edit rotina)
+- Tasks Screen (lista de tarefas da rotina)
+- Task Form Screen (wizard multi-step)
+- Daily Routine Screen (rotina do dia do perfil)
+- Reports Screen (relatórios)
+- Rewards Screen (recompensas)
+- Settings Screen (configurações)
+- PECS Screen (comunicação básica)
+- Onboarding Screen (tutorial)
+
+Implemente:
+- Deep linking
+- Passagem de argumentos entre telas
+- Animações de transição
+- Back stack management
+- Salvamento de estado
+
+Use sealed class para definir rotas de forma type-safe.
+```
+
+---
+
+## 🎨 FASE 10: RECURSOS ESPECIAIS
+
+### 🎯 Acessibilidade e Comunicação
+- Biblioteca de ícones ilustrativos
+- Text-to-Speech para acessibilidade
+- Sistema PECS básico
+
+### Prompt 10.1 - Biblioteca de Ícones de Tarefas
+
+```
+Crie um sistema de ícones ilustrativos para tarefas:
+
+TaskIcon (enum class) com categorias:
+
+HIGIENE:
+- BRUSH_TEETH (escovar dentes)
+- SHOWER (banho)
+- WASH_HANDS (lavar mãos)
+- BRUSH_HAIR (pentear cabelo)
+
+ALIMENTAÇÃO:
+- BREAKFAST (café da manhã)
+- LUNCH (almoço)
+- DINNER (jantar)
+- DRINK_WATER (beber água)
+
+CASA:
+- MAKE_BED (arrumar cama)
+- ORGANIZE_TOYS (organizar brinquedos)
+- PUT_CLOTHES (guardar roupas)
+
+ESCOLA/APRENDIZADO:
+- HOMEWORK (lição de casa)
+- READ_BOOK (ler livro)
+- SCHOOL (escola)
+
+LAZER:
+- PLAY_TIME (hora de brincar)
+- TV_TIME (assistir TV)
+- LISTEN_MUSIC (ouvir música)
+
+ROTINA:
+- WAKE_UP (acordar)
+- SLEEP_TIME (hora de dormir)
+- NAP_TIME (soneca)
+
+Cada enum deve ter:
+- Drawable resource ID
+- Nome amigável
+- Categoria
+- Cor associada
+
+Crie uma tela de seleção de ícone em grid com busca por categoria.
+```
+
+### Prompt 10.2 - Text-to-Speech para Acessibilidade
+
+```
+Implemente funcionalidade de Text-to-Speech:
+
+TTSHelper (classe utilitária):
+- Inicialização do TTS
+- Função speak(text: String)
+- Configuração de idioma (PT-BR)
+- Controle de velocidade de fala
+- Release de recursos
+
+Integre TTS em:
+- Leitura do nome das tarefas (botão de áudio nos cards)
+- Leitura de recompensas
+- Opção de leitura automática ao abrir tarefa
+- Confirmações de conclusão
+
+Adicione controles nas configurações:
+- Ativar/desativar TTS
+- Velocidade da fala (lenta, normal, rápida)
+- Volume específico
+
+Importante para acessibilidade de crianças com TEA.
+```
+
+### Prompt 10.3 - Sistema PECS Básico
+
+```
+Crie um módulo básico de PECS (Picture Exchange Communication System):
+
+PECSCard:
+- Imagem/ícone grande e clara
+- Palavra/frase associada
+- Categoria de comunicação
+- Cor de fundo por categoria
+
+PECSScreen:
+- Grid com categorias principais:
+    * EU QUERO (desejos básicos)
+    * EU SINTO (emoções simples)
+    * EU VOU (atividades)
+    * OBJETOS (itens do dia a dia)
+
+- Ao clicar em categoria, mostra cards específicos
+- Ao clicar no card:
+    * Aumenta o tamanho (feedback visual)
+    * Reproduz áudio do nome (TTS)
+    * Adiciona à "frase construída" (barra no topo)
+
+Funcionalidades:
+- Construir frases simples com sequência de cards
+- Botão "Falar" que lê a sequência completa
+- Botão "Limpar" para recomeçar
+- Cards grandes e coloridos para facilitar uso
+
+Nota: Implementação básica, focada em comunicação essencial.
+```
+
+---
+
+## ⚙️ FASE 11: CONFIGURAÇÕES E UTILIDADES
+
+### 🎯 Personalização e Controle
+- Configurações de acessibilidade
+- Backup e restauração
+- Notificações inteligentes
+
+### Prompt 11.1 - Tela de Configurações
+
+```
+Crie a tela de configurações (SettingsScreen):
+
+Preferências usando DataStore:
+- Perfil ativo padrão
+- Notificações ativadas
+- Som ativado
+- TTS ativado
+- Velocidade TTS
+- Tamanho de fonte
+
+SettingsScreen com seções:
+
+1. PERFIL:
+    - Selecionar perfil padrão
+    - Modo de entrada (criança/adulto)
+
+2. NOTIFICAÇÕES:
+    - Ativar lembretes de tarefas
+    - Tempo de antecedência (5, 10, 15 min)
+    - Som de notificação
+
+3. ACESSIBILIDADE:
+    - TTS ativado
+    - Velocidade de fala (lenta, normal, rápida)
+    - Tamanho de fonte (pequeno, médio, grande)
+    - Alto contraste
+
+4. DADOS:
+    - Exportar dados (backup JSON)
+    - Importar dados
+    - Limpar dados (confirmação dupla)
+
+5. SOBRE:
+    - Versão do app (1.0.0)
+    - Desenvolvedores
+    - Licenças
+    - Contato/Suporte
+
+Implemente switches, sliders e dropdowns apropriados.
+```
+
+### Prompt 11.2 - Sistema de Notificações
+
+```
+Implemente sistema de notificações para lembretes de tarefas:
+
+NotificationHelper:
+- Criar notification channel "task_reminders"
+- Agendar notificação para tarefa específica
+- Cancelar notificações existentes
+- Ação rápida "Marcar como concluída"
+
+Use WorkManager para agendar lembretes:
+- TaskReminderWorker que roda diariamente
+- Verificar tarefas do dia seguinte
+- Agendar notificação X minutos antes do horário configurado
+
+Notificação contém:
+- Ícone da tarefa
+- Título: "Hora da [nome da tarefa]!"
+- Horário da tarefa
+- Ação: "Concluir" (marca como feita)
+- Som configurável
+
+TaskReminderWorker:
+- Processa agendamento às 22h de cada dia
+- Agenda notificações para próximo dia
+- Respeita configurações do usuário (ligado/desligado)
+- Cancela notificações de tarefas já concluídas
+
+Implemente permissões para Android 13+ (POST_NOTIFICATIONS).
+```
+
+### Prompt 11.3 - Backup e Restauração
+
+```
+Implemente funcionalidade de backup/restauração de dados:
+
+BackupManager:
+- Função exportData():
+    * Exporta todos os dados do Room para JSON estruturado
+    * Inclui: perfis, rotinas, tarefas, conclusões, recompensas
+    * Salva em Documents/PequenosPassos/backup_[timestamp].json
+    * Comprime se necessário
+
+- Função importData(uri: Uri):
+    * Lê e valida arquivo JSON
+    * Opções: "Substituir tudo" ou "Mesclar dados"
+    * Mostra prévia do que será importado
+    * Backup automático antes de importar
+
+BackupScreen:
+- Card "Fazer Backup":
+    * Botão principal
+    * Info: data do último backup
+    * Tamanho estimado dos dados
+
+- Card "Restaurar Backup":
+    * Botão para selecionar arquivo
+    * Lista de backups encontrados localmente
+    * Prévia do conteúdo antes de restaurar
+
+- Warnings claros sobre perda de dados
+- Barra de progresso durante operações
+- Mensagens de sucesso/erro
+
+Implemente validação robusta:
+- Verificar versão de dados compatível
+- Validar integridade do JSON
+- Tratar erros de permissão/storage
+- Rollback em caso de falha
+
+Use Kotlin Serialization para JSON.
+```
+
+---
+
+## 🐛 FASE 12: TESTES E REFINAMENTOS
+
+### 🎯 Qualidade e Confiabilidade
+- Testes unitários das regras de negócio
+- Testes de UI para fluxos críticos
+- Otimizações de performance
+
+### Prompt 12.1 - Testes Unitários
+
+```
+Crie testes unitários para as principais UseCases:
+
+Use JUnit, Truth e MockK para:
+
+1. ProfileUseCaseTest:
+    - Validação de nome (vazio, muito curto, caracteres especiais)
+    - Validação de idade (menor que 0, maior que 18 anos)
+    - Save profile (sucesso e falha no repositório)
+    - Delete profile com dependências (tarefas existentes)
+
+2. TaskUseCaseTest:
+    - Validação de horário (formato HH:mm, range válido)
+    - Validação de estrelas (range 1-5)
+    - Validação de dias da semana (pelo menos 1 selecionado)
+    - Conflito de horários na mesma rotina
+
+3. TaskCompletionUseCaseTest:
+    - Cálculo correto de estrelas ganhas
+    - Não permitir completar tarefa já concluída no mesmo dia
+    - Atualização correta do total de estrelas do perfil
+    - Cálculo de estatísticas (taxa de conclusão)
+
+4. RewardUseCaseTest:
+    - Validar que não pode resgatar sem estrelas suficientes
+    - Dedução correta de estrelas após resgate
+    - Histórico de resgates por perfil
+
+5. BackupUseCaseTest:
+    - Serialização/deserialização correta dos dados
+    - Validação de integridade do backup
+    - Tratamento de arquivos corrompidos
+
+Configure Hilt para testes com repositórios fake.
+Use TestDispatcher para coroutines.
+```
+
+### Prompt 12.2 - Testes de UI com Compose
+
+```
+Crie testes de UI para telas principais:
+
+Use Compose Testing com JUnit:
+
+1. ProfilesScreenTest:
+    - Verificar exibição de lista de perfis
+    - Teste de clique em "Adicionar perfil"
+    - Teste de clique para editar perfil existente
+    - Verificar estado vazio (sem perfis)
+    - Teste de confirmação de delete
+
+2. TaskFormScreenTest:
+    - Verificar navegação entre steps do wizard
+    - Validação de campos obrigatórios em cada step
+    - Teste de salvamento com dados válidos
+    - Teste de cancelamento (volta sem salvar)
+
+3. DailyRoutineScreenTest:
+    - Verificar carregamento de tarefas do dia
+    - Teste de marcar tarefa como concluída
+    - Verificar atualização do contador de estrelas
+    - Teste de navegação entre datas
+    - Teste de filtro por período (manhã/tarde/noite)
+
+4. HomeScreenTest:
+    - Verificar cards de navegação
+    - Teste de troca de perfil ativo
+    - Verificar exibição de resumo do dia
+
+Configure semantics para acessibilidade:
+- contentDescription em todos os elementos clicáveis
+- Roles apropriados (Button, Checkbox, etc.)
+- Labels descritivos para screen readers
+
+Use ComposeTestRule e createComposeRule().
+Mock ViewModels com fake data.
+```
+
+### Prompt 12.3 - Melhorias de Performance
+
+```
+Otimize a performance do app:
+
+1. COMPOSE OTIMIZATIONS:
+    - Use keys únicos em LazyColumn/LazyRow/LazyGrid
+    - Implemente remember para cálculos custosos
+    - Use derivedStateOf para states computados
+    - Evite lambdas como parâmetros (cause recomposições)
+
+2. VIEWMODEL OPTIMIZATIONS:
+    - Use StateFlow.stateIn para compartilhar fluxos frios
+    - Implemente debounce em buscas (300ms)
+    - Cache dados frequentemente acessados
+    - Cancele coroutines em onCleared()
+
+3. DATABASE OPTIMIZATIONS:
+    - Adicione índices em colunas de consulta frequente:
+        * Profile.name
+        * Task.routineId, Task.time
+        * TaskCompletion.profileId, TaskCompletion.completedAt
+    - Use @Transaction para operações multi-tabela
+    - Limite resultados em consultas grandes (paginação)
+
+4. IMAGE LOADING:
+    - Configure Coil com disk cache de 50MB
+    - Use placeholder e error handling
+    - Implemente cache de memória apropriado
+    - Redimensione imagens grandes automaticamente
+
+5. NAVIGATION:
+    - Use launchSingleTop para evitar múltiplas instâncias
+    - Implemente popUpTo para limpar back stack
+    - Cache argumentos pesados entre telas
+
+6. MEMORY MANAGEMENT:
+    - Use collectAsStateWithLifecycle() ao invés de collectAsState()
+    - Limpe recursos (TTS, NotificationManager) em onCleared()
+    - Evite context leaks em ViewModels
+    - Use WeakReference para callbacks de longa duração
+
+Execute Android Studio Profiler para:
+- Memory leaks
+- CPU usage
+- Network calls desnecessárias
+- Overdraw na UI
+```
+
+---
+
+## 🚀 FASE 13: FINALIZAÇÃO E POLIMENTO
+
+### 🎯 Experiência Final do Usuário
+- Onboarding intuitivo
+- Splash screen atrativa
+- Ícone e recursos finais
+
+### Prompt 13.1 - Tela de Onboarding/Tutorial
+
+```
+Crie uma tela de onboarding para novos usuários:
+
+OnboardingScreen com HorizontalPager:
+
+Tela 1 - BEM-VINDO:
+- Ilustração do logo/mascote do app
+- Título: "Bem-vindo ao Pequenos Passos!"
+- Descrição: "Ajudando crianças a desenvolver autonomia através de rotinas
+  divertidas"
+
+Tela 2 - PERFIS:
+- Ilustração de crianças diversas
+- Título: "Crie perfis para cada criança"
+- Descrição: "Cada criança tem suas próprias rotinas e conquistas"
+
+Tela 3 - ROTINAS:
+- Ilustração de calendário com atividades
+- Título: "Organize rotinas diárias"
+- Descrição: "Crie tarefas com horários e conquiste estrelas"
+
+Tela 4 - GAMIFICAÇÃO:
+- Ilustração de estrelas e recompensas
+- Título: "Sistema de recompensas"
+- Descrição: "Complete tarefas, ganhe estrelas e desbloqueie recompensas"
+
+Tela 5 - ACESSIBILIDADE:
+- Ilustração de recursos TEA
+- Título: "Feito para o autismo"
+- Descrição: "Interface visual, áudio e comunicação PECS incluídos"
+
+Tela 6 - COMEÇAR:
+- Botão "Criar primeiro perfil"
+- Opção "Pular tutorial" (salva preferência)
+
+Componentes:
+- Indicador de página no rodapé
+- Botões "Anterior" e "Próximo"
+- Animações suaves entre telas
+- Design colorido e amigável
+
+Salve no DataStore se já viu o onboarding.
+```
+
+### Prompt 13.2 - Validação Final e Documentação
+
+```
+Realize validação final e organize documentação:
+
+CHECKLIST DE VALIDAÇÃO:
+1. Fluxos principais:
+    - [ ] Criar perfil → Criar rotina → Adicionar tarefa → Executar rotina
+    - [ ] Completar tarefa → Ganhar estrelas → Resgatar recompensa
+    - [ ] Visualizar relatórios → Exportar backup
+
+2. Acessibilidade:
+    - [ ] TTS funcionando em português
+    - [ ] Botões com contentDescription
+    - [ ] Contraste adequado
+    - [ ] Tamanhos de toque mínimo (48dp)
+
+3. Performance:
+    - [ ] App inicia em < 3 segundos
+    - [ ] Navegação fluida sem travamentos
+    - [ ] Uso de memória controlado
+    - [ ] Sem vazamentos de contexto
+
+4. Edge Cases:
+    - [ ] Comportamento sem conexão
+    - [ ] Banco vazio (primeiro uso)
+    - [ ] Permissões negadas
+    - [ ] Interrupções (chamadas, notificações)
+
+DOCUMENTAÇÃO FINAL:
+- README.md com:
+    * Instruções de instalação
+    * Funcionalidades principais
+    * Screenshots das telas
+    * Requisitos do sistema
+    * Informações de contato
+
+- CHANGELOG.md atualizado:
+    * Versão 1.0.0
+    * Lista completa de funcionalidades
+    * Tecnologias utilizadas
+
+Prepare release notes para publicação:
+- Descrição para Google Play Store
+- Keywords para SEO
+- Screenshots em alta qualidade
+- Video demo (opcional)
+```
+
+---
+
+## 📱 ESTRUTURA FINAL DO PROJETO
+
+### 🗂️ Organização de Pacotes
+
+```
+com.example.pequenospassos/
+├── data/
+│   ├── database/
+│   │   ├── entities/
+│   │   ├── dao/
+│   │   └── AppDatabase.kt
+│   ├── repository/
+│   └── datastore/
+├── domain/
+│   ├── model/
+│   ├── repository/
+│   └── usecase/
+├── presentation/
+│   ├── components/
+│   ├── screens/
+│   │   ├── home/
+│   │   ├── profiles/
+│   │   ├── routines/
+│   │   ├── tasks/
+│   │   ├── daily/
+│   │   ├── reports/
+│   │   ├── rewards/
+│   │   ├── settings/
+│   │   ├── pecs/
+│   │   └── onboarding/
+│   ├── navigation/
+│   └── theme/
+├── di/
+└── utils/
+```
+
+### 🎯 Funcionalidades Implementadas
+
+#### ✅ Funcionalidades Herdadas (do projeto FonoVirtual)
+- [x] SplashScreen com logo UNIVESP
+- [x] HomeScreen básica com navegação
+- [x] Módulos de ASR (reconhecimento de voz) com Vosk
+- [x] Módulos de TTS (síntese de fala) nativo
+- [x] Tela de Debug para testes
+
+#### 🔄 Core Features (A Implementar)
+- [ ] Gerenciamento de múltiplos perfis
+- [ ] Criação e edição de rotinas
+- [ ] Sistema de tarefas com horários
+- [ ] Gamificação com estrelas
+- [ ] Sistema de recompensas
+- [ ] Relatórios e estatísticas
+
+#### 🔄 Acessibilidade TEA (A Implementar)
+- [ ] Interface visual clara e intuitiva especializada para TEA
+- [ ] Text-to-Speech em português integrado
+- [ ] Sistema PECS básico
+- [ ] Feedback visual imediato
+- [ ] Navegação simplificada
+
+#### 🔄 Funcionalidades Auxiliares (A Implementar)
+- [ ] Notificações de lembrete
+- [ ] Backup e restauração
+- [ ] Configurações personalizáveis
+- [ ] Onboarding para novos usuários
+
+### 🚀 Roadmap Futuro
+
+#### Versão 1.0.0 (Em Desenvolvimento - Prioridade Máxima)
+- [🔄] Splash Screen e Ícone personalizado do "Pequenos Passos"
+- [ ] Sistema de design (Theme e Cores)
+- [ ] Componentes reutilizáveis básicos
+- [ ] Estrutura de dados base (Room Database)
+- [ ] Navegação completa entre telas
+
+#### Versão 1.1 (Próxima)
+- [ ] Módulo de Perfis completo
+- [ ] Módulo de Rotinas
+- [ ] Módulo de Tarefas básico
+- [ ] Gamificação inicial (sistema de estrelas)
+
+#### Versão 1.2
+- [ ] Sistema de recompensas
+- [ ] Relatórios e análises
+- [ ] Configurações avançadas
+- [ ] Sistema de notificações
+
+#### Versão 1.3
+- [ ] Sistema PECS básico
+- [ ] Backup e restauração
+- [ ] Testes unitários e de UI
+- [ ] Otimizações de performance
+
+#### Versão 2.0
+- [ ] Sincronização em nuvem
+- [ ] Suporte a múltiplos idiomas
+- [ ] Integração com calendário
+- [ ] Modo colaborativo (família)
+- [ ] Inteligência artificial para sugestões
+- [ ] Gamificação avançada
+- [ ] Modo terapeuta/profissional

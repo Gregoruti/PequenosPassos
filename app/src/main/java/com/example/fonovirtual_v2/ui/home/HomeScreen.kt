@@ -66,14 +66,6 @@ fun HomeScreen(navController: NavController) {
             Text(text = "Cadastro")
         }
 
-        // Botão Teste Rápido - Navega para o exercício de reconhecimento
-        Button(
-            onClick = { navController.navigate("simple_recognition") },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = stringResource(id = R.string.home_button_quick_test))
-        }
-
         // Botão Atividades (novo)
         Button(
             onClick = { /* TODO: Implementar navegação para atividades */ },

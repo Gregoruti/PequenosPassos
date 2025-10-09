@@ -28,7 +28,7 @@ Android com IA
 └──────────────────┴──────────────────┴──────────────────────┘
 ```
 
-**Versão**: 2.0.0 | **Data**: 07/10/2025 | **Status**: Ativo e validado
+**Versão**: 1.0.0 | **Data**: 09/10/2025 | **Status**: Ativo e validado
 
 ---
 
@@ -49,19 +49,20 @@ Android com IA
 
 ## 1. Introdução
 
-### 1.1 Propósito e Escopo
-Este documento estabelece as **diretrizes fundamentais** para desenvolvimento de 
-aplicações móveis utilizando **Code Assist (IA)** como parceiro de 
-desenvolvimento. Integra metodologias de arquitetura modular, engenharia de 
-prompt avançada e práticas de excelência em desenvolvimento de software.
+Este documento estabelece as diretrizes fundamentais para desenvolvimento de
+aplicações móveis utilizando Code Assist (IA) como parceiro de desenvolvimento.
+Integra metodologias de arquitetura modular, engenharia de prompt avançada e
+práticas de excelência em desenvolvimento de software.
 
 ### 1.2 Filosofia de Desenvolvimento
 - **Modularidade First**: Entregar valor incrementalmente através de módulos 
   pequenos, isolados e testáveis
-- **Context-Aware Development**: Maximizar a eficiência da IA através de 
-  contexto claro e bem estruturado
-- **Quality by Design**: Integrar qualidade, documentação e testes desde o 
-  primeiro commit
+- **Context-Aware Development**: Maximizar a eficiência da IA através de
+  documentação clara e contexto atualizado
+- **Versionamento**: Todos os arquivos devem conter versão e histórico de mudanças
+  no CHANGELOG.md
+- **Documentação**: Limite de 90 caracteres por linha em todos os arquivos do
+  diretório DOCs
 
 ### 1.3 Audiência
 - **Code Assistants (IA)**: Guia operacional obrigatório
@@ -151,8 +152,8 @@ e resultados de alta qualidade.
 |------------|-----------|---------|
 | **P**ersona | Papel e nível de experiência | "Desenvolvedor sênior Android especialista em Kotlin" |
 | **R**ole/Rules | Expertise ou restrições | "Seguindo Clean Architecture e padrões SOLID" |
-| **O**bjective | Objetivo geral e específico | "Implementar exercício de reconhecimento de voz" |
-| **M**essage | Mensagem clara da tarefa | "Criar tela de exercícios com ASR e feedback" |
+| **O**bjective | Objetivo geral e específico | "Implementar funcionalidade de login" |
+| **M**essage | Mensagem clara da tarefa | "Criar tela de login com validação de usuário" |
 | **P**arameters | Requisitos técnicos | "Jetpack Compose, MVVM, Hilt, testes unitários" |
 | **T**ask | Resultado final e critérios | "Tela funcional com 95% de cobertura de testes" |
 
@@ -383,6 +384,6 @@ O Code Assist **DEVE** tratar este documento como requisito de entrada
 
 ---
 
-**Versão**: 2.0.0 (Integração completa CONTEXT + RULES + GUIDELINES)  
-**Data**: 07/10/2025  
+**Versão**: 1.0.0 (Integração completa CONTEXT + RULES + GUIDELINES)  
+**Data**: 09/10/2025  
 **Status**: Ativo e validado para desenvolvimento FonoVirtual e projetos futuros
