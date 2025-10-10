@@ -95,3 +95,10 @@ HomeScreen
 - Módulos ASR/TTS: Implementados e validados
 - Exercícios e Teste Rápido: Removidos na migração
 - Cadastro, Atividades, Resultados: Em desenvolvimento
+
+---
+
+## Sincronização de Estrutura
+
+- Estrutura de arquivos e telas sincronizada com o repositório remoto em 09/10/2025.
+- Repositório oficial: [https://github.com/Gregoruti/PequenosPassos](https://github.com/Gregoruti/PequenosPassos)

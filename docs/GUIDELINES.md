@@ -384,6 +384,20 @@ O Code Assist **DEVE** tratar este documento como requisito de entrada
 
 ---
 
+## 13. Sincronização e Rastreabilidade dos Documentos
+
+**Diretriz Obrigatória**: Todos os arquivos de documentação do diretório `/docs` devem conter, no início, as seções de Propósito, Escopo, Interconexão da Documentação, Versão, Data e Status, sincronizadas entre si. Essa prática garante rastreabilidade, validação e que o Code Assist seguiu corretamente a interconexão entre os documentos.
+
+---
+
+## Registro de Sincronização
+
+- Projeto PequenosPassos sincronizado com o GitHub em 09/10/2025.
+- Repositório oficial: [https://github.com/Gregoruti/PequenosPassos](https://github.com/Gregoruti/PequenosPassos)
+- Status: Histórico e guidelines disponíveis para consulta e colaboração.
+
+---
+
 **Versão**: 1.0.0 (Integração completa CONTEXT + RULES + GUIDELINES)  
 **Data**: 09/10/2025  
 **Status**: Ativo e validado para desenvolvimento FonoVirtual e projetos futuros

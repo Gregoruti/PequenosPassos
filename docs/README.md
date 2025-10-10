@@ -136,6 +136,13 @@ MIT
 
 ---
 
+## 🚀 Sincronização com GitHub
+
+Em 09/10/2025, o projeto PequenosPassos foi sincronizado com o repositório remoto oficial:
+[https://github.com/Gregoruti/PequenosPassos](https://github.com/Gregoruti/PequenosPassos)
+
+Todos os commits e histórico do projeto estão disponíveis online para colaboração.
+
 <div align="center">
 
 **Desenvolvido com ❤️ para a comunidade de apoio a atividades diárias**

@@ -1,3 +1,31 @@
+# ESPECIFICATION_FOR_APP.MD
+
+**Propósito**: Especificação completa das funcionalidades, requisitos e contexto do projeto PequenosPassos, servindo como referência técnica para desenvolvimento, validação e evolução do app.
+
+**Escopo**: Detalhamento de requisitos, funcionalidades, arquitetura, fluxos e critérios de validação do aplicativo PequenosPassos para crianças com TEA.
+
+**Interconexões da Documentação**:
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    GUIDELINES.md                            │
+│              (Framework Universal de Desenvolvimento)       │
+└──────────────────┬──────────────────────────────────────────┘
+                   │ (Orienta Especificação)
+                   ▼
+┌─────────────────────────────────────────────────────────────┐
+│              SPECIFICATION_FOR_APP.md (ESTE)                │
+│                 Detalhes do Projeto                         │
+└──────────────────┬──────────────────────────────────────────┘
+                   │ (Define Funcionalidades)
+                   ▼
+┌──────────────────┬──────────────────┬──────────────────────┐
+│    PATHS.md      │   CHANGELOG.md   │      README.md       │
+│  (Estruturas)    │  (Histórico)     │   (Documentação)     │
+└──────────────────┴──────────────────┴──────────────────────┘
+```
+
+**Versão**: 1.0.0 | **Data**: 09/10/2025 | **Status**: Sincronizado com PequenosPassos
+
 # ESPECIFICAÇÃO COMPLETA - APP PEQUENOS PASSOS
 
 ## 📋 Visão Geral do Projeto

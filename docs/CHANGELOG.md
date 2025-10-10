@@ -77,6 +77,14 @@ PequenosPassos
 
 ---
 
+## 1.1 Registro de Sincronização com GitHub
+
+- Em 09/10/2025, o projeto PequenosPassos foi sincronizado com o repositório remoto no GitHub.
+- Todos os commits locais foram enviados para: [https://github.com/Gregoruti/PequenosPassos](https://github.com/Gregoruti/PequenosPassos)
+- Status: Repositório remoto criado e atualizado com histórico completo.
+
+---
+
 ## 2. Status de Validação Integrado
 
 Todas as funcionalidades acima foram validadas após a migração e renomeação.
