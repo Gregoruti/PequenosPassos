@@ -35,7 +35,7 @@ PequenosPassos
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Versão**: 1.1.0 | **Data**: 12/10/2025 | **Status**: Modelagem de Task atualizada para incluir Steps (subtarefas)
+**Versão**: 1.1.2 | **Data**: 12/10/2025 | **Status**: Personalização avançada de imagens, áudios, instruções e feedbacks
 
 ---
 
@@ -100,6 +100,6 @@ Todas as funcionalidades acima foram validadas após a migração e renomeação
 
 ---
 
-**Versão do Documento**: 1.1.0
+**Versão do Documento**: 1.1.1
 **Data**: 12/10/2025
 **Status**: Documentação completa e sincronizada com projeto PequenosPassos

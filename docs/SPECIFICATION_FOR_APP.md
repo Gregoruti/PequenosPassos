@@ -24,9 +24,21 @@
 └──────────────────┴──────────────────┴──────────────────────┘
 ```
 
-**Versão**: 1.1.0 | **Data**: 12/10/2025 | **Status**: Sincronizado com PequenosPassos
+**Versão**: 1.1.2 | **Data**: 12/10/2025 | **Status**: Sincronizado com PequenosPassos
 
 # ESPECIFICAÇÃO COMPLETA - APP PEQUENOS PASSOS
+
+## Personalização
+O app permite personalizar:
+- Imagens de cada rotina, tarefa, subtarefa e recompensa
+- Áudios para cada rotina, tarefa, subtarefa e recompensa (mensagens, instruções, feedbacks positivos)
+- Mensagens de instrução e feedback positivo (texto e áudio)
+
+O aplicativo será preenchido inicialmente com uma base de dados padrão de:
+- Imagens padrão para rotinas, tarefas, subtarefas e recompensas
+- Mensagens padrão (texto e áudio) para cada tarefa, subtarefa e recompensa
+
+Todos esses itens podem ser personalizados pelo usuário conforme necessidade.
 
 ## 🗂️ Modelagem das Entidades
 
@@ -48,7 +60,7 @@
 - title (String)
 - description (String - nullable)
 - order (Int - sequência do passo)
-- estimatedTime (String - formato HH:mm)
+- estimatedTime (String - formato MM:ss)
 - isCompleted (Boolean)
 
 > Cada Task pode conter múltiplos Steps, cada um com tempo determinado e ordem de execução.
@@ -268,7 +280,7 @@ Crie as entidades do Room Database para o app de rotinas infantis:
 - title (String)
 - description (String - nullable)
 - order (Int - sequência do passo)
-- estimatedTime (String - formato HH:mm)
+- estimatedTime (String - formato MM:ss)
 - isCompleted (Boolean)
 
 > Cada Task pode conter múltiplos Steps, cada um com tempo determinado e ordem de execução.

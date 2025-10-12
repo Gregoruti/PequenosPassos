@@ -28,12 +28,12 @@ navegação)
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Versão**: 1.1.0 | **Data**: 12/10/2025 | **Status**: Sincronizado com PequenosPassos
+**Versão**: 1.1.2 | **Data**: 12/10/2025 | **Status**: Sincronizado com PequenosPassos
 
 ---
 
 ## Atualização
-A estrutura de entidades agora inclui Task com Steps (subtarefas). Veja detalhes em [SPECIFICATION_FOR_APP.md](./SPECIFICATION_FOR_APP.md).
+O app possui base de dados padrão de imagens e mensagens (texto/áudio) para rotinas, tarefas, subtarefas e recompensas, mas todos esses itens podem ser personalizados pelo usuário. Veja detalhes em [SPECIFICATION_FOR_APP.md](./SPECIFICATION_FOR_APP.md).
 
 ## Sumário
 1. [Estrutura de Arquivos](#1-estrutura-de-arquivos)
