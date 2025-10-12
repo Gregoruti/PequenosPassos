@@ -24,9 +24,34 @@
 └──────────────────┴──────────────────┴──────────────────────┘
 ```
 
-**Versão**: 1.0.0 | **Data**: 09/10/2025 | **Status**: Sincronizado com PequenosPassos
+**Versão**: 1.1.0 | **Data**: 12/10/2025 | **Status**: Sincronizado com PequenosPassos
 
 # ESPECIFICAÇÃO COMPLETA - APP PEQUENOS PASSOS
+
+## 🗂️ Modelagem das Entidades
+
+### 3. Entidade Task (Tarefa)
+- id (autoincrement)
+- routineId (Foreign Key)
+- title (String)
+- iconRes (Int - recurso drawable)
+- time (String - formato HH:mm)
+- stars (Int - 1 a 5)
+- observation (String - nullable)
+- daysOfWeek (List<DayOfWeek>)
+- isActive (Boolean)
+- steps (List<Step>) // NOVO: lista de subtarefas/passos
+
+#### Estrutura Step (Passo)
+- id (autoincrement)
+- taskId (Foreign Key)
+- title (String)
+- description (String - nullable)
+- order (Int - sequência do passo)
+- estimatedTime (String - formato HH:mm)
+- isCompleted (Boolean)
+
+> Cada Task pode conter múltiplos Steps, cada um com tempo determinado e ordem de execução.
 
 ## 📋 Visão Geral do Projeto
 
@@ -70,9 +95,8 @@ estruturadas, feedback visual e sistema de recompensas motivador.
 - Consistência visual entre telas
 
 #### Comunicação:
-- Suporte a pictogramas (PECS)
-- Text-to-Speech com velocidade controlável
-- Instruções visuais complementando áudios
+- Suporte a pictogramas (PECS) ou imagens personalizadas
+- Instruções visuais com áudios complementando
 - Linguagem simples e direta
 - Feedback positivo constante
 
@@ -236,6 +260,18 @@ Crie as entidades do Room Database para o app de rotinas infantis:
     - observation (String - nullable)
     - daysOfWeek (List<DayOfWeek>)
     - isActive (Boolean)
+    - steps (List<Step>) // NOVO: lista de subtarefas/passos
+
+#### Estrutura Step (Passo)
+- id (autoincrement)
+- taskId (Foreign Key)
+- title (String)
+- description (String - nullable)
+- order (Int - sequência do passo)
+- estimatedTime (String - formato HH:mm)
+- isCompleted (Boolean)
+
+> Cada Task pode conter múltiplos Steps, cada um com tempo determinado e ordem de execução.
 
 4. Entidade TaskCompletion (Conclusão de Tarefa):
     - id (autoincrement)

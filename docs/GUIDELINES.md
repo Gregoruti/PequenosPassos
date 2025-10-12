@@ -390,6 +390,12 @@ O Code Assist **DEVE** tratar este documento como requisito de entrada
 
 ---
 
+## Prática Recomendada: Sincronização de Documentação
+
+Para garantir rastreabilidade e interconexão entre arquivos de documentação, recomenda-se que todos os arquivos de documentação (README.md, SPECIFICATION_FOR_APP.md, PATHS.md, CHANGELOG.md, GUIDELINES.md) estejam sempre na mesma versão e data após cada alteração relevante. Isso facilita auditoria, validação e uso do Code Assist.
+
+---
+
 ## Registro de Sincronização
 
 - Projeto PequenosPassos sincronizado com o GitHub em 09/10/2025.

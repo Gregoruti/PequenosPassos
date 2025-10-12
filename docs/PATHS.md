@@ -28,9 +28,12 @@ navegação)
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Versão**: 1.0.0 | **Data**: 09/10/2025 | **Status**: Sincronizado com PequenosPassos
+**Versão**: 1.1.0 | **Data**: 12/10/2025 | **Status**: Sincronizado com PequenosPassos
 
 ---
+
+## Atualização
+A estrutura de entidades agora inclui Task com Steps (subtarefas). Veja detalhes em [SPECIFICATION_FOR_APP.md](./SPECIFICATION_FOR_APP.md).
 
 ## Sumário
 1. [Estrutura de Arquivos](#1-estrutura-de-arquivos)

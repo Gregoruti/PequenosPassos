@@ -29,9 +29,12 @@ do projeto
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Versão**: 1.0.0 | **Data**: 09/10/2025 | **Status**: Documentação sincronizada
+**Versão**: 1.1.0 | **Data**: 12/10/2025 | **Status**: Documentação sincronizada
 
 ---
+
+## Novidade
+A modelagem da entidade Task agora inclui subtarefas (Steps), cada uma com tempo determinado e ordem de execução. Veja detalhes em [SPECIFICATION_FOR_APP.md](./SPECIFICATION_FOR_APP.md).
 
 > **Aplicativo Android para apoio a Atividades da Vida Diária com Reconhecimento de Voz**
 
