@@ -1,25 +1,26 @@
 @file:Suppress("DEPRECATION")
 
 import java.io.File
-import java.util.Properties
 import java.util.UUID
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    kotlin("kapt")
+    id("dagger.hilt.android.plugin")
 }
 
 android {
-    namespace = "com.example.pequenospassos"
+    namespace = "com.pequenospassos"
     compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.pequenospassos"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 4
+        versionName = "1.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -57,20 +58,36 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
 
-    // Dependência para Jetpack Navigation Compose
-    implementation("androidx.navigation:navigation-compose:2.8.0-beta05")
-    implementation("com.alphacephei:vosk-android:0.3.70") // Check Version
-    implementation(kotlin("stdlib-jdk8"))
+    // Navigation - MVP Dependencies
+    implementation(libs.androidx.navigation.compose)
 
-    // Google Accompanist - Permissions
-    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+    // Room Database - MVP Dependencies
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
+
+    // Hilt - MVP Dependencies
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Image Loading - MVP Dependencies
+    implementation(libs.coil.compose)
+
+    // ViewModel Compose
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Existing dependencies
+    implementation(libs.vosk.android)
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(libs.accompanist.permissions)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling) // Correção aqui
+    debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
 

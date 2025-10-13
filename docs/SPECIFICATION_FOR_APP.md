@@ -24,7 +24,1385 @@
 └──────────────────┴──────────────────┴──────────────────────┘
 ```
 
-**Versão**: 1.1.2 | **Data**: 12/10/2025 | **Status**: Sincronizado com PequenosPassos
+**Versão**: 1.3.0 | **Data**: 12/10/2025 | **Status**: MVP definido com sprint de 3 dias e prompts estruturais
+
+# 🎯 MVP - PRODUTO MÍNIMO VIÁVEL (PRIORIDADE MÁXIMA)
+
+**Objetivo**: Validar conceitos centrais do PequenosPassos em 3 dias de desenvolvimento com foco nas funcionalidades essenciais de cadastro da criança e execução de atividades.
+
+**Filosofia MVP**: "Fazer menos, mas fazer bem" - concentrar nos fluxos críticos que validam a proposta de valor para crianças com TEA.
+
+## 🚀 MODIFICAÇÕES IMPLEMENTADAS NO MVP
+
+### ✅ CADASTRO DA CRIANÇA EXPANDIDO
+- **Nome da criança**: Campo obrigatório 
+- **Sexo**: Seletor visual (Menino/Menina) com ícones
+- **Foto**: Captura da câmera ou galeria (opcional)
+- Integrado no OnboardingScreen na primeira execução
+
+### ✅ ORDENAÇÃO AUTOMÁTICA POR HORÁRIO
+- Tarefas ordenadas automaticamente pelo campo `time` (HH:mm)
+- Sequenciamento inteligente das atividades do dia
+- Propriedade `order` calculada baseada no horário
+
+### ✅ STATUS COMPLETO DE TAREFAS
+- ⏳ **Pendente**: Tarefa não iniciada
+- ✅ **Concluída**: Tarefa finalizada com sucesso  
+- ❌ **Cancelada**: Tarefa não realizada
+- Botões correspondentes: "FAZER" | "✓ FEITO" | "✗ CANCELAR"
+
+### ✅ SPRINT OTIMIZADO PARA 3 DIAS
+- **Dia 1**: Fundação (configuração + dados + lógica) - 8h
+- **Dia 2**: Interface (telas + cadastro de tarefas) - 8h  
+- **Dia 3**: Execução (funcionalidades + testes) - 8h
+
+---
+
+# 🏗️ PROMPTS ESTRUTURAIS MVP - METODOLOGIA PROMPT
+
+**Baseado em**: GUIDELINES.md - Seções 3 (Modularidade), 4 (Arquitetura), 5 (Metodologia PROMPT)
+**Ordem de Implementação**: Core → Aplicação → Infraestrutura → Apresentação
+**Filosofia**: "Entregar valor incrementalmente através de módulos pequenos, isolados e testáveis"
+
+## 📋 ÍNDICE DE PROMPTS MVP
+
+### DIA 1 - FUNDAÇÃO (Core + Infraestrutura)
+- [MVP-01](#mvp-01) - Estrutura Base do Projeto
+- [MVP-02](#mvp-02) - Entidades de Domínio MVP  
+- [MVP-03](#mvp-03) - Database e DAOs MVP
+- [MVP-04](#mvp-04) - Repositórios MVP
+- [MVP-05](#mvp-05) - Use Cases MVP
+
+### DIA 2 - INTERFACE (Apresentação)
+- [MVP-06](#mvp-06) - Theme e Design System MVP
+- [MVP-07](#mvp-07) - Componentes Reutilizáveis MVP
+- [MVP-08](#mvp-08) - SplashScreen MVP
+- [MVP-09](#mvp-09) - OnboardingScreen MVP
+- [MVP-10](#mvp-10) - TaskFormScreen MVP
+
+### DIA 3 - EXECUÇÃO (Funcionalidades + Testes)
+- [MVP-11](#mvp-11) - HomeScreen MVP
+- [MVP-12](#mvp-12) - TaskExecutionScreen MVP
+- [MVP-13](#mvp-13) - Navegação MVP
+- [MVP-14](#mvp-14) - Testes Unitários MVP
+- [MVP-15](#mvp-15) - Validação Final MVP
+
+---
+
+## DIA 1 - FUNDAÇÃO (8h)
+
+### MVP-01: Estrutura Base do Projeto
+
+**Persona**: Desenvolvedor sênior Android especialista em Clean Architecture e Kotlin
+**Role/Rules**: Seguindo Clean Architecture, MVVM, Jetpack Compose e padrões SOLID
+**Objective**: Configurar estrutura inicial do projeto MVP PequenosPassos
+**Message**: Criar projeto Android com arquitetura base para desenvolvimento MVP de 3 dias
+**Parameters**: 
+- Minimum SDK: API 24 (Android 7.0)
+- Target SDK: API 34
+- Jetpack Compose + Material 3
+- Hilt para DI
+- Room Database
+- Navigation Compose
+**Task**: Projeto compilando com estrutura de pacotes Clean Architecture e dependências configuradas
+
+```kotlin
+// Estrutura de Pacotes MVP
+com.pequenospassos/
+├── data/
+│   ├── database/
+│   │   ├── entities/     // ChildProfile, Task, Step, AppSettings
+│   │   ├── dao/          // DAOs MVP
+│   │   └── AppDatabase.kt
+│   └── repository/       // Implementações
+├── domain/
+│   ├── model/           // Modelos de domínio
+│   ├── repository/      // Interfaces
+│   └── usecase/         // Use cases MVP
+├── presentation/
+│   ├── components/      // Componentes reutilizáveis
+│   ├── screens/        // 5 telas MVP
+│   ├── navigation/     // NavGraph MVP
+│   └── theme/          // Design System MVP
+├── di/                 // Módulos Hilt
+└── utils/              // Helpers
+```
+
+**Dependências Essenciais MVP**:
+```kotlin
+// Core
+implementation("androidx.core:core-ktx:1.12.0")
+implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+implementation("androidx.activity:activity-compose:1.8.2")
+
+// Compose
+implementation(platform("androidx.compose:compose-bom:2024.02.00"))
+implementation("androidx.compose.ui:ui")
+implementation("androidx.compose.material3:material3")
+
+// Navigation
+implementation("androidx.navigation:navigation-compose:2.7.6")
+
+// Room
+implementation("androidx.room:room-runtime:2.6.1")
+implementation("androidx.room:room-ktx:2.6.1")
+kapt("androidx.room:room-compiler:2.6.1")
+
+// Hilt
+implementation("com.google.dagger:hilt-android:2.48")
+kapt("com.google.dagger:hilt-compiler:2.48")
+
+// Image Loading
+implementation("io.coil-kt:coil-compose:2.5.0")
+```
+
+**Critérios de Validação**:
+- [ ] Projeto compila sem erros
+- [ ] Estrutura de pacotes Clean Architecture criada
+- [ ] Dependências MVP configuradas
+- [ ] MainActivity com Compose configurada
+- [ ] Hilt Application criada
+
+---
+
+### MVP-02: Entidades de Domínio MVP
+
+**Persona**: Desenvolvedor especialista em modelagem de dados e Room Database
+**Role/Rules**: Seguindo princípios DDD e Clean Architecture - entidades no domínio
+**Objective**: Implementar entidades de domínio para MVP com foco em simplicidade
+**Message**: Criar 4 entidades essenciais para MVP com relacionamentos mínimos
+**Parameters**: 
+- Room Database entities
+- TypeConverters para enums
+- Relacionamentos 1:N simples
+- Validações básicas
+**Task**: 4 entidades funcionais com Room annotations e TypeConverters
+
+```kotlin
+// Entidades MVP Simplificadas
+
+@Entity(tableName = "child_profile")
+data class ChildProfile(
+    @PrimaryKey val id: String = "default_child",
+    val name: String,
+    val gender: Gender,
+    val photoUri: String? = null,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+enum class Gender { MALE, FEMALE }
+
+@Entity(tableName = "tasks")
+data class Task(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val title: String,
+    val description: String = "",
+    val iconRes: Int,
+    val time: String, // HH:mm para ordenação
+    val stars: Int, // 1-5
+    val status: TaskStatus = TaskStatus.PENDING,
+    val createdAt: Long = System.currentTimeMillis()
+)
+
+enum class TaskStatus { PENDING, COMPLETED, CANCELED }
+
+@Entity(tableName = "steps")
+data class Step(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val taskId: Long,
+    val title: String,
+    val order: Int,
+    val isCompleted: Boolean = false
+)
+
+@Entity(tableName = "app_settings")
+data class AppSettings(
+    @PrimaryKey val id: String = "settings",
+    val isFirstRun: Boolean = true,
+    val totalStars: Int = 0,
+    val currentDate: String = ""
+)
+```
+
+**TypeConverters Necessários**:
+```kotlin
+class Converters {
+    @TypeConverter
+    fun fromGender(gender: Gender): String = gender.name
+    
+    @TypeConverter
+    fun toGender(gender: String): Gender = Gender.valueOf(gender)
+    
+    @TypeConverter
+    fun fromTaskStatus(status: TaskStatus): String = status.name
+    
+    @TypeConverter
+    fun toTaskStatus(status: String): TaskStatus = TaskStatus.valueOf(status)
+}
+```
+
+**Critérios de Validação**:
+- [ ] 4 entidades criadas com annotations Room
+- [ ] TypeConverters funcionando
+- [ ] Enums TaskStatus e Gender implementados
+- [ ] Relacionamentos 1:N definidos
+- [ ] KDocs completos nas entidades
+
+---
+
+### MVP-03: Database e DAOs MVP
+
+**Persona**: Desenvolvedor especialista em Room Database e SQLite
+**Role/Rules**: Seguindo padrões Room, queries otimizadas e Flow para reatividade
+**Objective**: Implementar AppDatabase e DAOs para operações CRUD MVP
+**Message**: Criar database Room com 4 DAOs essenciais e queries otimizadas
+**Parameters**:
+- Room Database versão 1
+- DAOs com Flow para reatividade
+- Queries específicas para MVP
+- Migrations preparadas
+**Task**: Database funcional com DAOs testáveis e queries otimizadas
+
+```kotlin
+// DAOs MVP Essenciais
+
+@Dao
+interface ChildProfileDao {
+    @Query("SELECT * FROM child_profile WHERE id = :id")
+    fun getProfile(id: String = "default_child"): Flow<ChildProfile?>
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdate(profile: ChildProfile)
+    
+    @Query("SELECT COUNT(*) FROM child_profile")
+    suspend fun getProfileCount(): Int
+}
+
+@Dao
+interface TaskDao {
+    @Query("SELECT * FROM tasks ORDER BY time ASC")
+    fun getAllTasksOrderedByTime(): Flow<List<Task>>
+    
+    @Query("SELECT * FROM tasks WHERE id = :id")
+    fun getTaskById(id: Long): Flow<Task?>
+    
+    @Insert
+    suspend fun insertTask(task: Task): Long
+    
+    @Update
+    suspend fun updateTask(task: Task)
+    
+    @Delete
+    suspend fun deleteTask(task: Task)
+    
+    @Query("UPDATE tasks SET status = :status WHERE id = :taskId")
+    suspend fun updateTaskStatus(taskId: Long, status: TaskStatus)
+}
+
+@Dao
+interface StepDao {
+    @Query("SELECT * FROM steps WHERE taskId = :taskId ORDER BY `order` ASC")
+    fun getStepsByTask(taskId: Long): Flow<List<Step>>
+    
+    @Insert
+    suspend fun insertStep(step: Step)
+    
+    @Update
+    suspend fun updateStep(step: Step)
+    
+    @Delete
+    suspend fun deleteStep(step: Step)
+}
+
+@Dao
+interface AppSettingsDao {
+    @Query("SELECT * FROM app_settings WHERE id = :id")
+    fun getSettings(id: String = "settings"): Flow<AppSettings?>
+    
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateSettings(settings: AppSettings)
+}
+```
+
+**AppDatabase**:
+```kotlin
+@Database(
+    entities = [ChildProfile::class, Task::class, Step::class, AppSettings::class],
+    version = 1,
+    exportSchema = false
+)
+@TypeConverters(Converters::class)
+abstract class AppDatabase : RoomDatabase() {
+    abstract fun childProfileDao(): ChildProfileDao
+    abstract fun taskDao(): TaskDao
+    abstract fun stepDao(): StepDao
+    abstract fun appSettingsDao(): AppSettingsDao
+}
+```
+
+**Critérios de Validação**:
+- [ ] Database compila sem erros
+- [ ] 4 DAOs com operações CRUD
+- [ ] Queries otimizadas com Flow
+- [ ] TypeConverters integrados
+- [ ] Módulo Hilt para Database criado
+
+---
+
+### MVP-04: Repositórios MVP
+
+**Persona**: Desenvolvedor especialista em Repository Pattern e Clean Architecture
+**Role/Rules**: Seguindo Repository Pattern, Single Source of Truth e tratamento de erros
+**Objective**: Implementar repositórios para abstrair acesso aos dados
+**Message**: Criar interfaces de repositório no domínio e implementações na infraestrutura
+**Parameters**:
+- Interfaces no domain/repository
+- Implementações em data/repository
+- Result wrapper para tratamento de erros
+- Flow para reatividade
+**Task**: 4 repositórios funcionais com interfaces e implementações
+
+```kotlin
+// Domain - Interfaces
+
+interface ChildProfileRepository {
+    fun getProfile(): Flow<ChildProfile?>
+    suspend fun saveProfile(profile: ChildProfile): Result<Unit>
+    suspend fun hasProfile(): Boolean
+}
+
+interface TaskRepository {
+    fun getAllTasksOrderedByTime(): Flow<List<Task>>
+    fun getTaskById(id: Long): Flow<Task?>
+    suspend fun insertTask(task: Task): Result<Long>
+    suspend fun updateTask(task: Task): Result<Unit>
+    suspend fun updateTaskStatus(taskId: Long, status: TaskStatus): Result<Unit>
+    suspend fun deleteTask(task: Task): Result<Unit>
+}
+
+interface StepRepository {
+    fun getStepsByTask(taskId: Long): Flow<List<Step>>
+    suspend fun insertStep(step: Step): Result<Unit>
+    suspend fun updateStep(step: Step): Result<Unit>
+    suspend fun deleteStep(step: Step): Result<Unit>
+}
+
+interface AppSettingsRepository {
+    fun getSettings(): Flow<AppSettings?>
+    suspend fun updateSettings(settings: AppSettings): Result<Unit>
+    suspend fun isFirstRun(): Boolean
+    suspend fun markFirstRunCompleted(): Result<Unit>
+}
+```
+
+**Data - Implementações**:
+```kotlin
+@Singleton
+class ChildProfileRepositoryImpl @Inject constructor(
+    private val dao: ChildProfileDao
+) : ChildProfileRepository {
+    
+    override fun getProfile(): Flow<ChildProfile?> = dao.getProfile()
+    
+    override suspend fun saveProfile(profile: ChildProfile): Result<Unit> {
+        return try {
+            dao.insertOrUpdate(profile)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    override suspend fun hasProfile(): Boolean {
+        return dao.getProfileCount() > 0
+    }
+}
+
+// Similar implementations for other repositories...
+```
+
+**Result Wrapper**:
+```kotlin
+sealed class AppResult<out T> {
+    data class Success<T>(val data: T) : AppResult<T>()
+    data class Error(val exception: Throwable) : AppResult<Nothing>()
+    
+    inline fun onSuccess(action: (value: T) -> Unit): AppResult<T> {
+        if (this is Success) action(data)
+        return this
+    }
+    
+    inline fun onError(action: (exception: Throwable) -> Unit): AppResult<T> {
+        if (this is Error) action(exception)
+        return this
+    }
+}
+```
+
+**Critérios de Validação**:
+- [ ] 4 interfaces no domain/repository
+- [ ] 4 implementações em data/repository
+- [ ] Result wrapper implementado
+- [ ] Tratamento de erros em todas as operações
+- [ ] Módulos Hilt para injeção criados
+
+---
+
+### MVP-05: Use Cases MVP
+
+**Persona**: Desenvolvedor especialista em Clean Architecture e lógica de negócio
+**Role/Rules**: Seguindo princípios SOLID, Single Responsibility e Domain-Driven Design
+**Objective**: Implementar Use Cases para orquestrar lógica de negócio MVP
+**Message**: Criar Use Cases essenciais para operações MVP com validações
+**Parameters**:
+- Use Cases no domain/usecase
+- Validações de regras de negócio
+- Composição de operações
+- Tratamento de erros
+**Task**: Use Cases funcionais com lógica de negócio e validações
+
+```kotlin
+// Use Cases MVP Essenciais
+
+@Singleton
+class SaveChildProfileUseCase @Inject constructor(
+    private val repository: ChildProfileRepository
+) {
+    suspend operator fun invoke(
+        name: String,
+        gender: Gender,
+        photoUri: String? = null
+    ): AppResult<Unit> {
+        // Validações
+        if (name.isBlank()) {
+            return AppResult.Error(IllegalArgumentException("Nome é obrigatório"))
+        }
+        
+        if (name.length < 2) {
+            return AppResult.Error(IllegalArgumentException("Nome deve ter pelo menos 2 caracteres"))
+        }
+        
+        val profile = ChildProfile(
+            name = name.trim(),
+            gender = gender,
+            photoUri = photoUri
+        )
+        
+        return try {
+            repository.saveProfile(profile)
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(e)
+        }
+    }
+}
+
+@Singleton
+class GetChildProfileUseCase @Inject constructor(
+    private val repository: ChildProfileRepository
+) {
+    operator fun invoke(): Flow<ChildProfile?> = repository.getProfile()
+}
+
+@Singleton
+class SaveTaskUseCase @Inject constructor(
+    private val taskRepository: TaskRepository,
+    private val stepRepository: StepRepository
+) {
+    suspend operator fun invoke(
+        title: String,
+        description: String = "",
+        iconRes: Int,
+        time: String,
+        stars: Int,
+        steps: List<String> = emptyList()
+    ): AppResult<Long> {
+        // Validações
+        if (title.isBlank()) {
+            return AppResult.Error(IllegalArgumentException("Título é obrigatório"))
+        }
+        
+        if (!isValidTime(time)) {
+            return AppResult.Error(IllegalArgumentException("Horário inválido (formato HH:mm)"))
+        }
+        
+        if (stars !in 1..5) {
+            return AppResult.Error(IllegalArgumentException("Estrelas devem estar entre 1 e 5"))
+        }
+        
+        val task = Task(
+            title = title.trim(),
+            description = description.trim(),
+            iconRes = iconRes,
+            time = time,
+            stars = stars
+        )
+        
+        return try {
+            val taskId = taskRepository.insertTask(task).getOrThrow()
+            
+            // Inserir steps se houver
+            steps.forEachIndexed { index, stepTitle ->
+                val step = Step(
+                    taskId = taskId,
+                    title = stepTitle.trim(),
+                    order = index + 1
+                )
+                stepRepository.insertStep(step)
+            }
+            
+            AppResult.Success(taskId)
+        } catch (e: Exception) {
+            AppResult.Error(e)
+        }
+    }
+    
+    private fun isValidTime(time: String): Boolean {
+        return try {
+            val parts = time.split(":")
+            if (parts.size != 2) return false
+            val hour = parts[0].toInt()
+            val minute = parts[1].toInt()
+            hour in 0..23 && minute in 0..59
+        } catch (e: Exception) {
+            false
+        }
+    }
+}
+
+@Singleton
+class GetTasksOrderedByTimeUseCase @Inject constructor(
+    private val repository: TaskRepository
+) {
+    operator fun invoke(): Flow<List<Task>> = repository.getAllTasksOrderedByTime()
+}
+
+@Singleton
+class UpdateTaskStatusUseCase @Inject constructor(
+    private val taskRepository: TaskRepository,
+    private val settingsRepository: AppSettingsRepository
+) {
+    suspend operator fun invoke(
+        taskId: Long,
+        status: TaskStatus
+    ): AppResult<Unit> {
+        return try {
+            taskRepository.updateTaskStatus(taskId, status)
+            
+            // Se completada, adicionar estrelas
+            if (status == TaskStatus.COMPLETED) {
+                // Lógica para adicionar estrelas será implementada
+            }
+            
+            AppResult.Success(Unit)
+        } catch (e: Exception) {
+            AppResult.Error(e)
+        }
+    }
+}
+
+@Singleton
+class CheckFirstRunUseCase @Inject constructor(
+    private val repository: AppSettingsRepository
+) {
+    suspend operator fun invoke(): Boolean {
+        return repository.isFirstRun()
+    }
+}
+
+@Singleton
+class CompleteOnboardingUseCase @Inject constructor(
+    private val repository: AppSettingsRepository
+) {
+    suspend operator fun invoke(): AppResult<Unit> {
+        return repository.markFirstRunCompleted()
+    }
+}
+```
+
+**Critérios de Validação**:
+- [ ] 6 Use Cases essenciais implementados
+- [ ] Validações de regras de negócio
+- [ ] Tratamento de erros consistente
+- [ ] Composição de operações (task + steps)
+- [ ] KDocs completos
+- [ ] Testes unitários básicos
+
+---
+
+## DIA 2 - INTERFACE (8h)
+
+### MVP-06: Theme e Design System MVP
+
+**Persona**: Designer de UX/UI especialista em Material Design e acessibilidade para TEA
+**Role/Rules**: Seguindo Material 3, Design System e guidelines de acessibilidade TEA
+**Objective**: Criar tema consistente e acessível para crianças com autismo
+**Message**: Implementar Design System MVP com cores, tipografia e componentes base
+**Parameters**:
+- Material 3 Design System
+- Cores adequadas para TEA
+- Tipografia legível
+- Acessibilidade (48dp mínimo para touch)
+- Modo claro otimizado
+**Task**: Theme funcional com cores, tipografia e shapes adequados para MVP
+
+```kotlin
+// Theme MVP para TEA
+
+@Composable
+fun PequenosPassosTheme(
+    content: @Composable () -> Unit
+) {
+    MaterialTheme(
+        colorScheme = PequenosPassosColors,
+        typography = PequenosPassosTypography,
+        shapes = PequenosPassosShapes,
+        content = content
+    )
+}
+
+// Cores otimizadas para TEA
+val PequenosPassosColors = lightColorScheme(
+    primary = Color(0xFF4A90E2),        // Azul calmo
+    onPrimary = Color.White,
+    primaryContainer = Color(0xFFE3F2FD),
+    onPrimaryContainer = Color(0xFF1565C0),
+    
+    secondary = Color(0xFF4CAF50),      // Verde sucesso
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFFE8F5E8),
+    
+    tertiary = Color(0xFFFF9500),       // Laranja atenção
+    onTertiary = Color.White,
+    
+    error = Color(0xFFF44336),          // Vermelho cancelada
+    onError = Color.White,
+    errorContainer = Color(0xFFFFEBEE),
+    
+    surface = Color.White,
+    onSurface = Color(0xFF212121),
+    surfaceVariant = Color(0xFFF5F5F5),
+    onSurfaceVariant = Color(0xFF757575),
+    
+    background = Color(0xFFFAFAFA),
+    onBackground = Color(0xFF212121),
+    
+    outline = Color(0xFFE0E0E0),
+    outlineVariant = Color(0xFFEEEEEE)
+)
+
+// Tipografia legível para crianças
+val PequenosPassosTypography = Typography(
+    displayLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Bold,
+        fontSize = 32.sp,
+        lineHeight = 40.sp
+    ),
+    headlineLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        lineHeight = 32.sp
+    ),
+    titleLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 20.sp,
+        lineHeight = 28.sp
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp
+    ),
+    labelLarge = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp
+    )
+)
+
+// Shapes arredondadas e amigáveis
+val PequenosPassosShapes = Shapes(
+    extraSmall = RoundedCornerShape(8.dp),
+    small = RoundedCornerShape(12.dp),
+    medium = RoundedCornerShape(16.dp),
+    large = RoundedCornerShape(20.dp),
+    extraLarge = RoundedCornerShape(24.dp)
+)
+```
+
+**Cores Auxiliares**:
+```kotlin
+object PequenosPassosExtendedColors {
+    val Success = Color(0xFF4CAF50)
+    val Warning = Color(0xFFFF9500)
+    val Info = Color(0xFF2196F3)
+    val Pending = Color(0xFFFF9500)
+    val Completed = Color(0xFF4CAF50)
+    val Canceled = Color(0xFFF44336)
+    
+    // Cores para status de tarefas
+    val TaskPending = Color(0xFFFFF3E0)      // Laranja claro
+    val TaskCompleted = Color(0xFFE8F5E8)    // Verde claro
+    val TaskCanceled = Color(0xFFFFEBEE)     // Vermelho claro
+}
+```
+
+**Critérios de Validação**:
+- [ ] Theme Material 3 implementado
+- [ ] Cores adequadas para TEA validadas
+- [ ] Tipografia legível configurada
+- [ ] Shapes arredondadas definidas
+- [ ] Cores de status implementadas
+- [ ] Preview themes funcionando
+
+---
+
+### MVP-07: Componentes Reutilizáveis MVP
+
+**Persona**: Desenvolvedor especialista em Jetpack Compose e componentes reutilizáveis
+**Role/Rules**: Seguindo princípios de reutilização, acessibilidade e design consistente
+**Objective**: Criar componentes base para construção das telas MVP
+**Message**: Implementar componentes reutilizáveis específicos para MVP
+**Parameters**:
+- Componentes Material 3 customizados
+- Acessibilidade integrada
+- Estados visuais claros
+- Tamanhos adequados para TEA (48dp mínimo)
+**Task**: 6 componentes essenciais funcionais e acessíveis
+
+```kotlin
+// Componentes MVP Essenciais
+
+@Composable
+fun ChildProfileCard(
+    name: String,
+    photoUri: String?,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = photoUri ?: R.drawable.ic_child_placeholder,
+                contentDescription = "Foto de $name",
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            Column {
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Meu perfil",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TaskCard(
+    task: Task,
+    onExecute: () -> Unit,
+    onComplete: () -> Unit,
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = when (task.status) {
+                TaskStatus.PENDING -> PequenosPassosExtendedColors.TaskPending
+                TaskStatus.COMPLETED -> PequenosPassosExtendedColors.TaskCompleted
+                TaskStatus.CANCELED -> PequenosPassosExtendedColors.TaskCanceled
+            }
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = task.iconRes),
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                
+                Spacer(modifier = Modifier.width(16.dp))
+                
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = task.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = task.time,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                
+                TaskStatusBadge(status = task.status)
+            }
+            
+            if (task.description.isNotBlank()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = task.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            StarRating(
+                stars = task.stars,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            TaskActionButtons(
+                status = task.status,
+                onExecute = onExecute,
+                onComplete = onComplete,
+                onCancel = onCancel
+            )
+        }
+    }
+}
+
+@Composable
+fun TaskStatusBadge(
+    status: TaskStatus,
+    modifier: Modifier = Modifier
+) {
+    val (text, color, icon) = when (status) {
+        TaskStatus.PENDING -> Triple("Pendente", PequenosPassosExtendedColors.Pending, Icons.Default.Schedule)
+        TaskStatus.COMPLETED -> Triple("Concluída", PequenosPassosExtendedColors.Completed, Icons.Default.CheckCircle)
+        TaskStatus.CANCELED -> Triple("Cancelada", PequenosPassosExtendedColors.Canceled, Icons.Default.Cancel)
+    }
+    
+    Row(
+        modifier = modifier
+            .background(
+                color = color.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            modifier = Modifier.size(16.dp),
+            tint = color
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelSmall,
+            color = color
+        )
+    }
+}
+
+@Composable
+fun StarRating(
+    stars: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = modifier) {
+        repeat(5) { index ->
+            Icon(
+                imageVector = if (index < stars) Icons.Filled.Star else Icons.Outlined.Star,
+                contentDescription = if (index < stars) "Estrela preenchida" else "Estrela vazia",
+                modifier = Modifier.size(20.dp),
+                tint = if (index < stars) Color(0xFFFFD700) else Color(0xFFE0E0E0)
+            )
+        }
+    }
+}
+
+@Composable
+fun TaskActionButtons(
+    status: TaskStatus,
+    onExecute: () -> Unit,
+    onComplete: () -> Unit,
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        when (status) {
+            TaskStatus.PENDING -> {
+                Button(
+                    onClick = onExecute,
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("FAZER")
+                }
+                
+                Spacer(modifier = Modifier.width(8.dp))
+                
+                OutlinedButton(
+                    onClick = onCancel,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("CANCELAR")
+                }
+            }
+            
+            TaskStatus.COMPLETED -> {
+                Button(
+                    onClick = { /* Disabled */ },
+                    enabled = false,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PequenosPassosExtendedColors.Completed
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("CONCLUÍDA")
+                }
+            }
+            
+            TaskStatus.CANCELED -> {
+                Button(
+                    onClick = { /* Reset to pending */ },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("TENTAR NOVAMENTE")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun GenderSelector(
+    selectedGender: Gender?,
+    onGenderSelected: (Gender) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        GenderOption(
+            gender = Gender.MALE,
+            isSelected = selectedGender == Gender.MALE,
+            onClick = { onGenderSelected(Gender.MALE) }
+        )
+        
+        GenderOption(
+            gender = Gender.FEMALE,
+            isSelected = selectedGender == Gender.FEMALE,
+            onClick = { onGenderSelected(Gender.FEMALE) }
+        )
+    }
+}
+
+@Composable
+private fun GenderOption(
+    gender: Gender,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val (text, icon) = when (gender) {
+        Gender.MALE -> "Menino" to Icons.Default.Person
+        Gender.FEMALE -> "Menina" to Icons.Default.Person
+    }
+    
+    Card(
+        modifier = Modifier
+            .size(120.dp)
+            .clickable { onClick() },
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = if (isSelected) 8.dp else 2.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) 
+                MaterialTheme.colorScheme.primaryContainer 
+            else 
+                MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = text,
+                modifier = Modifier.size(48.dp),
+                tint = if (isSelected) 
+                    MaterialTheme.colorScheme.primary 
+                else 
+                    MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = text,
+                style = MaterialTheme.typography.titleSmall,
+                color = if (isSelected) 
+                    MaterialTheme.colorScheme.onPrimaryContainer 
+                else 
+                    MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+```
+
+**Critérios de Validação**:
+- [ ] 6 componentes implementados e funcionais
+- [ ] Acessibilidade (contentDescription, tamanhos mínimos)
+- [ ] Estados visuais claros para TaskStatus
+- [ ] Componentes responsivos e reutilizáveis
+- [ ] Previews Compose funcionando
+- [ ] Integração com theme MVP
+
+---
+
+### MVP-08: SplashScreen MVP
+
+**Persona**: Desenvolvedor especialista em UI/UX e inicialização de aplicações Android
+**Role/Rules**: Seguindo Android App Startup, Splash Screen API e boas práticas de UX
+**Objective**: Implementar SplashScreen funcional com verificação de primeiro acesso
+**Message**: Criar SplashScreen que verifica onboarding e inicializa app MVP
+**Parameters**:
+- Splash Screen API nativa
+- Verificação de primeiro acesso
+- Inicialização do banco de dados
+- Transição suave para próxima tela
+- Tempo mínimo/máximo configurável
+**Task**: SplashScreen funcional com navegação condicional
+
+```kotlin
+// SplashScreen MVP
+
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        // Configurar Splash Screen nativo
+        installSplashScreen()
+        
+        setContent {
+            PequenosPassosTheme {
+                PequenosPassosApp()
+            }
+        }
+    }
+}
+
+@Composable
+fun PequenosPassosApp() {
+    val navController = rememberNavController()
+    
+    NavHost(
+        navController = navController,
+        startDestination = Routes.SPLASH
+    ) {
+        composable(Routes.SPLASH) {
+            SplashScreen(navController = navController)
+        }
+        composable(Routes.ONBOARDING) {
+            OnboardingScreen(navController = navController)
+        }
+        composable(Routes.HOME) {
+            HomeScreen(navController = navController)
+        }
+        // ... outras rotas MVP
+    }
+}
+
+@Composable
+fun SplashScreen(
+    navController: NavController,
+    viewModel: SplashViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    
+    LaunchedEffect(Unit) {
+        viewModel.initialize()
+    }
+    
+    LaunchedEffect(uiState.navigationEvent) {
+        when (uiState.navigationEvent) {
+            SplashNavigationEvent.NavigateToOnboarding -> {
+                navController.navigate(Routes.ONBOARDING) {
+                    popUpTo(Routes.SPLASH) { inclusive = true }
+                }
+            }
+            SplashNavigationEvent.NavigateToHome -> {
+                navController.navigate(Routes.HOME) {
+                    popUpTo(Routes.SPLASH) { inclusive = true }
+                }
+            }
+            null -> { /* Aguardando inicialização */ }
+        }
+    }
+    
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.primaryContainer
+                    )
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // Logo do app
+            Icon(
+                painter = painterResource(id = R.drawable.ic_logo_pequenos_passos),
+                contentDescription = "Logo Pequenos Passos",
+                modifier = Modifier.size(120.dp),
+                tint = Color.White
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                text = "Pequenos Passos",
+                style = MaterialTheme.typography.headlineLarge,
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                text = "Autonomia através de rotinas",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Color.White.copy(alpha = 0.8f)
+            )
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            // Loading indicator
+            if (uiState.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(32.dp),
+                    color = Color.White,
+                    strokeWidth = 3.dp
+                )
+            }
+            
+            // Erro se houver
+            if (uiState.error != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Erro ao inicializar: ${uiState.error}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Button(
+                    onClick = { viewModel.retry() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("Tentar Novamente")
+                }
+            }
+        }
+    }
+}
+
+// ViewModel
+@HiltViewModel
+class SplashViewModel @Inject constructor(
+    private val checkFirstRunUseCase: CheckFirstRunUseCase,
+    private val childProfileRepository: ChildProfileRepository
+) : ViewModel() {
+    
+    private val _uiState = MutableStateFlow(SplashUiState())
+    val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
+    
+    fun initialize() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            
+            try {
+                // Aguardar tempo mínimo para mostrar splash
+                delay(1500)
+                
+                // Verificar se é primeiro acesso
+                val isFirstRun = checkFirstRunUseCase()
+                val hasProfile = childProfileRepository.hasProfile()
+                
+                val navigationEvent = when {
+                    isFirstRun || !hasProfile -> SplashNavigationEvent.NavigateToOnboarding
+                    else -> SplashNavigationEvent.NavigateToHome
+                }
+                
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    navigationEvent = navigationEvent
+                )
+                
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.message
+                )
+            }
+        }
+    }
+    
+    fun retry() {
+        initialize()
+    }
+}
+
+// Estados
+data class SplashUiState(
+    val isLoading: Boolean = false,
+    val error: String? = null,
+    val navigationEvent: SplashNavigationEvent? = null
+)
+
+sealed class SplashNavigationEvent {
+    object NavigateToOnboarding : SplashNavigationEvent()
+    object NavigateToHome : SplashNavigationEvent()
+}
+
+// Rotas
+object Routes {
+    const val SPLASH = "splash"
+    const val ONBOARDING = "onboarding"
+    const val HOME = "home"
+    const val TASK_FORM = "task_form"
+    const val TASK_EXECUTION = "task_execution/{taskId}"
+}
+```
+
+**Critérios de Validação**:
+- [ ] SplashScreen exibe logo e loading
+- [ ] Verificação de primeiro acesso funcional
+- [ ] Navegação condicional implementada
+- [ ] Tratamento de erros
+- [ ] Tempo mínimo de splash respeitado
+- [ ] Transições suaves
+
+---
+
+## 📝 CONTINUAÇÃO DOS PROMPTS
+
+Os prompts MVP-09 a MVP-15 serão implementados na sequência, mantendo a mesma estrutura PROMPT e critérios de validação rigorosos definidos no GUIDELINES.md.
+
+**Próximos Prompts**:
+- MVP-09: OnboardingScreen MVP (Cadastro da criança)
+- MVP-10: TaskFormScreen MVP (Cadastro de tarefas)
+- MVP-11: HomeScreen MVP (Lista ordenada por horário)
+- MVP-12: TaskExecutionScreen MVP (Execução com steps)
+- MVP-13: Navegação MVP (NavGraph completo)
+- MVP-14: Testes Unitários MVP (Cobertura essencial)
+- MVP-15: Validação Final MVP (Build e deploy)
+
+**Status de Validação**: Cada prompt deve ser validado antes de prosseguir para o próximo, com status atualizado no CHANGELOG.md conforme diretrizes.
+
+---
+
+# Estrutura Hierárquica de Rotinas
+No PequenosPassos, uma Rotina representa o conjunto de atividades (tarefas) que
+devem ser realizadas em um dia. Cada Rotina é composta por diversas Tarefas, que
+são as atividades principais do fluxo diário. Cada Tarefa, por sua vez, pode ser
+detalhada em um passo-a-passo, formado por Subtarefas (Steps), que orientam a
+execução da atividade de forma sequencial e didática.
+
+Estrutura:
+- Rotina: conjunto de Tarefas do dia.
+- Tarefa: atividade principal da rotina.
+- Subtarefas (Steps): etapas sequenciais para realizar cada Tarefa.
+
+Essa abordagem facilita o acompanhamento, personalização e gamificação das
+atividades diárias, promovendo autonomia e organização para crianças com TEA.
 
 # ESPECIFICAÇÃO COMPLETA - APP PEQUENOS PASSOS
 
@@ -369,7 +1747,7 @@ Crie componentes Compose reutilizáveis para o app:
 2. TaskCard:
     - Ícone ilustrativo
     - Título da tarefa
-    - Horário
+    - Horário (para garantir uma sequencia adequada)
     - Sistema de estrelas (1-5)
     - Status visual (A fazer, Feito, Cancelado)
     - Botões de ação (concluir, cancelar, editar, deletar)
@@ -840,7 +2218,7 @@ Crie a tela de recompensas (RewardsScreen):
 RewardsViewModel:
 - StateFlow com recompensas disponíveis
 - StateFlow com estrelas do perfil
-- Fun��ão para resgatar recompensa
+- Função para resgatar recompensa
 
 RewardsScreen:
 - Header com:
@@ -1484,7 +2862,6 @@ com.example.pequenospassos/
 - [ ] Configurações personalizáveis
 - [ ] Onboarding para novos usuários
 
-### 🚀 Roadmap Futuro
 
 #### Versão 1.0.0 (Em Desenvolvimento - Prioridade Máxima)
 - [🔄] Splash Screen e Ícone personalizado do "Pequenos Passos"

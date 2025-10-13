@@ -28,11 +28,46 @@ navegação)
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Versão**: 1.1.2 | **Data**: 12/10/2025 | **Status**: Sincronizado com PequenosPassos
+**Versão**: 1.3.0 | **Data**: 12/10/2025 | **Status**: Sincronizado com MVP e prompts estruturais implementados
+
+---
+
+## MVP - Estrutura Simplificada
+Para o MVP (Produto Mínimo Viável), a estrutura foi otimizada para 3 dias de desenvolvimento:
+
+### Entidades MVP
+- **ChildProfile**: Cadastro da criança (nome, sexo, foto)
+- **Task**: Tarefas ordenadas por horário
+- **Step**: Subtarefas/passos opcionais
+- **TaskStatus**: PENDING, COMPLETED, CANCELED
+
+### Telas MVP (5 principais)
+1. **SplashScreen**: Verificação de primeiro uso
+2. **OnboardingScreen**: Cadastro da criança (nome, sexo, foto)
+3. **TaskFormScreen**: Cadastro simplificado de tarefas
+4. **HomeScreen**: Lista de tarefas ordenadas por horário
+5. **TaskExecutionScreen**: Execução de tarefas com passos
+
+### Funcionalidades MVP
+- ✅ Cadastro único da criança
+- ✅ Tarefas ordenadas automaticamente por horário (HH:mm)
+- ✅ Status completo: ⏳ Pendente | ✅ Concluída | ❌ Cancelada
+- ✅ Sistema básico de estrelas
+- ✅ Interface TEA adaptada
 
 ---
 
 ## Atualização
+A estrutura do app segue a hierarquia:
+- Rotina: conjunto de tarefas do dia
+- Tarefa: atividade principal (ordenada por horário)
+- Subtarefas (Steps): etapas sequenciais de cada tarefa
+
+Cada rotina é composta por tarefas ordenadas por horário, e cada tarefa pode ser detalhada em passos
+(subtarefas), facilitando o acompanhamento e personalização.
+
+O MVP foca no essencial: cadastro da criança e execução de tarefas com status completo.
+
 O app possui base de dados padrão de imagens e mensagens (texto/áudio) para rotinas, tarefas, subtarefas e recompensas, mas todos esses itens podem ser personalizados pelo usuário. Veja detalhes em [SPECIFICATION_FOR_APP.md](./SPECIFICATION_FOR_APP.md).
 
 ## Sumário

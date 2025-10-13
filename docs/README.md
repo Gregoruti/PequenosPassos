@@ -29,11 +29,19 @@ do projeto
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Versão**: 1.1.2 | **Data**: 12/10/2025 | **Status**: Documentação sincronizada
+**Versão**: 1.1.3 | **Data**: 12/10/2025 | **Status**: Documentação sincronizada
 
 ---
 
 ## Novidade
+O PequenosPassos utiliza uma estrutura hierárquica clara:
+- Rotina: conjunto de tarefas do dia
+- Tarefa: atividade principal
+- Subtarefas (Steps): etapas sequenciais de cada tarefa
+
+Cada rotina representa o conjunto de atividades diárias, cada tarefa pode ser
+composta por vários passos, facilitando o acompanhamento e personalização.
+
 Agora é possível personalizar imagens, áudios, instruções e feedbacks positivos para rotinas, tarefas, subtarefas e recompensas. O app vem com uma base de dados padrão, mas todos os itens podem ser ajustados pelo usuário. Veja detalhes em [SPECIFICATION_FOR_APP.md](./SPECIFICATION_FOR_APP.md).
 
 > **Aplicativo Android para apoio a Atividades da Vida Diária com Reconhecimento de Voz**
