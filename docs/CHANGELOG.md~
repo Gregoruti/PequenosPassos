@@ -59,263 +59,78 @@ Essa abordagem facilita o acompanhamento, personalização e gamificação das a
 
 ## 1. Histórico de Versões
 
-### Versão 1.3.1 (13/10/2025) - 🔧 Correções Críticas e Restauração de Funcionalidades
+### Versão 1.0.0 (09/10/2025) - Primeira Versão do App Inicializando após Renomeações
 
-**Status da Versão**: `✅ APROVADO - Produção`
+**Status da Versão**: `✅ Implementado e Validado`
 
-#### 🎯 Resumo Executivo
-Esta versão corrige problemas críticos de build e restaura completamente as funcionalidades de **TTS (Text-to-Speech)** e **ASR (Reconhecimento de Voz)**, essenciais para a experiência do usuário no PequenosPassos.
+#### Mudanças Implementadas
+- **Renomeação Completa do Projeto**: Transição de "FonoVirtual_V2" para "PequenosPassos"
+- **Atualização de Interface**:
+  - Título principal alterado para "Pequenos Passos"
+  - Informação do projeto alterada de "Projeto Integrador VI" para "TCC-540"
+- **Correção de Configurações**:
+  - Ajustes de navegação e temas
+  - Remoção de módulos de exercícios e Teste Rápido
+- **Funcionalidades Mantidas**:
+  - SplashScreen com logo UNIVESP
+  - HomeScreen com navegação para Cadastro, Atividades, Resultados, Debug
+  - Módulos de ASR (Vosk) e TTS nativo
+  - Tela de Debug
 
-**Taxa de Sucesso nos Testes:** 100% (45/45 testes passaram)
-
----
-
-#### ✅ CORREÇÕES DE BUILD IMPLEMENTADAS
-
-##### Build System
-- **Problema:** Versão do Hilt desatualizada (2.48) causando inconsistências
-- **Solução:** Atualizado para versão 2.57.2 (sincronizado com libs.versions.toml)
-- **Impacto:** Build agora compila sem erros críticos
-- **RESULTADO:** ✅ Build bem-sucedido, 0 erros críticos de compilação
-
-##### Dependências
-- **Problema:** 14+ referências incorretas de bibliotecas (usando ponto em vez de hífen)
-- **Correções aplicadas:**
-  - `libs.androidx.navigation.compose` ✅
-  - `libs.androidx.room.runtime` ✅
-  - `libs.androidx.room.ktx` ✅
-  - `libs.hilt.android` ✅
-  - `libs.hilt.compiler` ✅
-  - `libs.androidx.hilt.navigation.compose` ✅
-  - `libs.coil.compose` ✅
-  - `libs.androidx.lifecycle.viewmodel.compose` ✅
-  - `libs.vosk.android` ✅
-  - `libs.accompanist.permissions` ✅
-- **Impacto:** Todas as dependências resolvidas corretamente
+#### Validação
+| Funcionalidade | Status | Data |
+|---------------|--------|------|
+| SplashScreen  | OK     | 09/10/2025 |
+| HomeScreen    | OK     | 09/10/2025 |
+| ASR (Vosk)    | OK     | 09/10/2025 |
+| TTS           | OK     | 09/10/2025 |
+| DebugScreen   | OK     | 09/10/2025 |
 
 ---
 
-#### 🎤 FUNCIONALIDADE TTS (TEXT-TO-SPEECH) RESTAURADA
+### Versão 1.2.0 (12/10/2025) - MVP Definido com Sprint de 3 Dias
 
-**Status:** ✅ 100% FUNCIONAL
+**Status da Versão**: `🔄 Em Desenvolvimento - MVP Otimizado`
 
-##### Recursos Implementados:
-- ✅ Tela de teste completa e intuitiva (`TtsTestScreen.kt`)
-- ✅ Campo de texto editável para entrada customizada
-- ✅ 4 botões de testes rápidos pré-definidos:
-  - "Bom dia! Como você está?"
-  - "Vamos fazer uma atividade divertida!"
-  - "Muito bem! Continue assim!"
-  - "Um, dois, três, quatro, cinco"
-- ✅ Suporte completo a português brasileiro (pt-BR)
-- ✅ Status visual do sistema (pronto/erro)
-- ✅ Informações técnicas sobre o engine
-- ✅ Navegação: Home → Debug → Teste TTS
+#### Mudanças Implementadas no MVP
+- **Cadastro da Criança Expandido**:
+  - Nome da criança (obrigatório)
+  - Sexo (seletor visual Menino/Menina)
+  - Foto (captura ou galeria, opcional)
+- **Ordenação Automática por Horário**:
+  - Tarefas ordenadas automaticamente por horário HH:mm
+  - Sequenciamento inteligente das atividades do dia
+- **Sistema de Status Completo**:
+  - ⏳ Pendente (tarefa não iniciada)
+  - ✅ Concluída (tarefa finalizada com sucesso)
+  - ❌ Cancelada (tarefa não realizada)
+- **Sprint Otimizado para 3 Dias**:
+  - Dia 1: Fundação completa (configuração + dados + lógica)
+  - Dia 2: Interface e navegação (telas + cadastro de tarefas)
+  - Dia 3: Execução e polimento (funcionalidades + testes)
 
-##### Correções Técnicas:
-- Callback do TextToSpeech com referência correta da instância usando variável local
-- Uso de `Locale.forLanguageTag("pt-BR")` moderno em vez de construtor deprecated
-- Ícone substituído para compatibilidade (VolumeUp → Settings)
-- Safe calls adequados no DisposableEffect
+#### Estrutura de Dados MVP
+- **ChildProfile**: Entidade para cadastro da criança
+- **Task**: Tarefas com ordenação por horário
+- **Step**: Subtarefas opcionais
+- **TaskStatus**: Enum com PENDING, COMPLETED, CANCELED
 
-##### Especificações Técnicas:
-- **Engine:** Android TTS nativo
-- **Idioma:** Português Brasil (pt-BR)
-- **Modo:** QUEUE_FLUSH (substitui fala anterior)
+#### Validação MVP
+| Funcionalidade | Status | Critério |
+|---------------|--------|----------|
+| Cadastro da Criança | 🔄 | Nome, sexo e foto em < 2 min |
+| Ordenação por Horário | 🔄 | Tarefas automáticamente ordenadas |
+| Status Completo | 🔄 | 3 estados visuais claros |
+| Interface TEA | 🔄 | Acessível para 4-6 anos |
+| Sprint 3 Dias | 🔄 | MVP funcional em 72h |
 
----
-
-#### 🎙️ FUNCIONALIDADE ASR (RECONHECIMENTO DE VOZ) RESTAURADA
-
-**Status:** ✅ 100% FUNCIONAL
-
-##### Recursos Implementados:
-- ✅ Tela de teste completa (`AsrTestScreen.kt`)
-- ✅ Reconhecimento de voz offline em português
-- ✅ Exibição de texto parcial em tempo real
-- ✅ Exibição de texto final reconhecido
-- ✅ Gerenciamento automático de permissão de microfone
-- ✅ Botões Iniciar/Parar com feedback visual
-- ✅ Validação completa de arquivos do modelo
-- ✅ Informações técnicas e dicas de uso
-- ✅ Navegação: Home → Debug → Teste ASR (Vosk)
-
-##### Correções Técnicas (Críticas):
-1. **Caminho do modelo corrigido:**
-   - Antes: Buscava em `getExternalFilesDir()` (incorreto)
-   - Depois: Busca em `assets/` e copia para `filesDir/`
-   
-2. **Cópia recursiva implementada:**
-   - Problema: Subdiretório `ivector/` não era copiado
-   - Solução: Função recursiva `copyAssetFolder()` que copia toda estrutura
-   
-3. **Validação do arquivo UUID:**
-   - Problema: Modelo falhava com erro "ivector not found"
-   - Solução: Valida UUID e arquivos críticos antes de carregar
-   - Arquivos validados: uuid, final.mdl, Gr.fst, HCLr.fst, ivector/
-   
-4. **Limpeza de diretório corrompido:**
-   - Se modelo foi copiado parcialmente, deleta e recopia completamente
-   - Evita estados inconsistentes
-   
-5. **Tratamento robusto de erros:**
-   - Mensagens detalhadas indicando arquivo faltante
-   - Stack trace em caso de erro no carregamento
-
-##### Especificações Técnicas:
-- **Engine:** Vosk ASR 0.3.70
-- **Modelo:** vosk-model-small-pt-0.3
-- **Idioma:** Português Brasil (PT-BR)
-- **Modo:** Offline (sem necessidade de internet)
-- **Sample Rate:** 16000 Hz
-- **Estrutura do modelo:**
-  - Arquivos raiz: disambig_tid.int, final.mdl, Gr.fst, HCLr.fst, mfcc.conf, phones.txt, uuid, word_boundary.int
-  - Subdiretório: ivector/ (com arquivos internos)
-
----
-
-#### 🔍 TELA DE DEBUG ATUALIZADA
-
-##### Validações MVP com Status Visual:
-- ✅ **MVP-01: Estrutura Base** (Verde - SUCCESS)
-- ✅ **TTS - Text-to-Speech** (Verde - SUCCESS) 
-- ✅ **ASR - Reconhecimento de Voz** (Verde - SUCCESS)
-- ⏳ **MVP-02 a MVP-05** (Laranja - PENDING)
-
-##### Testes Funcionais:
-- 🎤 **Teste TTS** - Navega para TtsTestScreen
-- 🎙️ **Teste ASR (Vosk)** - Navega para AsrTestScreen
-- 🔨 **Verificar Build** - Executa validação MVP-01
-
-##### Organização:
-- Seção "🔍 VALIDAÇÕES MVP" - Cards com status coloridos
-- Seção "🧪 TESTES FUNCIONAIS" - Botões de teste
-- Interface intuitiva com feedback visual claro
-
----
-
-#### 📋 VALIDAÇÕES MVP-01 COMPLETAS
-
-##### Resultados dos Testes:
-- **Total de Testes:** 45
-- **Testes Passados:** 45 ✅
-- **Testes Falhados:** 0 ❌
-- **Taxa de Sucesso:** 100%
-
-##### Áreas Validadas:
-1. ✅ **Estrutura Base do Projeto**
-   - Clean Architecture implementada
-   - MVVM pattern aplicado
-   - Jetpack Compose configurado
-   
-2. ✅ **Sistema de Navegação**
-   - Navigation Compose funcional
-   - Rotas configuradas corretamente
-   - Transições entre telas sem erro
-   
-3. ✅ **Injeção de Dependências**
-   - Hilt 2.57.2 configurado
-   - Módulos e componentes adequados
-   - Inicialização sem erros
-   
-4. ✅ **Text-to-Speech**
-   - Síntese de voz em português
-   - Interface de teste funcional
-   - Testes rápidos operacionais
-   
-5. ✅ **Speech Recognition**
-   - Reconhecimento offline Vosk
-   - Modelo carregado corretamente
-   - Reconhecimento em tempo real
-   
-6. ✅ **Tela de Debug**
-   - Painel centralizado de validações
-   - Status visuais corretos
-   - Navegação funcional
-   
-7. ✅ **Build System**
-   - Gradle sync sem erros
-   - Todas dependências resolvidas
-   - APK gerado com sucesso
-
----
-
-#### 🔒 TESTES DE REGRESSÃO
-
-Todos os testes de regressão passaram:
-- ✅ Splash screen continua funcionando após mudanças
-- ✅ Home screen mantém funcionalidade de navegação
-- ✅ Versão exibida corretamente (1.3.1)
-- ✅ Theme Material3 aplicado em todas as telas
-- ✅ Sem crashes ao navegar entre telas
-- ✅ BuildConfig.VERSION_NAME sincronizado
-
----
-
-#### 📦 ARQUIVOS MODIFICADOS
-
-```
-build.gradle.kts (raiz)
-  └─ Hilt 2.48 → 2.57.2
-
-app/build.gradle.kts
-  └─ 14+ correções de referências de dependências
-  └─ versionCode 3 → 4
-  └─ versionName 1.3.0 → 1.3.1
-
-app/src/main/java/com/pequenospassos/
-  ├─ MainActivity.kt (rotas tts_test e asr_test adicionadas)
-  ├─ presentation/screens/
-  │  ├─ DebugScreen.kt (status TTS e ASR atualizados)
-  │  ├─ TtsTestScreen.kt (NOVO - tela de teste TTS)
-  │  └─ AsrTestScreen.kt (NOVO - tela de teste ASR)
-
-docs/
-  ├─ CHANGELOG.md (versão 1.3.1 documentada)
-  └─ MVP01_VALIDATION.md (45 testes documentados)
-```
-
----
-
-#### 🎯 PRÓXIMOS PASSOS (MVP-02)
-
-Com o MVP-01 100% validado, o projeto está pronto para:
-
-**MVP-02: Entidades de Domínio**
-- [ ] Implementar entidade Child (cadastro da criança)
-- [ ] Implementar entidade Task (tarefas diárias)
-- [ ] Implementar entidade Routine (rotinas organizadas)
-- [ ] Implementar entidade Step (subtarefas/passos)
-- [ ] Criar enums (TaskStatus, Gender, etc.)
-
-**MVP-03: Database e DAOs**
-- [ ] Configurar Room Database
-- [ ] Criar DAOs para cada entidade
-- [ ] Implementar queries otimizadas
-- [ ] Testes de persistência
-
----
-
-#### 📊 MÉTRICAS DE QUALIDADE
-
-##### Cobertura de Testes:
-- Testes Manuais: 45/45 (100%)
-- Testes de Navegação: 8/8 (100%)
-- Testes de Build: 1/1 (100%)
-- Testes de Funcionalidades Core: 2/2 (100%)
-
-##### Performance:
-- Build Time: Otimizado após correções
-- App Startup: < 2s (splash → home)
-- Navegação: < 300ms entre telas
-- TTS Response: < 500ms
-- ASR Initialization: < 3s (primeira vez)
-
-##### Conformidade:
-- ✅ Guidelines do Projeto
-- ✅ Clean Architecture
-- ✅ Material Design 3
-- ✅ Acessibilidade TEA
+#### Objetivos de Validação
+- ✅ 80% dos usuários completam fluxo sem ajuda
+- ✅ Cadastro da criança < 2 minutos
+- ✅ Cadastro de tarefa < 1 minuto
+- ✅ Interface compreensível para criança de 4-6 anos
+- ✅ Ordenação por horário intuitiva
+- ✅ Status (Pendente/Concluída/Cancelada) claros
 
 ---
 
