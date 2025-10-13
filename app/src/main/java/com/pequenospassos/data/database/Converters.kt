@@ -5,26 +5,29 @@ import com.pequenospassos.domain.model.Gender
 import com.pequenospassos.domain.model.TaskStatus
 
 /**
- * TypeConverters para Room Database.
+ * Converters do Room Database.
  *
- * Converte enums para String e vice-versa para armazenamento no SQLite.
- * Essencial para o funcionamento das entidades com enums no Room.
+ * Converte tipos personalizados (enums) para tipos que o Room pode armazenar.
  *
- * @since MVP 1.3.0 (12/10/2025) - DIA 1 - MVP-02
- * @author MVP Development Team
+ * @since MVP-02 (13/10/2025) - DIA 1 - Fundação
+ * @author PequenosPassos Development Team
  * @validationStatus ✅ Implementado - MVP-02
  */
 class Converters {
+
+    // Gender Converters
 
     @TypeConverter
     fun fromGender(gender: Gender): String = gender.name
 
     @TypeConverter
-    fun toGender(gender: String): Gender = Gender.valueOf(gender)
+    fun toGender(value: String): Gender = Gender.valueOf(value)
+
+    // TaskStatus Converters
 
     @TypeConverter
     fun fromTaskStatus(status: TaskStatus): String = status.name
 
     @TypeConverter
-    fun toTaskStatus(status: String): TaskStatus = TaskStatus.valueOf(status)
+    fun toTaskStatus(value: String): TaskStatus = TaskStatus.valueOf(value)
 }

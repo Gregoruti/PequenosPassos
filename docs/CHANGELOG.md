@@ -512,3 +512,374 @@ Para prevenir regressões futuras:
 
 ---
 
+**Versão**: 1.4.0 | **Data**: 13/10/2025 | **Status**: MVP-02 implementado - Entidades de Domínio completas
+
+---
+
+## Estrutura Hierárquica de Rotinas
+No PequenosPassos, uma Rotina representa o conjunto de atividades (tarefas) que devem ser realizadas em um dia. Cada Rotina é composta por diversas Tarefas, que são as atividades principais do fluxo diário. Cada Tarefa pode ser detalhada em um passo-a-passo, formado por Subtarefas (Steps), que orientam a execução da atividade de forma sequencial e didática.
+
+- Rotina: conjunto de Tarefas do dia.
+- Tarefa: atividade principal da rotina.
+- Subtarefas (Steps): etapas sequenciais para realizar cada Tarefa.
+
+Essa abordagem facilita o acompanhamento, personalização e gamificação das atividades.
+
+---
+
+## Sumário
+1. [Histórico de Versões](#1-histórico-de-versões)
+2. [Status de Validação Integrado](#2-status-de-validação-integrado)
+3. [Roadmap de Funcionalidades](#3-roadmap-de-funcionalidades)
+
+---
+
+## 1. Histórico de Versões
+
+### Versão 1.4.0 (13/10/2025) - 📦 MVP-02: Entidades de Domínio
+
+**Status da Versão**: `✅ APROVADO - Produção`
+
+#### 🎯 Resumo Executivo
+Esta versão implementa as **4 entidades essenciais** do domínio seguindo Clean Architecture e princípios DDD (Domain-Driven Design). Todas as entidades incluem validações, métodos auxiliares e documentação completa com KDoc.
+
+**Entidades Implementadas:** 4/4 (100%)
+
+---
+
+#### 📦 ENTIDADES IMPLEMENTADAS
+
+##### 1. ChildProfile (Perfil da Criança)
+**Arquivo:** `domain/model/ChildProfile.kt`
+
+**Propósito:** Armazena informações da criança que utiliza o aplicativo
+
+**Campos:**
+- `id: String` - Identificador único (padrão: "default_child" para MVP single-user)
+- `name: String` - Nome da criança (obrigatório, mínimo 2 caracteres)
+- `gender: Gender` - Gênero (MALE ou FEMALE)
+- `photoUri: String?` - URI da foto (opcional, câmera/galeria)
+- `createdAt: Long` - Timestamp de criação
+
+**Métodos:**
+- `isValid(): Boolean` - Valida dados mínimos necessários
+
+**Enum Gender:**
+- `MALE` - Masculino ("Menino")
+- `FEMALE` - Feminino ("Menina")
+- `getDisplayName(): String` - Nome formatado para exibição
+
+**Annotations Room:**
+- `@Entity(tableName = "child_profile")`
+- `@PrimaryKey` em id
+
+---
+
+##### 2. Task (Tarefa/Atividade)
+**Arquivo:** `domain/model/Task.kt`
+
+**Propósito:** Representa uma atividade diária que a criança deve realizar
+
+**Campos:**
+- `id: Long` - Auto-gerado (auto-increment)
+- `title: String` - Título da tarefa
+- `description: String` - Descrição detalhada (opcional)
+- `iconRes: Int` - Recurso de ícone
+- `time: String` - Horário no formato HH:mm (ordenação automática)
+- `stars: Int` - Estrelas de recompensa (1-5)
+- `status: TaskStatus` - Status atual (PENDING/COMPLETED/CANCELED)
+- `createdAt: Long` - Timestamp de criação
+
+**Métodos:**
+- `isValid(): Boolean` - Valida dados e formato de horário
+- `isCompleted(): Boolean` - Verifica se está completa
+- `isCanceled(): Boolean` - Verifica se foi cancelada
+- `isPending(): Boolean` - Verifica se está pendente
+- `getTimeInMinutes(): Int` - Converte horário para minutos (ordenação)
+
+**Enum TaskStatus:**
+- `PENDING` - Não iniciada (⏳ "Pendente")
+- `COMPLETED` - Concluída (✅ "Concluída")
+- `CANCELED` - Cancelada (❌ "Cancelada")
+- `getEmoji(): String` - Retorna emoji do status
+- `getDisplayName(): String` - Nome formatado
+
+**Annotations Room:**
+- `@Entity(tableName = "tasks")`
+- `@PrimaryKey(autoGenerate = true)` em id
+
+---
+
+##### 3. Step (Passo/Subtarefa)
+**Arquivo:** `domain/model/Step.kt`
+
+**Propósito:** Representa um passo detalhado dentro de uma tarefa
+
+**Campos:**
+- `id: Long` - Auto-gerado
+- `taskId: Long` - ID da tarefa pai (foreign key)
+- `title: String` - Título do passo
+- `order: Int` - Ordem de execução (sequencial)
+- `isCompleted: Boolean` - Se foi completado
+
+**Métodos:**
+- `isValid(): Boolean` - Valida dados mínimos
+- `getStepNumber(): Int` - Número do passo para exibição (order + 1)
+
+**Data Class TaskWithSteps:**
+Agregado útil para queries que retornam tarefa + steps
+
+**Campos:**
+- `task: Task` - Tarefa principal
+- `steps: List<Step>` - Lista de steps ordenados
+
+**Métodos:**
+- `getTotalSteps(): Int` - Total de steps
+- `getCompletedSteps(): Int` - Steps completados
+- `getProgressPercentage(): Int` - Progresso 0-100%
+- `isFullyCompleted(): Boolean` - Todos steps completos
+
+**Annotations Room:**
+- `@Entity(tableName = "steps")`
+- `@ForeignKey` para Task (onDelete = CASCADE)
+- `@Index` em taskId
+
+---
+
+##### 4. AppSettings (Configurações)
+**Arquivo:** `domain/model/AppSettings.kt`
+
+**Propósito:** Armazena configurações globais e estado da aplicação
+
+**Campos:**
+- `id: String` - Fixo "settings" (single-instance)
+- `isFirstRun: Boolean` - Primeira execução do app
+- `totalStars: Int` - Total de estrelas acumuladas
+- `currentDate: String` - Data atual (YYYY-MM-DD)
+- `lastSyncTimestamp: Long` - Última sincronização
+- `notificationsEnabled: Boolean` - Notificações habilitadas
+
+**Métodos:**
+- `isValid(): Boolean` - Valida consistência
+- `isNewDay(today: String): Boolean` - Detecta mudança de dia
+
+**Companion Object:**
+- `getDefault(): AppSettings` - Configurações padrão
+- `getCurrentDateString(): String` - Data atual formatada
+
+**Annotations Room:**
+- `@Entity(tableName = "app_settings")`
+- `@PrimaryKey` em id
+
+---
+
+#### 🔄 TYPECONVERTERS
+
+**Arquivo:** `data/database/Converters.kt`
+
+Conversores Room para tipos personalizados (enums):
+
+```kotlin
+// Gender
+@TypeConverter fromGender(gender: Gender): String
+@TypeConverter toGender(value: String): Gender
+
+// TaskStatus
+@TypeConverter fromTaskStatus(status: TaskStatus): String
+@TypeConverter toTaskStatus(value: String): TaskStatus
+```
+
+---
+
+#### 📋 VALIDAÇÕES MVP-02 COMPLETAS
+
+**Data de Validação:** 13/10/2025  
+**Responsável:** PequenosPassos Development Team  
+**Método:** Análise de código + Verificação de compilação
+
+##### Resultados:
+- **Entidades Criadas:** 4/4 ✅
+- **Enums Implementados:** 2/2 ✅ (Gender, TaskStatus)
+- **TypeConverters:** 2/2 ✅
+- **Relacionamentos:** 1/1 ✅ (Task → Steps com CASCADE)
+- **KDocs Completos:** 4/4 ✅
+- **Erros de Compilação:** 0 ❌
+
+##### Checklist Detalhado:
+
+###### Entidade ChildProfile
+- [x] Entity annotation configurada ✅
+- [x] Primary key definida (id) ✅
+- [x] Campos essenciais (name, gender, photoUri) ✅
+- [x] Enum Gender implementado ✅
+- [x] Método isValid() implementado ✅
+- [x] Método getDisplayName() em Gender ✅
+- [x] KDoc completo ✅
+- [x] Compila sem erros ✅
+
+###### Entidade Task
+- [x] Entity annotation configurada ✅
+- [x] Primary key auto-increment (id) ✅
+- [x] Campos essenciais (title, time, stars, status) ✅
+- [x] Enum TaskStatus implementado ✅
+- [x] Validação de formato HH:mm ✅
+- [x] Métodos de estado (isCompleted, isPending, isCanceled) ✅
+- [x] Método getTimeInMinutes() para ordenação ✅
+- [x] Métodos getEmoji() e getDisplayName() em TaskStatus ✅
+- [x] KDoc completo ✅
+- [x] Compila sem erros ✅
+
+###### Entidade Step
+- [x] Entity annotation configurada ✅
+- [x] Primary key auto-increment (id) ✅
+- [x] Foreign key para Task (CASCADE) ✅
+- [x] Index em taskId ✅
+- [x] Campos essenciais (taskId, title, order) ✅
+- [x] Método isValid() implementado ✅
+- [x] Método getStepNumber() implementado ✅
+- [x] Data class TaskWithSteps criada ✅
+- [x] Métodos de progresso implementados ✅
+- [x] KDoc completo ✅
+- [x] Compila sem erros ✅
+
+###### Entidade AppSettings
+- [x] Entity annotation configurada ✅
+- [x] Primary key fixo "settings" ✅
+- [x] Campos de configuração (isFirstRun, totalStars) ✅
+- [x] Método isValid() implementado ✅
+- [x] Método isNewDay() implementado ✅
+- [x] Companion object com getDefault() ✅
+- [x] Método getCurrentDateString() ✅
+- [x] KDoc completo ✅
+- [x] Compila sem erros ✅
+
+###### TypeConverters
+- [x] Classe Converters criada ✅
+- [x] Gender converters (to/from) ✅
+- [x] TaskStatus converters (to/from) ✅
+- [x] Imports corretos ✅
+- [x] KDoc completo ✅
+- [x] Compila sem erros ✅
+
+---
+
+#### 🏗️ ARQUITETURA E DESIGN
+
+##### Clean Architecture
+- ✅ **Camada Domain:** Entidades no package `domain/model/`
+- ✅ **Independência:** Entidades sem dependências externas (exceto Room annotations)
+- ✅ **Enums colocalizados:** Gender em ChildProfile, TaskStatus em Task
+- ✅ **Regras de negócio:** Validações nos próprios modelos
+
+##### Domain-Driven Design (DDD)
+- ✅ **Entities:** Objetos com identidade (ChildProfile, Task, Step, AppSettings)
+- ✅ **Value Objects:** Enums (Gender, TaskStatus)
+- ✅ **Aggregates:** TaskWithSteps (agregado de Task + Steps)
+- ✅ **Validations:** Métodos isValid() em todas as entidades
+- ✅ **Business Logic:** Métodos auxiliares (getTimeInMinutes, getProgressPercentage)
+
+##### Room Database
+- ✅ **Entities:** Annotations `@Entity` em todas
+- ✅ **Primary Keys:** Definidas apropriadamente
+- ✅ **Foreign Keys:** Task → Step com CASCADE delete
+- ✅ **Indexes:** Index em Step.taskId para performance
+- ✅ **Type Converters:** Para enums customizados
+
+---
+
+#### 📊 MÉTRICAS DE QUALIDADE MVP-02
+
+##### Cobertura:
+- Entidades Implementadas: 4/4 (100%)
+- Enums Implementados: 2/2 (100%)
+- TypeConverters: 2/2 (100%)
+- KDoc Coverage: 100%
+- Métodos de Validação: 4/4 (100%)
+
+##### Complexidade:
+- Entidades simples e focadas
+- Métodos auxiliares bem definidos
+- Relacionamento 1:N simples (Task → Steps)
+- Sem lógica complexa (preparado para use cases)
+
+##### Manutenibilidade:
+- KDoc completo em todas as classes
+- Nomenclatura clara e consistente
+- Separação de responsabilidades
+- Fácil extensão futura
+
+---
+
+#### 🎯 CRITÉRIOS DE ACEITAÇÃO MVP-02
+
+Todos os critérios foram atendidos:
+
+1. ✅ **4 entidades criadas:** ChildProfile, Task, Step, AppSettings
+2. ✅ **Room annotations:** Todas as entidades anotadas corretamente
+3. ✅ **TypeConverters funcionando:** Gender e TaskStatus
+4. ✅ **Enums implementados:** Gender (2 valores), TaskStatus (3 valores)
+5. ✅ **Relacionamentos definidos:** Task → Steps (1:N com CASCADE)
+6. ✅ **Validações implementadas:** isValid() em todas as entidades
+7. ✅ **Métodos auxiliares:** Métodos úteis para lógica de negócio
+8. ✅ **KDocs completos:** Documentação profissional
+9. ✅ **Sem erros de compilação:** Build limpo
+10. ✅ **Clean Architecture:** Entidades no domínio, independentes
+
+---
+
+#### 📦 ARQUIVOS CRIADOS/MODIFICADOS
+
+```
+app/src/main/java/com/pequenospassos/
+├── domain/model/
+│   ├── ChildProfile.kt (NOVO - Perfil da criança + enum Gender)
+│   ├── Task.kt (NOVO - Tarefa + enum TaskStatus)
+│   ├── Step.kt (NOVO - Subtarefa + TaskWithSteps)
+│   ├── AppSettings.kt (NOVO - Configurações globais)
+│   └── Enums.kt (REMOVIDO - enums movidos para entidades)
+├── data/database/
+│   └── Converters.kt (ATUALIZADO - TypeConverters para enums)
+
+app/build.gradle.kts
+  └─ versionCode 4 → 5
+  └─ versionName 1.3.1 → 1.4.0
+
+docs/
+  └─ CHANGELOG.md (MVP-02 documentado)
+```
+
+---
+
+#### 🎯 PRÓXIMOS PASSOS (MVP-03)
+
+Com o MVP-02 100% completo, estamos prontos para:
+
+**MVP-03: Database e DAOs**
+- [ ] Criar AppDatabase.kt com Room
+- [ ] Implementar ChildProfileDao
+- [ ] Implementar TaskDao
+- [ ] Implementar StepDao
+- [ ] Implementar AppSettingsDao
+- [ ] Configurar TypeConverters no Database
+- [ ] Queries básicas (insert, update, delete, getAll)
+- [ ] Queries específicas (getTasksOrderedByTime, getTaskWithSteps)
+- [ ] Migrations strategy
+- [ ] Testes de persistência
+
+**Data Prevista:** 14/10/2025
+
+---
+
+#### 📚 REFERÊNCIAS
+
+**Documentação Relacionada:**
+- `docs/GUIDELINES.md` - Clean Architecture e DDD
+- `docs/SPECIFICATION_FOR_APP.md` - Detalhes das entidades
+- Room Database: https://developer.android.com/training/data-storage/room
+
+**Padrões Seguidos:**
+- ✅ Clean Architecture (entities no domain)
+- ✅ DDD (validações, métodos auxiliares)
+- ✅ SOLID (Single Responsibility)
+- ✅ Kotlin Best Practices
+- ✅ Room Database patterns
