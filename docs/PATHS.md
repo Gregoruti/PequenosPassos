@@ -1,8 +1,8 @@
 # PATHS.MD
 
-**Propósito**: Documentação unificada da estrutura de arquivos e telas do
-projeto PequenosPassos. Combina hierarquia de diretórios, mapeamento de telas,
-fluxos de navegação e estatísticas do projeto em um documento centralizado.
+**Propósito**: Documentação unificada da estrutura de arquivos e telas do projeto
+PequenosPassos. Combina hierarquia de diretórios, mapeamento de telas, fluxos de
+navegação e estatísticas do projeto em um documento centralizado.
 
 **Escopo**: Estrutura completa do projeto PequenosPassos (arquivos + telas +
 navegação)
@@ -34,8 +34,8 @@ navegação)
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Versão**: 1.4.0 | **Data**: 13/10/2025 | **Status**: Sincronizado com 
-MVP-02 implementado e testado
+**Versão**: 1.4.0 | **Data**: 13/10/2025 | **Status**: Sincronizado com MVP-02
+implementado e testado
 
 ---
 
@@ -43,8 +43,8 @@ MVP-02 implementado e testado
 
 ### 📊 Resumo Executivo de Testes
 
-**Última Execução:** 13/10/2025 23:40  
-**Build Status:** ✅ **SUCCESSFUL** (41s)  
+**Última Execução:** 13/10/2025 23:40
+**Build Status:** ✅ **SUCCESSFUL** (41s)
 **Resultado:** 58/58 testes passando (100%)
 
 | Categoria | Testes | Passaram | Falharam | Status |
@@ -55,16 +55,17 @@ MVP-02 implementado e testado
 | StepTest | 16 | 16 | 0 | ✅ |
 | AppSettingsTest | 14 | 14 | 0 | ✅ |
 
-**Cobertura:** 100% dos métodos públicos das entidades de domínio  
+**Cobertura:** 100% dos métodos públicos das entidades de domínio
 **Relatório HTML:** `app/build/reports/tests/testDebugUnitTest/index.html`
 
-**Referência Completa:** Ver CHANGELOG.md seções 2 e 3 para estratégia de 
-validação e testes
+**Referência Completa:** Ver CHANGELOG.md seções 2 e 3 para estratégia de validação
+e testes
 
 ---
 
 ## MVP - Estrutura Simplificada
-Para o MVP (Produto Mínimo Viável), a estrutura foi otimizada para 3 dias de desenvolvimento:
+Para o MVP (Produto Mínimo Viável), a estrutura foi otimizada para 3 dias de
+desenvolvimento:
 
 ### Entidades MVP
 - **ChildProfile**: Cadastro da criança (nome, sexo, foto)

@@ -1,9 +1,11 @@
 package com.pequenospassos.domain.model
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 
 /**
  * Entidade de passo/subtarefa (step).
@@ -69,7 +71,11 @@ data class Step(
  * @property steps Lista de steps da tarefa (ordenados por order)
  */
 data class TaskWithSteps(
-    val task: Task,
+    @Embedded val task: Task,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "taskId"
+    )
     val steps: List<Step>
 ) {
     /**
@@ -97,4 +103,3 @@ data class TaskWithSteps(
         return steps.isNotEmpty() && steps.all { it.isCompleted }
     }
 }
-

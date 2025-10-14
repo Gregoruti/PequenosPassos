@@ -98,16 +98,15 @@ práticas de excelência em desenvolvimento de software.
 
 ### 2.2.1 Estratégia de Testes por MVP
 **Lição Aprendida do MVP-01**: Validação apenas manual não previne regressões.
-A partir do MVP-02, **todos os MVPs devem ter testes automatizados** antes
-do aceite final.
+A partir de agora, **todos os MVPs, incluindo MVP-01, devem ter testes automatizados** antes do aceite final e antes de qualquer evolução ou refatoração. Isso garante que a base do projeto esteja protegida contra regressões e que cada módulo evolua de forma incremental e segura.
 
 **Processo Obrigatório:**
 1. **Planejar Testes**: Identificar o que será testado antes de codificar
 2. **Implementar Testes**: Criar testes junto com (ou logo após) o código
 3. **Executar Testes**: `gradlew test` deve passar 100%
 4. **Gerar Relatório**: HTML report em `build/reports/tests/`
-5. **Documentar Testes**: Criar guia específico do MVP (ex: MVP02_TESTING_GUIDE.md)
-6. **Atualizar CHANGELOG**: Seção de validação com métricas de testes
+5. **Documentar Testes**: Atualizar CHANGELOG.md com status de validação e cobertura
+6. **Validação Modular**: Cada MVP deve ser validado isoladamente e de forma incremental
 
 **Critério de Bloqueio**: Um MVP **NÃO PODE** ser considerado concluído sem:
 - ✅ Testes automatizados implementados
@@ -455,6 +454,15 @@ Para garantir rastreabilidade e interconexão entre arquivos de documentação, 
 - Projeto PequenosPassos sincronizado com o GitHub em 09/10/2025.
 - Repositório oficial: [https://github.com/Gregoruti/PequenosPassos](https://github.com/Gregoruti/PequenosPassos)
 - Status: Histórico e guidelines disponíveis para consulta e colaboração.
+
+---
+
+## Estratégia de Testes e Validação
+
+- Todo MVP ou funcionalidade deve ser validado por testes automatizados (unitários e instrumentados) e, quando aplicável, por testes manuais documentados.
+- O registro dos testes realizados (automatizados e manuais) deve ser feito no CHANGELOG.md, detalhando cobertura, status e eventuais regressões.
+- A validação incremental e modular é obrigatória: cada novo módulo ou MVP só avança após validação completa dos anteriores, protegendo contra regressão.
+- O relatório de testes deve ser atualizado a cada ciclo de desenvolvimento.
 
 ---
 

@@ -1,8 +1,11 @@
 # ESPECIFICATION_FOR_APP.MD
 
-**Propósito**: Especificação completa das funcionalidades, requisitos e contexto do projeto PequenosPassos, servindo como referência técnica para desenvolvimento, validação e evolução do app.
+**Propósito**: Especificação completa das funcionalidades, requisitos e contexto do
+projeto PequenosPassos, servindo como referência técnica para desenvolvimento,
+validação e evolução do app.
 
-**Escopo**: Detalhamento de requisitos, funcionalidades, arquitetura, fluxos e critérios de validação do aplicativo PequenosPassos para crianças com TEA.
+**Escopo**: Detalhamento de requisitos, funcionalidades, arquitetura, fluxos e
+critérios de validação do aplicativo PequenosPassos para crianças com TEA.
 
 **Interconexões da Documentação**:
 ```
@@ -24,18 +27,22 @@
 └──────────────────┴──────────────────┴──────────────────────┘
 ```
 
-**Versão**: 1.3.0 | **Data**: 12/10/2025 | **Status**: MVP definido com sprint de 3 dias e prompts estruturais
+**Versão**: 1.3.0 | **Data**: 12/10/2025 | **Status**: MVP definido com sprint de 3
+dias e prompts estruturais
 
 # 🎯 MVP - PRODUTO MÍNIMO VIÁVEL (PRIORIDADE MÁXIMA)
 
-**Objetivo**: Validar conceitos centrais do PequenosPassos em 3 dias de desenvolvimento com foco nas funcionalidades essenciais de cadastro da criança e execução de atividades.
+**Objetivo**: Validar conceitos centrais do PequenosPassos em 3 dias de
+desenvolvimento com foco nas funcionalidades essenciais de cadastro da criança e
+execução de atividades.
 
-**Filosofia MVP**: "Fazer menos, mas fazer bem" - concentrar nos fluxos críticos que validam a proposta de valor para crianças com TEA.
+**Filosofia MVP**: "Fazer menos, mas fazer bem" - concentrar nos fluxos críticos
+que validam a proposta de valor para crianças com TEA.
 
 ## 🚀 MODIFICAÇÕES IMPLEMENTADAS NO MVP
 
 ### ✅ CADASTRO DA CRIANÇA EXPANDIDO
-- **Nome da criança**: Campo obrigatório 
+- **Nome da criança**: Campo obrigatório
 - **Sexo**: Seletor visual (Menino/Menina) com ícones
 - **Foto**: Captura da câmera ou galeria (opcional)
 - Integrado no OnboardingScreen na primeira execução
@@ -47,28 +54,30 @@
 
 ### ✅ STATUS COMPLETO DE TAREFAS
 - ⏳ **Pendente**: Tarefa não iniciada
-- ✅ **Concluída**: Tarefa finalizada com sucesso  
+- ✅ **Concluída**: Tarefa finalizada com sucesso
 - ❌ **Cancelada**: Tarefa não realizada
 - Botões correspondentes: "FAZER" | "✓ FEITO" | "✗ CANCELAR"
 
 ### ✅ SPRINT OTIMIZADO PARA 3 DIAS
 - **Dia 1**: Fundação (configuração + dados + lógica) - 8h
-- **Dia 2**: Interface (telas + cadastro de tarefas) - 8h  
+- **Dia 2**: Interface (telas + cadastro de tarefas) - 8h
 - **Dia 3**: Execução (funcionalidades + testes) - 8h
 
 ---
 
 # 🏗️ PROMPTS ESTRUTURAIS MVP - METODOLOGIA PROMPT
 
-**Baseado em**: GUIDELINES.md - Seções 3 (Modularidade), 4 (Arquitetura), 5 (Metodologia PROMPT)
+**Baseado em**: GUIDELINES.md - Seções 3 (Modularidade), 4 (Arquitetura), 5
+(Metodologia PROMPT)
 **Ordem de Implementação**: Core → Aplicação → Infraestrutura → Apresentação
-**Filosofia**: "Entregar valor incrementalmente através de módulos pequenos, isolados e testáveis"
+**Filosofia**: "Entregar valor incrementalmente através de módulos pequenos, isolados
+e testáveis"
 
 ## 📋 ÍNDICE DE PROMPTS MVP
 
 ### DIA 1 - FUNDAÇÃO (Core + Infraestrutura)
 - [MVP-01](#mvp-01) - Estrutura Base do Projeto
-- [MVP-02](#mvp-02) - Entidades de Domínio MVP  
+- [MVP-02](#mvp-02) - Entidades de Domínio MVP
 - [MVP-03](#mvp-03) - Database e DAOs MVP
 - [MVP-04](#mvp-04) - Repositórios MVP
 - [MVP-05](#mvp-05) - Use Cases MVP
@@ -1374,7 +1383,8 @@ object Routes {
 
 ## 📝 CONTINUAÇÃO DOS PROMPTS
 
-Os prompts MVP-09 a MVP-15 serão implementados na sequência, mantendo a mesma estrutura PROMPT e critérios de validação rigorosos definidos no GUIDELINES.md.
+Os prompts MVP-09 a MVP-15 serão implementados na sequência, mantendo a mesma
+estrutura PROMPT e critérios de validação rigorosos definidos no GUIDELINES.md.
 
 **Próximos Prompts**:
 - MVP-09: OnboardingScreen MVP (Cadastro da criança)
@@ -1385,7 +1395,8 @@ Os prompts MVP-09 a MVP-15 serão implementados na sequência, mantendo a mesma 
 - MVP-14: Testes Unitários MVP (Cobertura essencial)
 - MVP-15: Validação Final MVP (Build e deploy)
 
-**Status de Validação**: Cada prompt deve ser validado antes de prosseguir para o próximo, com status atualizado no CHANGELOG.md conforme diretrizes.
+**Status de Validação**: Cada prompt deve ser validado antes de prosseguir para o
+próximo, com status atualizado no CHANGELOG.md conforme diretrizes.
 
 ---
 
@@ -1993,7 +2004,7 @@ TaskRepository (interface):
 - getTasksByDayOfWeek(day): Flow<List<Task>>
 - getTaskById(id): Flow<Task?>
 - insertTask(task): Result<Long>
-- updateTask(task): Result<Unit>
+- updateTask(task: Task): Result<Unit>
 - deleteTask(id): Result<Unit>
 
 TaskRepositoryImpl

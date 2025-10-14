@@ -17,7 +17,8 @@
 
 ## 🎯 VISÃO GERAL
 
-Como o MVP-02 implementa apenas as **entidades de domínio** (sem DAOs, repositórios ou UI), os testes focam em:
+Como o MVP-02 implementa apenas as **entidades de domínio** (sem DAOs, repositórios
+ou UI), os testes focam em:
 
 ### ✅ O que PODE ser testado (Testes Unitários):
 1. **Validações** - Métodos `isValid()` de cada entidade
@@ -359,4 +360,3 @@ O MVP-02 está **100% testado** dentro do escopo possível de testes unitários.
 **Documentado por:** PequenosPassos Development Team  
 **Data:** 13/10/2025  
 **Versão:** 1.0
-

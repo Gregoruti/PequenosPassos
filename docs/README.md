@@ -1,12 +1,11 @@
 # PequenosPassos
 
-**Propósito**: Documentação principal e ponto de entrada para o projeto
-PequenosPassos. Fornece visão geral completa, instruções de instalação, guia de
-uso e informações de contato seguindo as melhores práticas de documentação de
-projetos open source.
+**Propósito**: Documentação principal e ponto de entrada para o projeto PequenosPassos.
+Fornece visão geral completa, instruções de instalação, guia de uso e informações de
+contato seguindo as melhores práticas de documentação de projetos open source.
 
-**Escopo**: Documentação externa para desenvolvedores, usuários e contribuidores
-do projeto
+**Escopo**: Documentação externa para desenvolvedores, usuários e contribuidores do
+projeto
 
 **Interconexões da Documentação**:
 ```
@@ -42,7 +41,10 @@ O PequenosPassos utiliza uma estrutura hierárquica clara:
 Cada rotina representa o conjunto de atividades diárias, cada tarefa pode ser
 composta por vários passos, facilitando o acompanhamento e personalização.
 
-Agora é possível personalizar imagens, áudios, instruções e feedbacks positivos para rotinas, tarefas, subtarefas e recompensas. O app vem com uma base de dados padrão, mas todos os itens podem ser ajustados pelo usuário. Veja detalhes em [SPECIFICATION_FOR_APP.md](./SPECIFICATION_FOR_APP.md).
+Agora é possível personalizar imagens, áudios, instruções e feedbacks positivos para
+rotinas, tarefas, subtarefas e recompensas. O app vem com uma base de dados padrão,
+mas todos os itens podem ser ajustados pelo usuário. Veja detalhes em
+[SPECIFICATION_FOR_APP.md](./SPECIFICATION_FOR_APP.md).
 
 > **Aplicativo Android para apoio a Atividades da Vida Diária com Reconhecimento de Voz**
 
@@ -67,11 +69,10 @@ Agora é possível personalizar imagens, áudios, instruções e feedbacks posit
 
 ## 🎯 Sobre o Projeto
 
-O **PequenosPassos** é um aplicativo Android desenvolvido para apoiar crianças
-com TEA e seus cuidadores na execução de atividades diárias, promovendo
-autonomia e integração familiar. O projeto foi migrado do antigo FonoVirtual_V2,
-com foco em funcionalidades de ASR (Vosk), TTS nativo, SplashScreen, HomeScreen,
-e Debug.
+O **PequenosPassos** é um aplicativo Android desenvolvido para apoiar crianças com
+TEA e seus cuidadores na execução de atividades diárias, promovendo autonomia e
+integração familiar. O projeto foi migrado do antigo FonoVirtual_V2, com foco em
+funcionalidades de ASR (Vosk), TTS nativo, SplashScreen, HomeScreen e Debug.
 
 ## 🚀 Funcionalidades
 
