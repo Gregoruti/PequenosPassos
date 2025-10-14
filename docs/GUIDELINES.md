@@ -85,7 +85,61 @@ práticas de excelência em desenvolvimento de software.
 2. **Comentários**: KDocs obrigatórios para classes e métodos públicos
 3. **Estrutura**: Seguir padrões Clean Architecture adaptados para Android
 4. **Dependências**: Preferir injeção de dependências (Hilt/Dagger)
-5. **Testes**: Cobertura mínima de 80% para camada de domínio
+5. **Testes Automatizados**: **OBRIGATÓRIO** para todos os MVPs
+   - Unitários: 60-75% da cobertura total
+   - Instrumentados: 20-30% da cobertura total
+   - E2E: 5-10% da cobertura total
+   - Cobertura mínima por camada:
+     * Domínio: 95%+ (entidades e regras de negócio)
+     * Aplicação: 90%+ (use cases)
+     * Infraestrutura: 85%+ (repositories e DAOs)
+     * Apresentação: 80%+ (ViewModels e UI críticos)
+   - **Referência Completa**: `docs/TESTING_STRATEGY.md`
+
+### 2.2.1 Estratégia de Testes por MVP
+**Lição Aprendida do MVP-01**: Validação apenas manual não previne regressões.
+A partir do MVP-02, **todos os MVPs devem ter testes automatizados** antes
+do aceite final.
+
+**Processo Obrigatório:**
+1. **Planejar Testes**: Identificar o que será testado antes de codificar
+2. **Implementar Testes**: Criar testes junto com (ou logo após) o código
+3. **Executar Testes**: `gradlew test` deve passar 100%
+4. **Gerar Relatório**: HTML report em `build/reports/tests/`
+5. **Documentar Testes**: Criar guia específico do MVP (ex: MVP02_TESTING_GUIDE.md)
+6. **Atualizar CHANGELOG**: Seção de validação com métricas de testes
+
+**Critério de Bloqueio**: Um MVP **NÃO PODE** ser considerado concluído sem:
+- ✅ Testes automatizados implementados
+- ✅ 100% dos testes passando
+- ✅ Cobertura mínima atingida por camada
+- ✅ Relatório HTML gerado
+- ✅ Documentação de testes completa
+
+**Pirâmide de Testes (Distribuição Ideal):**
+```
+                    ╱╲
+                   ╱  ╲
+                  ╱ E2E ╲          ← 5-10%
+                 ╱────────╲         
+                ╱          ╲        
+               ╱Instrumen- ╲       ← 20-30%
+              ╱   tados    ╱        
+             ╱──────────────╲       
+            ╱                ╲      
+           ╱    Unitários     ╲    ← 60-75%
+          ╱────────────────────╲   
+```
+
+**Consultar sempre**: `docs/CHANGELOG.md` seção 3 para detalhes completos 
+sobre:
+- Estratégia de validação e testes
+- Tipos de teste por MVP
+- Padrões e convenções
+- Ferramentas e bibliotecas
+- Critérios de aceite obrigatórios
+- Processo de aceite de MVP
+- Exemplos práticos por MVP
 
 ### 2.3 Processo de Versionamento
 - **MAJOR**: Mudanças que quebram compatibilidade

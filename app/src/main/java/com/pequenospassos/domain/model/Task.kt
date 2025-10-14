@@ -46,7 +46,7 @@ data class Task(
      */
     fun isValid(): Boolean {
         return title.isNotBlank() &&
-               time.matches(Regex("^([01]?[0-9]|2[0-3]):[0-5][0-9]$")) &&
+               time.matches(Regex("^([01][0-9]|2[0-3]):[0-5][0-9]$")) &&
                stars in 1..5
     }
 
@@ -107,4 +107,3 @@ enum class TaskStatus {
         CANCELED -> "Cancelada"
     }
 }
-

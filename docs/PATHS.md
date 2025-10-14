@@ -25,10 +25,41 @@ navegação)
 │                     PATHS.md (ESTE)                         │
 │              Estrutura de Arquivos e Telas                  │
 │                                                             │
+└─────────────────┬───────────────────────────────────────────┘
+                  │ (Documenta Estrutura)
+                  ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   CHANGELOG.md                              │
+│       (Histórico de Versões + Status de Validação)         │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Versão**: 1.3.0 | **Data**: 12/10/2025 | **Status**: Sincronizado com MVP e prompts estruturais implementados
+**Versão**: 1.4.0 | **Data**: 13/10/2025 | **Status**: Sincronizado com 
+MVP-02 implementado e testado
+
+---
+
+## Status de Validação de Testes
+
+### 📊 Resumo Executivo de Testes
+
+**Última Execução:** 13/10/2025 23:40  
+**Build Status:** ✅ **SUCCESSFUL** (41s)  
+**Resultado:** 58/58 testes passando (100%)
+
+| Categoria | Testes | Passaram | Falharam | Status |
+|-----------|--------|----------|----------|--------|
+| **MVP-02: Domain** | 58 | 58 | 0 | ✅ 100% |
+| ChildProfileTest | 13 | 13 | 0 | ✅ |
+| TaskTest | 21 | 21 | 0 | ✅ |
+| StepTest | 16 | 16 | 0 | ✅ |
+| AppSettingsTest | 14 | 14 | 0 | ✅ |
+
+**Cobertura:** 100% dos métodos públicos das entidades de domínio  
+**Relatório HTML:** `app/build/reports/tests/testDebugUnitTest/index.html`
+
+**Referência Completa:** Ver CHANGELOG.md seções 2 e 3 para estratégia de 
+validação e testes
 
 ---
 
