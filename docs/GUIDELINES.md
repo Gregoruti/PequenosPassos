@@ -1,471 +1,314 @@
-# GUIDELINES.MD
+# GUIDELINES - Pequenos Passos
 
-**Propósito**: Diretrizes fundamentais para desenvolvimento de aplicações móveis 
-utilizando Code Assist (IA) como parceiro de desenvolvimento. Integra 
-metodologias de arquitetura modular, engenharia de prompt avançada e práticas 
-de excelência em desenvolvimento de software.
-
-**Escopo**: Framework universal aplicável a qualquer projeto de desenvolvimento 
-Android com IA
-
-**Interconexões da Documentação**:
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    GUIDELINES.md (CORE)                    │
-│              Framework Universal de Desenvolvimento         │
-└──────────────────┬──────────────────────────────────────────┘
-                   │ (Estabelece Metodologia)
-                   ▼
-┌─────────────────────────────────────────────────────────────┐
-│              SPECIFICATION_FOR_APP.md                      │
-│                 Detalhes do Projeto                        │
-└──────────────────┬──────────────────────────────────────────┘
-                   │ (Especifica Implementação)
-                   ▼
-┌──────────────────┬──────────────────┬──────────────────────┐
-│    PATHS.md      │   CHANGELOG.md   │      README.md       │
-│  (Estruturas)    │  (Histórico)     │   (Documentação)     │
-└──────────────────┴──────────────────┴──────────────────────┘
-```
-
-**Versão**: 1.3.0 | **Data**: 12/10/2025 | **Status**: Sincronizado com MVP e prompts estruturais
+## Diretrizes de Desenvolvimento do Projeto
 
 ---
 
-## Sumário
-1. [Introdução](#1-introdução)
-2. [Contexto de Desenvolvimento](#2-contexto-de-desenvolvimento)
-3. [Princípios de Modularidade](#3-princípios-de-modularidade)
-4. [Arquitetura e Separação de Preocupações](#4-arquitetura-e-separação-de-preocupações)
-5. [Metodologia PROMPT](#5-metodologia-prompt)
-6. [Gestão de Contexto](#6-gestão-de-contexto)
-7. [Processo Operacional da IA](#7-processo-operacional-da-ia)
-8. [Regras de Ouro do Desenvolvimento](#8-regras-de-ouro-do-desenvolvimento)
-9. [Mecanismos de Proteção](#9-mecanismos-de-proteção)
-10. [Qualidade e Validação](#10-qualidade-e-validação)
-11. [Controle de Versão](#11-controle-de-versão)
+## 1. Filosofia do Projeto
+
+### 1.1 Abordagem MVP (Minimum Viable Product)
+- Desenvolvimento incremental e modular
+- Cada MVP é completo e funcional
+- Validação rigorosa antes de avançar
+- Documentação sincronizada com código
+
+### 1.2 Princípios Fundamentais
+- **Clean Architecture**: Separação clara de responsabilidades
+- **SOLID**: Código sustentável e extensível
+- **DRY**: Evitar repetição desnecessária
+- **KISS**: Manter simplicidade sempre que possível
+- **TDD**: Testes guiam o desenvolvimento
 
 ---
 
-## 1. Introdução
+## 2. Estrutura Arquitetural
 
-Este documento estabelece as diretrizes fundamentais para desenvolvimento de
-aplicações móveis utilizando Code Assist (IA) como parceiro de desenvolvimento.
-Integra metodologias de arquitetura modular, engenharia de prompt avançada e
-práticas de excelência em desenvolvimento de software.
+### 2.1 Camadas da Aplicação
 
-### 1.2 Filosofia de Desenvolvimento
-- **Modularidade First**: Entregar valor incrementalmente através de módulos 
-  pequenos, isolados e testáveis
-- **Context-Aware Development**: Maximizar a eficiência da IA através de
-  documentação clara e contexto atualizado
-- **Versionamento**: Todos os arquivos devem conter versão e histórico de mudanças
-  no CHANGELOG.md
-- **Documentação**: Limite de 90 caracteres por linha em todos os arquivos do
-  diretório DOCs
-
-### 1.3 Audiência
-- **Code Assistants (IA)**: Guia operacional obrigatório
-- **Desenvolvedores**: Framework de melhores práticas
-- **Arquitetos**: Padrões de estruturação de projetos
-
----
-
-## 2. Contexto de Desenvolvimento
-
-### 2.1 Stack Tecnológico Padrão
-- **Linguagem Principal**: Kotlin para desenvolvimento Android
-- **Arquitetura**: MVVM (Model-View-ViewModel) com Jetpack Compose
-- **Build System**: Gradle com Kotlin DSL
-- **Versionamento**: Semântico (MAJOR.MINOR.PATCH)
-- **Documentação**: Markdown com KDocs para código
-
-### 2.2 Regras Fundamentais de Código
-1. **Idioma**: Todo código e documentação em **Português Brasileiro (PT-BR)**
-2. **Comentários**: KDocs obrigatórios para classes e métodos públicos
-3. **Estrutura**: Seguir padrões Clean Architecture adaptados para Android
-4. **Dependências**: Preferir injeção de dependências (Hilt/Dagger)
-5. **Testes Automatizados**: **OBRIGATÓRIO** para todos os MVPs
-   - Unitários: 60-75% da cobertura total
-   - Instrumentados: 20-30% da cobertura total
-   - E2E: 5-10% da cobertura total
-   - Cobertura mínima por camada:
-     * Domínio: 95%+ (entidades e regras de negócio)
-     * Aplicação: 90%+ (use cases)
-     * Infraestrutura: 85%+ (repositories e DAOs)
-     * Apresentação: 80%+ (ViewModels e UI críticos)
-   - **Referência Completa**: `docs/TESTING_STRATEGY.md`
-
-### 2.2.1 Estratégia de Testes por MVP
-**Lição Aprendida do MVP-01**: Validação apenas manual não previne regressões.
-A partir de agora, **todos os MVPs, incluindo MVP-01, devem ter testes automatizados** antes do aceite final e antes de qualquer evolução ou refatoração. Isso garante que a base do projeto esteja protegida contra regressões e que cada módulo evolua de forma incremental e segura.
-
-**Processo Obrigatório:**
-1. **Planejar Testes**: Identificar o que será testado antes de codificar
-2. **Implementar Testes**: Criar testes junto com (ou logo após) o código
-3. **Executar Testes**: `gradlew test` deve passar 100%
-4. **Gerar Relatório**: HTML report em `build/reports/tests/`
-5. **Documentar Testes**: Atualizar CHANGELOG.md com status de validação e cobertura
-6. **Validação Modular**: Cada MVP deve ser validado isoladamente e de forma incremental
-
-**Critério de Bloqueio**: Um MVP **NÃO PODE** ser considerado concluído sem:
-- ✅ Testes automatizados implementados
-- ✅ 100% dos testes passando
-- ✅ Cobertura mínima atingida por camada
-- ✅ Relatório HTML gerado
-- ✅ Documentação de testes completa
-
-**Pirâmide de Testes (Distribuição Ideal):**
 ```
-                    ╱╲
-                   ╱  ╲
-                  ╱ E2E ╲          ← 5-10%
-                 ╱────────╲         
-                ╱          ╲        
-               ╱Instrumen- ╲       ← 20-30%
-              ╱   tados    ╱        
-             ╱──────────────╲       
-            ╱                ╲      
-           ╱    Unitários     ╲    ← 60-75%
-          ╱────────────────────╲   
+presentation/          # UI e ViewModels
+├── screens/          # Telas Compose
+├── components/       # Componentes reutilizáveis
+├── navigation/       # Sistema de navegação
+└── theme/           # Design System
+
+domain/               # Regras de negócio
+├── model/           # Entidades de domínio
+├── repository/      # Interfaces de repositório
+└── usecase/         # Casos de uso
+
+data/                # Fontes de dados
+├── database/        # Room Database
+│   ├── dao/        # Data Access Objects
+│   └── entities/   # Entidades Room (se diferentes do domain)
+└── repository/     # Implementações de repositório
 ```
 
-**Consultar sempre**: `docs/CHANGELOG.md` seção 3 para detalhes completos 
-sobre:
-- Estratégia de validação e testes
-- Tipos de teste por MVP
-- Padrões e convenções
-- Ferramentas e bibliotecas
-- Critérios de aceite obrigatórios
-- Processo de aceite de MVP
-- Exemplos práticos por MVP
-
-### 2.3 Processo de Versionamento
-- **MAJOR**: Mudanças que quebram compatibilidade
-- **MINOR**: Novas funcionalidades mantendo compatibilidade  
-- **PATCH**: Correções de bugs e melhorias menores
-- **Sincronização**: Versão deve ser consistente entre build.gradle.kts, 
-  documentação e interface
+### 2.2 Fluxo de Dados
+- **UI → ViewModel → UseCase → Repository → Database**
+- Dados reativos usando Flow
+- Estado gerenciado com StateFlow
+- Injeção de dependências via Hilt
 
 ---
 
-## 3. Princípios de Modularidade
+## 3. Padrões de Código
 
-### 3.1 Conceito Central
-**Entregar valor incrementalmente**, dividindo problemas complexos em módulos 
-pequenos, isolados e testáveis. Cada módulo deve ter uma responsabilidade clara 
-e interfaces bem definidas.
+### 3.1 Nomenclatura
+- **Classes**: PascalCase (Ex: `ChildProfile`, `TaskRepository`)
+- **Funções**: camelCase (Ex: `saveTask`, `getChildProfile`)
+- **Constantes**: UPPER_SNAKE_CASE (Ex: `MAX_STARS`, `DEFAULT_TIME`)
+- **Arquivos**: Nome da classe principal (Ex: `HomeScreen.kt`)
 
-### 3.2 Benefícios para Code Assist
-- **Clareza de Contexto**: Reduz ambiguidade, fornecendo contexto menor e claro
-- **Precisão**: Prompts focados resultam em sugestões mais precisas
-- **Iteração Rápida**: Permite correções isoladas sem impacto sistêmico
-- **Testabilidade**: Facilita criação de testes com targets claros
-- **Paralelização**: Melhora colaboração entre desenvolvedores e IAs
+### 3.2 Organização de Arquivos
+- Um arquivo por classe principal
+- Agrupar classes relacionadas em packages
+- Testes no mesmo package, mas em src/test ou src/androidTest
 
-### 3.3 Diretiva Chave
-**Use prompts específicos por módulo e arquivo-alvo. Evite "fazer tudo de uma 
-vez" (Big Bang).**
-
----
-
-## 4. Arquitetura e Separação de Preocupações
-
-### 4.1 Princípios Fundamentais
-- **Coesão Alta, Acoplamento Baixo**: O Santo Graal da arquitetura
-- **Interfaces Explícitas**: DTOs, Schemas e Ports devem ser priorizados
-- **Evolução Segura**: Feature flags, migrações e compatibilidade garantida
-
-### 4.2 Camadas Arquiteturais
-
-| Camada | Responsabilidade | Diretiva |
-|--------|------------------|----------|
-| **Domínio (Core)** | Entidades, regras de negócio, exceções | Domínio Primeiro: Regras no core, sem dependências externas |
-| **Aplicação** | Use cases, orquestração, transações | Lógica de fluxo e coordenação |
-| **Infraestrutura** | Repositórios, DB models, integrações | Persistência e comunicação externa |
-| **Apresentação** | UI, APIs, validações, mapeamento | Interface do sistema, entrada/saída |
-
-### 4.3 Ordem de Implementação
-1. **Core**: Definir entidades e regras de domínio
-2. **Aplicação**: Casos de uso que orquestram
-3. **Infraestrutura**: Persistência e integrações
-4. **Apresentação**: APIs e interface de usuário
-5. **Observabilidade**: Logs, métricas e monitoramento
-6. **Testes**: Cobertura por camada com critérios específicos
-
----
-
-## 5. Metodologia PROMPT
-
-### 5.1 Framework Sistemático
-A Metodologia PROMPT estrutura a comunicação com Code Assist garantindo clareza 
-e resultados de alta qualidade.
-
-| Componente | Descrição | Exemplo |
-|------------|-----------|---------|
-| **P**ersona | Papel e nível de experiência | "Desenvolvedor sênior Android especialista em Kotlin" |
-| **R**ole/Rules | Expertise ou restrições | "Seguindo Clean Architecture e padrões SOLID" |
-| **O**bjective | Objetivo geral e específico | "Implementar funcionalidade de login" |
-| **M**essage | Mensagem clara da tarefa | "Criar tela de login com validação de usuário" |
-| **P**arameters | Requisitos técnicos | "Jetpack Compose, MVVM, Hilt, testes unitários" |
-| **T**ask | Resultado final e critérios | "Tela funcional com 95% de cobertura de testes" |
-
-### 5.2 Boas Práticas de Comunicação
-- **Clareza**: Ações inequívocas ("Criar função validar email" vs "fazer 
-  validação")
-- **Especificidade**: Detalhes de escopo e retorno incluídos
-- **Contextualidade**: Informações de ambiente e requisitos específicos
-- **Completude**: Tratamento de erro, documentação e testes solicitados
-- **Comandos Imperativos**: Linguagem direta com verbos de ação
-
----
-
-## 6. Gestão de Contexto
-
-### 6.1 Princípios de Contexto Eficiente
-- **Foco**: Passar apenas o necessário para a etapa atual
-- **Granularidade**: Trabalhar em partes pequenas e verificáveis
-- **Contratos**: Explicitar entradas, saídas e invariantes
-- **Evidência**: Fornecer trechos concretos, não descrições vagas
-
-### 6.2 Técnicas Avançadas
-
-#### 6.2.1 Contexto Mínimo Viável
-| O que Passar | O que Evitar |
-|--------------|--------------|
-| Objetivo e critérios de aceite | Arquivos longos sem relevância |
-| Interfaces e modelos afetados | Código desnecessário (ruído) |
-| Regras de negócio essenciais | Features não relacionadas |
-| 1-2 trechos de referência | Histórico irrelevante de chat |
-
-#### 6.2.2 Delta Prompts (Mudança Incremental)
-- **"Extraia função validar_documento()"**: Menor uso de contexto
-- **"Injete repositório via construtor"**: Maior controle sobre resultado
-- **"Atualize teste A para cobrir erro X"**: Menor risco de regressão
-
-#### 6.2.3 Testes como Âncoras
-Escrever 1-2 testes mínimos antes da implementação. Pedir ao Code Assist para 
-fazer o código passar neles, garantindo critérios objetivos de sucesso.
-
----
-
-## 7. Processo Operacional da IA
-
-### 7.1 Fluxo Obrigatório (Passo a Passo)
-
-#### 7.1.1 Análise Inicial
-1. **Interpretar Solicitação**: Entender objetivo principal
-2. **Consulta Obrigatória**: Carregar diretrizes deste arquivo
-3. **Verificação de Especificações**: Consultar SPECIFICATION_FOR_APP.md
-
-#### 7.1.2 Planejamento e Execução
-1. **Identificar Artefatos**: Determinar arquivos impactados
-2. **Planejar Alterações**: Formular plano de sincronia código-documentação
-3. **Implementação**: Seguir regras arquiteturais e de qualidade
-4. **Validação**: Garantir consistência e funcionamento
-
-#### 7.1.3 Verificação de Qualidade
-- **Sincronia**: Código, especificações e documentação alinhados
-- **Testes**: Cobertura adequada conforme critérios
-- **Performance**: Build time e flakiness dentro dos limites
-- **Documentação**: KDocs e comentários atualizados
-
-### 7.2 Comportamento na Comunicação
-- **Insuficiência de Informações**: Alertar explicitamente sobre lacunas
-- **Detecção de Divergências**: Reportar inconsistências encontradas
-- **Proatividade Controlada**: Sugerir melhorias, mas solicitar aprovação
-
----
-
-## 8. Regras de Ouro do Desenvolvimento
-
-### 8.1 Princípios Fundamentais
-- **DRY (Don't Repeat Yourself)**: Evitar duplicação, criar abstrações 
-  reutilizáveis
-- **KISS (Keep It Simple, Stupid)**: Priorizar simplicidade sobre complexidade 
-  desnecessária
-- **YAGNI (You Aren't Gonna Need It)**: Não implementar funcionalidades 
-  especulativas
-- **SoC (Separation of Concerns)**: Uma responsabilidade por componente
-- **Dependency Injection**: Favorecer DI para desacoplamento e testabilidade
-- **Test-Driven Development**: Escrever testes antes ou junto com o código
-- **Document While Coding**: Manter documentação sincronizada em tempo real
-
-### 8.2 Padrões de Implementação Android
-- **Single Activity**: Usar Navigation Component com Jetpack Compose
-- **Reactive Programming**: Flow e StateFlow para streams de dados
-- **Material Design**: Seguir guidelines do Material 3
-- **Accessibility**: Implementar desde o início, não como afterthought
-
----
-
-## 9. Mecanismos de Proteção
-
-### 9.1 Anti-Looping Mechanism
-**Objetivo**: Prevenir ciclos infinitos de consulta e regeneração
-
-#### 9.1.1 Condições de Ativação
-- Releitura das mesmas instruções mais de 2 vezes na mesma interação
-- Regeneração do mesmo bloco sem progresso significativo
-- Repetição da mesma pergunta de esclarecimento
-
-#### 9.1.2 Ação Automática
-```
-PARE IMEDIATAMENTE → Consulte Usuário:
-"Detectei possível ciclo de repetição. Como prosseguir?
-A) Continuar apesar do alerta
-B) Explicar onde identifiquei o bloqueio  
-C) Abortar e aguardar novas instruções"
-```
-
-### 9.2 Anti-Regressão Mechanism
-**Objetivo**: Proteger funcionalidades validadas contra degradação
-
-#### 9.2.1 Checklist Obrigatório (ANTES de modificar código)
-- [ ] Li o código atual COMPLETO dos arquivos a modificar?
-- [ ] Identifiquei TODAS as funcionalidades existentes no escopo?
-- [ ] Defini se vou ADICIONAR ou SUBSTITUIR/ALTERAR funcionalidade?
-- [ ] Validei que modificação não degrada funcionalidades preserváveis?
-- [ ] Verifiquei dependências e impactos em outros módulos?
-- [ ] Consultei VALIDATION_STATUS.md para funcionalidades impactadas?
-- [ ] Considerei impacto potencial em outros módulos do sistema?
-
-#### 9.2.2 Regra de Ouro para Substituição
-**NUNCA SUBSTITUIR código sem:**
-- Comentários claros explicando O QUE e POR QUÊ da mudança
-- Garantia de manutenção de funcionalidades validadas (✅ status)
-- Declaração explícita quando substituição oferece equivalência/melhoria
-
----
-
-## 10. Qualidade e Validação
-
-### 10.1 Critérios de Conclusão ("Done")
-- **Compilação**: Build bem-sucedido sem warnings críticos
-- **Testes**: Cobertura mínima por camada (Domínio ≥95%, UI ≥80%)
-- **Lint**: Zero violações de regras críticas
-- **Contratos**: APIs e repositórios com contract tests
-- **Performance**: Tempo de build <30s, zero flaky tests
-- **Documentação**: KDocs completos, README atualizado
-
-### 10.2 Formatação de Documentação
-**Diretriz Obrigatória**: Todos os arquivos de documentação no diretório `/docs` 
-devem seguir o limite de **90 caracteres por linha**. 
-
-#### 10.2.1 Regras de Formatação
-- **Limite de Linha**: Máximo 90 caracteres por linha
-- **Quebra de Linha**: Usar CR+LF (Windows) ou LF (Unix/Linux)
-- **Exceções**: URLs, código em blocos, diagramas ASCII podem exceder o limite
-- **Texto Corrido**: Quebrar frases em pontos naturais (vírgulas, conectivos)
-- **Listas**: Cada item deve respeitar o limite individualmente
-- **Tabelas**: Ajustar colunas para manter legibilidade dentro do limite
-
-#### 10.2.2 Exemplo de Formatação Correta
-```markdown
-Este é um exemplo de texto que respeita o limite de 90 caracteres por 
-linha, garantindo melhor legibilidade e padronização da documentação 
-técnica do projeto.
-```
-
-#### 10.2.3 Ferramentas Recomendadas
-- **VS Code**: Régua vertical em 90 caracteres (`"editor.rulers": [90]`)
-- **Markdown Lint**: Validação automática de formatação
-- **Git Hooks**: Verificação pré-commit para conformidade
-
-### 10.3 Métricas por Camada
-| Camada | Cobertura Mínima | Critérios Específicos |
-|--------|------------------|----------------------|
-| Domínio | 95% | Regras de negócio 100% testadas |
-| Aplicação | 90% | Use cases com cenários felizes/tristes |
-| Infraestrutura | 85% | Integração com mocks |
-| Apresentação | 80% | UI tests para fluxos críticos |
-
-### 10.4 Anti-padrões a Evitar
-- **Big Bang**: PRs massivos sem decomposição
-- **Prompts Vagos**: Sem arquivos-alvo ou critérios de aceite
-- **Acoplamento**: Violação da Inversão de Dependência
-- **Regras na API**: Lógica de negócio fora do domínio
-- **Documentação Defasada**: Dessincronia entre código e docs
-
----
-
-## 11. Controle de Versão
-
-### 11.1 Estratégia de Versionamento
-- **Semantic Versioning**: MAJOR.MINOR.PATCH rigorosamente aplicado
-- **Sincronização**: Versão consistente em build.gradle.kts, documentação e UI
-- **Histórico Detalhado**: CHANGELOG.md com delta entre versões
-- **Validação Integrada**: Status de cada versão documentado com testes
-
-### 11.2 Processo de Release
-1. **Desenvolvimento**: Feature branches com testes completos
-2. **Integração**: Merge apenas após validação completa
-3. **Versionamento**: Incremento automático baseado em tipo de mudança
-4. **Documentação**: Atualização sincronizada de todos os arquivos
-5. **Deploy**: Build, teste e release com rollback automático se falhas
-
-### 11.3 Boas Práticas de Commit
-- **Mensagens Descritivas**: Formato: `tipo(escopo): descrição [versão]`
-- **Atomicidade**: Um commit por funcionalidade ou correção
-- **Referências**: Linking com issues e pull requests
-- **Assinatura**: Commits assinados para segurança
-
----
-
-## 12. Diretiva de Conformidade
-
-### 12.1 Meta-Instrução para Code Assist
-O Code Assist **DEVE** tratar este documento como requisito de entrada 
-**OBRIGATÓRIO** para qualquer solicitação de desenvolvimento.
-
-### 12.2 Processo de Verificação
-1. **Avaliação Inicial**: Verificar se todos os componentes PROMPT estão claros
-2. **Ação de Preenchimento**: Solicitar informações faltantes antes de 
-   prosseguir
-3. **Feedback Educativo**: Explicar qual princípio foi violado e por que é 
-   importante
-4. **Garantia de Qualidade**: Assegurar critérios de sucesso alinhados com 
-   diretrizes
-
-### 12.3 Exemplo de Feedback
-```
-"Para garantir máxima precisão (PROMPT), por favor especifique:
-- Persona (P): Qual especialidade? (ex: sênior em mobile security)
-- Parameters (P): Restrições técnicas? (ex: usar regex RFC 5322)
-- Task (T): Critério de falha? (o que retornar em validação inválida?)"
+### 3.3 Comentários e Documentação
+```kotlin
+/**
+ * Descrição da classe/função.
+ *
+ * @param parametro Descrição do parâmetro
+ * @return Descrição do retorno
+ * @since MVP-XX
+ */
 ```
 
 ---
 
-## 13. Sincronização e Rastreabilidade dos Documentos
+## 4. Estratégia de Testes
 
-**Diretriz Obrigatória**: Todos os arquivos de documentação do diretório `/docs` devem conter, no início, as seções de Propósito, Escopo, Interconexão da Documentação, Versão, Data e Status, sincronizadas entre si. Essa prática garante rastreabilidade, validação e que o Code Assist seguiu corretamente a interconexão entre os documentos.
+### 4.1 Pirâmide de Testes
+- **70% Testes Unitários**: UseCase, Repository, Models
+- **20% Testes de Integração**: Database, API
+- **10% Testes E2E**: UI completa
+
+### 4.2 Cobertura Mínima
+- Use Cases: 100%
+- Repositories: 90%
+- ViewModels: 80%
+- UI: Testes críticos
+
+### 4.3 Padrão de Testes
+```kotlin
+@Test
+fun `should return success when valid data`() {
+    // Given (Arrange)
+    val input = ...
+    
+    // When (Act)
+    val result = ...
+    
+    // Then (Assert)
+    assertEquals(expected, result)
+}
+```
 
 ---
 
-## Prática Recomendada: Sincronização de Documentação
+## 5. Controle de Versão
 
-Para garantir rastreabilidade e interconexão entre arquivos de documentação, recomenda-se que todos os arquivos de documentação (README.md, SPECIFICATION_FOR_APP.md, PATHS.md, CHANGELOG.md, GUIDELINES.md) estejam sempre na mesma versão e data após cada alteração relevante. Isso facilita auditoria, validação e uso do Code Assist.
+### 5.1 Versionamento Semântico
+- **MAJOR.MINOR.PATCH** (Ex: 1.7.0)
+- **MAJOR**: Mudanças incompatíveis
+- **MINOR**: Novas funcionalidades (MVPs)
+- **PATCH**: Correções de bugs
+
+### 5.2 Commits Semânticos
+```
+feat(mvp-XX): descrição curta
+fix(component): descrição do bug corrigido
+docs(file): atualização de documentação
+test(usecase): adição de testes
+refactor(repository): melhoria de código
+```
+
+### 5.3 Branches
+- **main**: Código estável e validado
+- **develop**: Desenvolvimento ativo (se necessário)
+- **feature/mvp-XX**: Desenvolvimento de MVP específico
 
 ---
 
-## Registro de Sincronização
+## 6. Processo de Desenvolvimento MVP
 
-- Projeto PequenosPassos sincronizado com o GitHub em 09/10/2025.
-- Repositório oficial: [https://github.com/Gregoruti/PequenosPassos](https://github.com/Gregoruti/PequenosPassos)
-- Status: Histórico e guidelines disponíveis para consulta e colaboração.
+### 6.1 Ciclo de Cada MVP
+
+1. **Planejamento**
+   - Definir escopo do MVP
+   - Listar funcionalidades
+   - Criar draft de arquitetura
+
+2. **Implementação**
+   - Desenvolver código seguindo Clean Architecture
+   - Seguir padrões estabelecidos
+   - Documentar conforme desenvolve
+
+3. **Testes**
+   - Escrever testes unitários
+   - Executar testes de integração
+   - Validar anti-regressão (MVPs anteriores)
+
+4. **Documentação**
+   - Atualizar CHANGELOG.md
+   - Atualizar MVPXX_VALIDATION_SUMMARY.md
+   - Atualizar documentação técnica
+
+5. **Validação**
+   - Build completo sem erros
+   - Todos os testes passando
+   - Revisão de código
+   - Commit e push
+
+6. **Avançar**
+   - Incrementar versão
+   - Planejar próximo MVP
 
 ---
 
-## Estratégia de Testes e Validação
+## 7. Checklist de Validação MVP
 
-- Todo MVP ou funcionalidade deve ser validado por testes automatizados (unitários e instrumentados) e, quando aplicável, por testes manuais documentados.
-- O registro dos testes realizados (automatizados e manuais) deve ser feito no CHANGELOG.md, detalhando cobertura, status e eventuais regressões.
-- A validação incremental e modular é obrigatória: cada novo módulo ou MVP só avança após validação completa dos anteriores, protegendo contra regressão.
-- O relatório de testes deve ser atualizado a cada ciclo de desenvolvimento.
+Antes de considerar um MVP completo:
+
+- [ ] Código implementado e funcionando
+- [ ] Testes unitários escritos e passando (cobertura adequada)
+- [ ] Testes de integração (se aplicável)
+- [ ] Build gradle: SUCCESS
+- [ ] Anti-regressão: MVPs anteriores funcionando
+- [ ] CHANGELOG.md atualizado
+- [ ] MVPXX_VALIDATION_SUMMARY.md criado
+- [ ] Versão incrementada (build.gradle.kts)
+- [ ] Commit com mensagem semântica
+- [ ] Push para repositório remoto
 
 ---
 
-**Versão**: 1.3.0 (Integração completa CONTEXT + RULES + GUIDELINES)  
-**Data**: 12/10/2025  
-**Status**: Sincronizado com MVP e prompts estruturais
+## 8. Boas Práticas Específicas
+
+### 8.1 Jetpack Compose
+- Componentes pequenos e reutilizáveis
+- State hoisting quando apropriado
+- Preview para cada componente
+- Acessibilidade (contentDescription, semantics)
+
+### 8.2 Hilt/Dagger
+- Um módulo por camada/feature
+- Providers claros e específicos
+- Evitar dependências circulares
+
+### 8.3 Room Database
+- Migrations versionadas
+- Testes de integração para DAOs
+- Índices em campos de busca frequente
+- Converters para tipos complexos
+
+### 8.4 Coroutines e Flow
+- Usar Dispatchers.IO para operações de I/O
+- Flow para streams de dados reativos
+- StateFlow para estado de UI
+- Tratamento adequado de exceções
+
+---
+
+## 9. Design System
+
+### 9.1 Cores
+- Seguir Material Design 3
+- Paleta definida em Theme
+- Cores semânticas (success, error, warning)
+
+### 9.2 Tipografia
+- Famílias de fontes consistentes
+- Hierarquia clara (Display, Headline, Title, Body, Label)
+- Tamanhos e pesos definidos
+
+### 9.3 Espaçamentos
+- Sistema padronizado (4dp, 8dp, 16dp, 24dp, 32dp)
+- Margens e paddings consistentes
+
+---
+
+## 10. Ferramentas e Ambiente
+
+### 10.1 Requisitos
+- Android Studio (última versão estável)
+- JDK 11+
+- Gradle 8.0+
+- Git
+
+### 10.2 Dependências Principais
+- Kotlin
+- Jetpack Compose
+- Hilt/Dagger
+- Room
+- Coroutines/Flow
+- JUnit, Mockk, Truth (testes)
+
+---
+
+## 11. Documentação Obrigatória
+
+Para cada MVP, criar/atualizar:
+
+1. **CHANGELOG.md**: Histórico de mudanças
+2. **MVPXX_VALIDATION_SUMMARY.md**: Resumo de validação
+3. **PATHS.md**: Fluxo de navegação (se aplicável)
+4. **Comentários no código**: Documentação inline
+
+---
+
+## 12. Anti-Regressão
+
+Sempre que um novo MVP é desenvolvido:
+
+1. Executar todos os testes existentes
+2. Verificar se MVPs anteriores continuam funcionando
+3. Validar navegação completa
+4. Testar build em dispositivo real (quando possível)
+
+---
+
+## 13. Estratégia de Navegação
+
+### 13.1 Estrutura Atual
+```
+SplashScreen (3s)
+    ↓
+HomeScreen
+    ├── Botão "Cadastro" → [Em desenvolvimento]
+    ├── Botão "Teste Rápido" → [Em desenvolvimento]
+    ├── Botão "Atividades" → [Em desenvolvimento]
+    └── Botão "Debug" → DebugScreen
+                          ├── TTS Test → TtsTestScreen
+                          └── ASR Test → AsrTestScreen
+```
+
+### 13.2 Expansão Planejada (MVP-07)
+- TaskFormScreen (cadastro de tarefas)
+- OnboardingScreen (cadastro de usuário)
+- TaskExecutionScreen (execução de tarefas)
+- TaskListScreen (lista de atividades)
+
+---
+
+## 14. Roadmap de MVPs
+
+- **MVP-01**: Estrutura Base ✅
+- **MVP-02**: Entidades ✅
+- **MVP-03**: Database ✅
+- **MVP-04**: Repositórios ✅
+- **MVP-05**: Use Cases ✅
+- **MVP-06**: Theme e Design System ✅
+- **MVP-07**: Telas de Interface 📋 (PRÓXIMO)
+- **MVP-08**: ViewModels e Integração 📋
+- **MVP-09**: Testes E2E 📋
+- **MVP-10**: Polimento e Release 📋
+
+---
+
+**Última atualização**: 2025-10-15  
+**Versão do documento**: 1.0  
+**Status**: Ativo
+
