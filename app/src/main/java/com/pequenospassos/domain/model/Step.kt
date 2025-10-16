@@ -21,10 +21,13 @@ import androidx.room.Relation
  * @property title Título do passo (ex: "Pegar a escova de dentes")
  * @property order Ordem de execução do passo (sequencial)
  * @property isCompleted Se o passo foi completado
+ * @property imageUrl URL/path da imagem do step (aparece durante execução) - MVP-07
+ * @property durationSeconds Duração do timer em segundos (15-600s, padrão 60s) - MVP-07
  *
  * @since MVP-02 (13/10/2025) - DIA 1 - Fundação
+ * @updated MVP-07 (16/10/2025) - Adicionado imageUrl e durationSeconds
  * @author PequenosPassos Development Team
- * @validationStatus ✅ Implementado - MVP-02
+ * @validationStatus ✅ Implementado - MVP-02, ⏳ Atualizado - MVP-07
  */
 @Entity(
     tableName = "steps",
@@ -48,7 +51,25 @@ data class Step(
 
     val order: Int,
 
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+
+    /**
+     * URL ou path local da imagem do step.
+     * Aparece durante a execução da tarefa (TaskExecutionScreen).
+     * Opcional - se null, não exibe imagem.
+     *
+     * @since MVP-07
+     */
+    val imageUrl: String? = null,
+
+    /**
+     * Duração do timer em segundos para este step.
+     * Range: 15-600 segundos (15s a 10 minutos).
+     * Padrão: 60 segundos.
+     *
+     * @since MVP-07
+     */
+    val durationSeconds: Int = 60
 ) {
     /**
      * Valida se o step tem dados mínimos necessários
@@ -61,6 +82,16 @@ data class Step(
      * Retorna o número do passo para exibição (order + 1)
      */
     fun getStepNumber(): Int = order + 1
+
+    /**
+     * Valida se a duração do timer está dentro do range permitido.
+     *
+     * @return true se duração entre 15 e 600 segundos
+     * @since MVP-07
+     */
+    fun isValidDuration(): Boolean {
+        return durationSeconds in 15..600
+    }
 }
 
 /**

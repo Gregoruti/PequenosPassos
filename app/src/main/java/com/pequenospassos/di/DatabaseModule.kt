@@ -34,6 +34,8 @@ object DatabaseModule {
      *
      * @param context Contexto da aplicação
      * @return Instância do AppDatabase
+     * @since MVP-03
+     * @updated MVP-07 - Adicionada MIGRATION_1_2
      */
     @Provides
     @Singleton
@@ -45,7 +47,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
         )
-            .fallbackToDestructiveMigration(dropAllTables = true) // MVP: aceita perda de dados em mudanças de schema
+            .addMigrations(AppDatabase.MIGRATION_1_2) // MVP-07: Adicionar migration 1→2
             .build()
     }
 
