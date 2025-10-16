@@ -41,7 +41,8 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 - Dividir tarefas em pequenos passos
 - Ordem sequencial de execução
 - Descrição textual de cada passo
-- Suporte a imagens (futuro)
+- **Suporte a imagens** por step (galeria ou câmera)
+- **Timer configurável** por step (duração em segundos)
 - Marcação de conclusão por step
 
 ### 2.4 Execução de Tarefas
@@ -78,6 +79,8 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 ### 3.4 Recursos de Acessibilidade
 - **TTS**: Text-to-Speech nativo do Android
 - **ASR**: Vosk (reconhecimento offline) - planejado
+- **Imagens visuais**: Suporte a fotos nos steps para auxílio visual
+- **Timers visuais**: Contagem regressiva clara e grande
 - **Cores**: Alto contraste e modo claro/escuro
 
 ---
@@ -258,6 +261,8 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 - Tempo de carregamento < 2s
 - Animações fluidas (60 fps)
 - Resposta imediata a toques
+- **Carregamento otimizado de imagens** (redimensionamento automático)
+- **Timer preciso** (usando coroutines/Flow)
 
 ### 10.2 Acessibilidade
 - Suporte a TalkBack
@@ -334,7 +339,6 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 ### 13.1 Versão Atual (1.7.0)
 - Telas de interface ainda não implementadas (em desenvolvimento MVP-07)
 - Reconhecimento de voz (ASR) planejado mas não integrado
-- Suporte a imagens nos steps não implementado
 - Um único perfil de criança por dispositivo
 
 ### 13.2 Planejado para Futuro
@@ -342,6 +346,7 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 - Sincronização entre dispositivos
 - Gamificação mais elaborada
 - Estatísticas e relatórios
+- **Banco de imagens predefinidas** para steps comuns
 
 ---
 
@@ -357,4 +362,3 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 **Última atualização**: 2025-10-15  
 **Versão do documento**: 1.0  
 **Status**: Documento Vivo (atualizado continuamente)
-

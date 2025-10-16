@@ -185,19 +185,23 @@ fun HomeScreen(navController: NavController, hasProfile: Boolean) {
 - Navegação condicional na HomeScreen
 - **Estimativa**: 2-3 dias
 
-**MVP-07B**: Formulário de Tarefas
+**MVP-07B**: Formulário de Tarefas + Imagens/Timer
 - TaskFormScreen (criar/editar)
+- **Seleção de imagens** por step (galeria/câmera)
+- **Configuração de timer** por step
 - Validações
 - Adicionar/remover steps dinamicamente
-- **Estimativa**: 3-4 dias
+- **Estimativa**: 4-5 dias (aumentado devido às novas features)
 
-**MVP-07C**: Lista e Execução
+**MVP-07C**: Lista e Execução com Timer Visual
 - TaskListScreen
-- TaskExecutionScreen (básica)
+- TaskExecutionScreen (com **timer funcional** e **exibição de imagens**)
+- **Timer circular** animado
+- **Alarme sonoro** e vibração
 - Navegação completa
-- **Estimativa**: 4-5 dias
+- **Estimativa**: 5-6 dias (aumentado devido ao timer)
 
-**TOTAL MVP-07**: 9-12 dias (1.5-2 semanas)
+**TOTAL MVP-07**: 11-14 dias (2-3 semanas)
 
 ---
 
@@ -329,6 +333,9 @@ Cada ViewModel terá:
 | Risco | Probabilidade | Impacto | Mitigação |
 |-------|---------------|---------|-----------|
 | TaskExecutionScreen muito complexa | Alta | Alto | Dividir em MVP-07C separado |
+| **Timer preciso pode ter atrasos** | Média | Médio | Usar Flow com delay preciso |
+| **Imagens grandes podem travar UI** | Média | Alto | Redimensionar antes de salvar (max 1024px) |
+| **Permissões de câmera rejeitadas** | Baixa | Médio | Fallback para galeria apenas |
 | Validações de formulário bugs | Média | Médio | Usar Use Cases já testados |
 | UX confusa para crianças | Média | Alto | Criar protótipos e validar |
 | Regressão em MVPs anteriores | Baixa | Alto | Testes anti-regressão rigorosos |
@@ -357,4 +364,3 @@ Cada ViewModel terá:
 **Aprovado por**: (Pendente)  
 **Data de Início Planejada**: 2025-10-15  
 **Data de Conclusão Estimada**: 2025-11-05
-
