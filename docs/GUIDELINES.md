@@ -125,10 +125,234 @@ test(usecase): adição de testes
 refactor(repository): melhoria de código
 ```
 
-### 5.3 Branches
-- **main**: Código estável e validado
-- **develop**: Desenvolvimento ativo (se necessário)
-- **feature/mvp-XX**: Desenvolvimento de MVP específico
+### 5.3 Estratégia de Branches ⭐ NOVO
+
+#### 5.3.1 Estrutura de Branches
+
+**Branch Principal:**
+- **`main`**: Código estável, sempre funcional, MVPs validados
+  - Protegida contra push direto
+  - Apenas aceita merges de branches de feature após validação
+
+**Branches de Feature/MVP:**
+- **`feature/mvp-XX-nome-descritivo`**: Desenvolvimento de novo MVP completo
+- **`feature/mvp-XX-faseY-nome`**: Desenvolvimento de fase específica de MVP complexo
+- **`hotfix/descricao`**: Correções urgentes em produção
+- **`bugfix/descricao`**: Correções de bugs não urgentes
+
+#### 5.3.2 Quando Criar uma Nova Branch
+
+**✅ CRIAR BRANCH quando:**
+1. Iniciar um novo MVP
+2. Implementar fase complexa que pode afetar múltiplos arquivos
+3. Adicionar funcionalidade que requer mais de 1 dia de desenvolvimento
+4. Fazer refatoração significativa
+5. Implementar feature que pode introduzir breaking changes
+
+**❌ NÃO criar branch para:**
+- Correções de typos simples na documentação
+- Ajustes de formatação
+- Mudanças triviais em comentários
+
+#### 5.3.3 Nomenclatura de Branches
+
+**Padrão Geral:**
+```
+tipo/mvp-numero-fase-descricao-curta
+```
+
+**Exemplos:**
+```
+feature/mvp-07-implementacao-completa
+feature/mvp-07-fase1-entidades-database
+feature/mvp-07-fase2-componentes-ui
+feature/mvp-08-estatisticas
+hotfix/crash-ao-salvar-tarefa
+bugfix/timer-nao-para-corretamente
+```
+
+**Regras:**
+- Usar kebab-case (palavras separadas por hífen)
+- Máximo 50 caracteres
+- Descritivo mas conciso
+- Incluir número do MVP quando aplicável
+
+#### 5.3.4 Fluxo de Trabalho com Branches
+
+**1. Criar Branch a partir da `main`:**
+```bash
+git checkout main
+git pull origin main
+git checkout -b feature/mvp-07-fase1-entidades-database
+```
+
+**2. Desenvolver na Branch:**
+```bash
+# Fazer modificações no código
+git add .
+git commit -m "feat(mvp-07): adicionar campos imageUrl e category em Task"
+git push origin feature/mvp-07-fase1-entidades-database
+```
+
+**3. Manter Branch Atualizada:**
+```bash
+# Periodicamente, atualizar com mudanças da main
+git checkout main
+git pull origin main
+git checkout feature/mvp-07-fase1-entidades-database
+git merge main
+# Resolver conflitos se houver
+git push origin feature/mvp-07-fase1-entidades-database
+```
+
+**4. Finalizar e Integrar (Merge):**
+```bash
+# Após validação completa (testes passando, build OK)
+git checkout main
+git pull origin main
+git merge feature/mvp-07-fase1-entidades-database
+git push origin main
+
+# Deletar branch local e remota (opcional, após merge)
+git branch -d feature/mvp-07-fase1-entidades-database
+git push origin --delete feature/mvp-07-fase1-entidades-database
+```
+
+#### 5.3.5 Estratégia para MVPs Complexos (Como MVP-07)
+
+Para MVPs grandes (>10 dias de desenvolvimento), **dividir em fases com branches separadas**:
+
+**Exemplo MVP-07:**
+```
+main (MVP-06 estável)
+  │
+  ├─→ feature/mvp-07-fase1-entidades-database (1-2 dias)
+  │   ├─ Atualizar entidades (Step, Task)
+  │   ├─ Criar migrations
+  │   ├─ Atualizar DAOs
+  │   ├─ Atualizar repositórios
+  │   ├─ Testes unitários
+  │   └─ MERGE → main (validado)
+  │
+  ├─→ feature/mvp-07-fase2-componentes (2-3 dias)
+  │   ├─ CategoryPicker
+  │   ├─ ImagePicker
+  │   ├─ TimerInput
+  │   ├─ CircularTimer
+  │   ├─ Testes de componentes
+  │   └─ MERGE → main (validado)
+  │
+  ├─→ feature/mvp-07-fase3-telas (3-4 dias)
+  │   ├─ OnboardingScreen
+  │   ├─ TaskFormScreen
+  │   ├─ TaskListScreen
+  │   ├─ TaskExecutionScreen
+  │   ├─ ViewModels
+  │   ├─ Navegação
+  │   ├─ Testes de UI
+  │   └─ MERGE → main (validado)
+  │
+  └─→ feature/mvp-07-fase4-integracao (2-3 dias)
+      ├─ Integração completa
+      ├─ Testes E2E
+      ├─ Anti-regressão (MVPs 01-06)
+      ├─ Polimento
+      └─ MERGE → main (MVP-07 completo!)
+```
+
+**Vantagens desta Estratégia:**
+- ✅ Cada fase é pequena e gerenciável
+- ✅ Validação incremental (menos risco)
+- ✅ Rollback fácil se fase falhar
+- ✅ Histórico Git organizado
+- ✅ Facilita code review
+- ✅ Permite pausar entre fases
+- ✅ Main sempre funcional
+
+#### 5.3.6 Boas Práticas
+
+**✅ FAZER:**
+- Criar branch descritiva antes de começar trabalho significativo
+- Fazer commits pequenos e frequentes na branch
+- Atualizar branch com `main` antes de merge final
+- Executar todos os testes antes de merge
+- Validar build antes de merge
+- Documentar mudanças no CHANGELOG antes de merge
+- Deletar branch após merge bem-sucedido (manter histórico limpo)
+
+**❌ EVITAR:**
+- Trabalhar direto na `main` para features complexas
+- Criar branches com nomes genéricos ("teste", "temp", "wip")
+- Manter branches por muito tempo sem merge (>2 semanas)
+- Fazer merge sem executar testes
+- Deixar branches abandonadas no repositório
+
+#### 5.3.7 Resolução de Conflitos
+
+**Quando houver conflitos durante merge:**
+
+1. **Identificar arquivos em conflito:**
+```bash
+git status
+# Arquivos marcados com "both modified"
+```
+
+2. **Abrir arquivo e resolver manualmente:**
+```kotlin
+<<<<<<< HEAD (main)
+// Código da main
+=======
+// Seu código na branch
+>>>>>>> feature/mvp-07-fase1
+```
+
+3. **Escolher qual versão manter ou combinar ambas**
+
+4. **Marcar como resolvido:**
+```bash
+git add arquivo-resolvido.kt
+git commit -m "merge: resolver conflitos entre main e feature/mvp-07-fase1"
+```
+
+#### 5.3.8 Comandos Úteis
+
+**Ver branches:**
+```bash
+git branch          # Branches locais
+git branch -a       # Todas as branches (local + remoto)
+```
+
+**Trocar de branch:**
+```bash
+git checkout nome-da-branch
+git switch nome-da-branch  # Comando novo (Git 2.23+)
+```
+
+**Deletar branch:**
+```bash
+git branch -d nome-da-branch        # Local (seguro, só se merged)
+git branch -D nome-da-branch        # Local (forçado)
+git push origin --delete nome-da-branch  # Remoto
+```
+
+**Ver diferenças entre branches:**
+```bash
+git diff main..feature/mvp-07-fase1
+```
+
+#### 5.3.9 Checklist de Merge para Main
+
+Antes de fazer merge de uma branch de feature para `main`:
+
+- [ ] Todos os testes unitários passando
+- [ ] Todos os testes de integração passando
+- [ ] Build: SUCCESS (sem erros)
+- [ ] Anti-regressão: MVPs anteriores funcionando
+- [ ] Documentação atualizada (CHANGELOG, README, etc)
+- [ ] Code review realizado (se trabalho em equipe)
+- [ ] Branch atualizada com última versão da main
+- [ ] Sem conflitos pendentes
+- [ ] Commits organizados e com mensagens claras
 
 ---
 
@@ -311,4 +535,3 @@ HomeScreen
 **Última atualização**: 2025-10-15  
 **Versão do documento**: 1.0  
 **Status**: Ativo
-
