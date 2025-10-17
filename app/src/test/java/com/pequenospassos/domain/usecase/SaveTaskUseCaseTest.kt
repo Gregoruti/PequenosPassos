@@ -1,7 +1,6 @@
 package com.pequenospassos.domain.usecase
 
 import com.pequenospassos.domain.model.AppResult
-import com.pequenospassos.domain.model.Step
 import com.pequenospassos.domain.repository.StepRepository
 import com.pequenospassos.domain.repository.TaskRepository
 import io.mockk.coEvery
@@ -45,7 +44,7 @@ class SaveTaskUseCaseTest {
         coEvery { taskRepository.insertTask(any()) } returns Result.success(taskId)
 
         // Act
-        val result = useCase(title, "", 1, time, stars, category, emptyList())
+        val result = useCase(title, "", 1, time, stars, category, null, emptyList())
 
         // Assert
         assertTrue(result is AppResult.Success)
@@ -128,18 +127,14 @@ class SaveTaskUseCaseTest {
         val time = "08:00"
         val stars = 3
         val category = "HIGIENE_PESSOAL"
-        val steps = listOf(
-            Step(taskId = 0, title = "Passo 1", order = 0),
-            Step(taskId = 0, title = "Passo 2", order = 1),
-            Step(taskId = 0, title = "Passo 3", order = 2)
-        )
+        val steps = listOf("Passo 1", "Passo 2", "Passo 3")
         val taskId = 1L
 
         coEvery { taskRepository.insertTask(any()) } returns Result.success(taskId)
         coEvery { stepRepository.insertStep(any()) } returns Result.success(1L)
 
         // Act
-        val result = useCase(title, "", 1, time, stars, category, steps)
+        val result = useCase(title, "", 1, time, stars, category, null, steps)
 
         // Assert
         assertTrue(result is AppResult.Success)
@@ -173,9 +168,7 @@ class SaveTaskUseCaseTest {
         val time = "08:00"
         val stars = 3
         val category = "ESCRITA"
-        val steps = listOf(
-            Step(taskId = 0, title = "Passo 1", order = 0)
-        )
+        val steps = listOf("Passo 1")
         val taskId = 1L
         val exception = RuntimeException("Step error")
 
@@ -183,7 +176,7 @@ class SaveTaskUseCaseTest {
         coEvery { stepRepository.insertStep(any()) } returns Result.failure(exception)
 
         // Act
-        val result = useCase(title, "", 1, time, stars, category, steps)
+        val result = useCase(title, "", 1, time, stars, category, null, steps)
 
         // Assert
         assertTrue(result is AppResult.Error)
