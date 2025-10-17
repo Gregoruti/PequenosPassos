@@ -268,7 +268,8 @@ private fun createTempImageFile(context: Context): Uri? {
     return try {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val imageFileName = "JPEG_${timeStamp}_"
-        val storageDir = context.getExternalFilesDir("Pictures")
+        // Prefer external files dir, mas faz fallback para cacheDir se null
+        val storageDir = context.getExternalFilesDir("Pictures") ?: context.cacheDir
 
         val imageFile = File.createTempFile(
             imageFileName,
@@ -276,12 +277,17 @@ private fun createTempImageFile(context: Context): Uri? {
             storageDir
         )
 
-        FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            imageFile
-        )
-    } catch (e: IOException) {
+        try {
+            FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                imageFile
+            )
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            null
+        }
+    } catch (e: Exception) {
         e.printStackTrace()
         null
     }
@@ -293,10 +299,14 @@ private fun createTempImageFile(context: Context): Uri? {
  */
 private fun resizeAndSaveImage(context: Context, sourceUri: Uri, maxSize: Int): Uri? {
     return try {
-        // Decode bitmap
-        val inputStream = context.contentResolver.openInputStream(sourceUri)
-        val originalBitmap = BitmapFactory.decodeStream(inputStream)
-        inputStream?.close()
+        // Decode bitmap com checagem de null
+        val inputStream = try { context.contentResolver.openInputStream(sourceUri) } catch (e: Exception) { null }
+        val originalBitmap = inputStream?.use { BitmapFactory.decodeStream(it) }
+
+        if (originalBitmap == null) {
+            // Não foi possível decodificar a imagem
+            return null
+        }
 
         // Calculate new dimensions
         val (newWidth, newHeight) = calculateNewDimensions(
@@ -316,7 +326,7 @@ private fun resizeAndSaveImage(context: Context, sourceUri: Uri, maxSize: Int): 
         // Save to file
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val fileName = "IMG_${timeStamp}.jpg"
-        val storageDir = context.getExternalFilesDir("Pictures")
+        val storageDir = context.getExternalFilesDir("Pictures") ?: context.cacheDir
         val imageFile = File(storageDir, fileName)
 
         FileOutputStream(imageFile).use { out ->
@@ -328,11 +338,16 @@ private fun resizeAndSaveImage(context: Context, sourceUri: Uri, maxSize: Int): 
         resizedBitmap.recycle()
 
         // Return URI
-        FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.fileprovider",
-            imageFile
-        )
+        try {
+            FileProvider.getUriForFile(
+                context,
+                "${context.packageName}.fileprovider",
+                imageFile
+            )
+        } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
+            null
+        }
     } catch (e: Exception) {
         e.printStackTrace()
         null

@@ -61,12 +61,12 @@ val LocalExtendedColors = staticCompositionLocalOf { PequenosPassosExtendedColor
 /**
  * Tema principal do PequenosPassos
  *
- * @param useDarkTheme Define se usa tema escuro (atualmente apenas claro é suportado)
+ * @param darkTheme Define se usa tema escuro (atualmente apenas claro é suportado)
  * @param content Conteúdo a ser envolvido pelo tema
  */
 @Composable
 fun PequenosPassosTheme(
-    useDarkTheme: Boolean = false,
+    darkTheme: Boolean = false,
     content: @Composable () -> Unit
 ) {
     // Por enquanto, apenas tema claro é suportado
@@ -93,4 +93,3 @@ fun PequenosPassosTheme(
 val MaterialTheme.extendedColors: PequenosPassosExtendedColors
     @Composable
     get() = LocalExtendedColors.current
-

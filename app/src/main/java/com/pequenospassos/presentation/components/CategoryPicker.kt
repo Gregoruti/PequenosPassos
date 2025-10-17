@@ -2,8 +2,8 @@ package com.pequenospassos.presentation.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
@@ -81,20 +81,19 @@ fun CategoryPicker(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                LazyColumn(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 400.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
                     // Iterar por cada grupo
                     categoriesByGroup.forEach { (group, categories) ->
                         // Cabeçalho do grupo
-                        item {
-                            CategoryGroupHeader(group = group)
-                        }
+                        CategoryGroupHeader(group = group)
 
                         // Categorias do grupo
-                        items(categories) { category ->
+                        categories.forEach { category ->
                             CategoryItem(
                                 category = category,
                                 isSelected = category == selectedCategory,
@@ -107,9 +106,7 @@ fun CategoryPicker(
 
                         // Divisor entre grupos (exceto no último)
                         if (group != CategoryGroup.OUTROS) {
-                            item {
-                                Divider(modifier = Modifier.padding(vertical = 4.dp))
-                            }
+                            Divider(modifier = Modifier.padding(vertical = 4.dp))
                         }
                     }
                 }
