@@ -36,9 +36,9 @@ class GetTasksOrderedByTimeUseCaseTest {
     fun `invoke retorna flow com tasks ordenadas`() = runTest {
         // Arrange
         val tasks = listOf(
-            Task(id = 1, title = "Café", description = "", iconRes = 1, time = "07:00", stars = 3, status = TaskStatus.PENDING),
-            Task(id = 2, title = "Escola", description = "", iconRes = 2, time = "08:00", stars = 5, status = TaskStatus.PENDING),
-            Task(id = 3, title = "Almoço", description = "", iconRes = 3, time = "12:00", stars = 4, status = TaskStatus.PENDING)
+            Task(id = 1, title = "Café", description = "", iconRes = 1, time = "07:00", stars = 3, status = TaskStatus.PENDING, category = "ALIMENTACAO"),
+            Task(id = 2, title = "Escola", description = "", iconRes = 2, time = "08:00", stars = 5, status = TaskStatus.PENDING, category = "ESTUDO"),
+            Task(id = 3, title = "Almoço", description = "", iconRes = 3, time = "12:00", stars = 4, status = TaskStatus.PENDING, category = "ALIMENTACAO")
         )
         every { repository.getAllTasksOrderedByTime() } returns flowOf(tasks)
 
@@ -78,4 +78,3 @@ class GetTasksOrderedByTimeUseCaseTest {
         verify(exactly = 1) { repository.getAllTasksOrderedByTime() }
     }
 }
-

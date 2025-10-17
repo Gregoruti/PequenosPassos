@@ -1,6 +1,7 @@
 package com.pequenospassos.domain.usecase
 
 import com.pequenospassos.domain.model.AppResult
+import com.pequenospassos.domain.model.Step
 import com.pequenospassos.domain.repository.StepRepository
 import com.pequenospassos.domain.repository.TaskRepository
 import io.mockk.coEvery
@@ -17,6 +18,7 @@ import org.junit.Test
  * Valida o salvamento de tarefas com steps e validações.
  *
  * @since MVP-05 (14/10/2025) - DIA 1 - Fundação
+ * @updated MVP-07 (17/10/2025) - Atualizado com campo category
  * @author PequenosPassos Development Team
  */
 class SaveTaskUseCaseTest {
@@ -38,11 +40,12 @@ class SaveTaskUseCaseTest {
         val title = "Escovar os dentes"
         val time = "08:00"
         val stars = 3
+        val category = "HIGIENE_PESSOAL"
         val taskId = 1L
         coEvery { taskRepository.insertTask(any()) } returns Result.success(taskId)
 
         // Act
-        val result = useCase(title, "", 1, time, stars, emptyList())
+        val result = useCase(title, "", 1, time, stars, category, emptyList())
 
         // Assert
         assertTrue(result is AppResult.Success)
@@ -56,9 +59,10 @@ class SaveTaskUseCaseTest {
         val title = ""
         val time = "08:00"
         val stars = 3
+        val category = "BANHO"
 
         // Act
-        val result = useCase(title, "", 1, time, stars)
+        val result = useCase(title, "", 1, time, stars, category)
 
         // Assert
         assertTrue(result is AppResult.Error)
@@ -72,9 +76,10 @@ class SaveTaskUseCaseTest {
         val title = "Tarefa"
         val time = "25:99" // Inválido
         val stars = 3
+        val category = "VESTIR"
 
         // Act
-        val result = useCase(title, "", 1, time, stars)
+        val result = useCase(title, "", 1, time, stars, category)
 
         // Assert
         assertTrue(result is AppResult.Error)
@@ -88,9 +93,10 @@ class SaveTaskUseCaseTest {
         val title = "Tarefa"
         val time = "08:00"
         val stars = 0
+        val category = "ALIMENTACAO"
 
         // Act
-        val result = useCase(title, "", 1, time, stars)
+        val result = useCase(title, "", 1, time, stars, category)
 
         // Assert
         assertTrue(result is AppResult.Error)
@@ -104,9 +110,10 @@ class SaveTaskUseCaseTest {
         val title = "Tarefa"
         val time = "08:00"
         val stars = 6
+        val category = "SONO"
 
         // Act
-        val result = useCase(title, "", 1, time, stars)
+        val result = useCase(title, "", 1, time, stars, category)
 
         // Assert
         assertTrue(result is AppResult.Error)
@@ -120,14 +127,19 @@ class SaveTaskUseCaseTest {
         val title = "Escovar os dentes"
         val time = "08:00"
         val stars = 3
-        val steps = listOf("Passo 1", "Passo 2", "Passo 3")
+        val category = "HIGIENE_PESSOAL"
+        val steps = listOf(
+            Step(taskId = 0, title = "Passo 1", order = 0),
+            Step(taskId = 0, title = "Passo 2", order = 1),
+            Step(taskId = 0, title = "Passo 3", order = 2)
+        )
         val taskId = 1L
 
         coEvery { taskRepository.insertTask(any()) } returns Result.success(taskId)
         coEvery { stepRepository.insertStep(any()) } returns Result.success(1L)
 
         // Act
-        val result = useCase(title, "", 1, time, stars, steps)
+        val result = useCase(title, "", 1, time, stars, category, steps)
 
         // Assert
         assertTrue(result is AppResult.Success)
@@ -142,11 +154,12 @@ class SaveTaskUseCaseTest {
         val title = "Tarefa"
         val time = "08:00"
         val stars = 3
+        val category = "LEITURA"
         val exception = RuntimeException("Database error")
         coEvery { taskRepository.insertTask(any()) } returns Result.failure(exception)
 
         // Act
-        val result = useCase(title, "", 1, time, stars)
+        val result = useCase(title, "", 1, time, stars, category)
 
         // Assert
         assertTrue(result is AppResult.Error)
@@ -159,7 +172,10 @@ class SaveTaskUseCaseTest {
         val title = "Tarefa"
         val time = "08:00"
         val stars = 3
-        val steps = listOf("Passo 1")
+        val category = "ESCRITA"
+        val steps = listOf(
+            Step(taskId = 0, title = "Passo 1", order = 0)
+        )
         val taskId = 1L
         val exception = RuntimeException("Step error")
 
@@ -167,11 +183,10 @@ class SaveTaskUseCaseTest {
         coEvery { stepRepository.insertStep(any()) } returns Result.failure(exception)
 
         // Act
-        val result = useCase(title, "", 1, time, stars, steps)
+        val result = useCase(title, "", 1, time, stars, category, steps)
 
         // Assert
         assertTrue(result is AppResult.Error)
         assertEquals(exception, (result as AppResult.Error).exception)
     }
 }
-

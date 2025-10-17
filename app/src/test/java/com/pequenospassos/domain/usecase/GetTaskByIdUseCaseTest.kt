@@ -43,7 +43,8 @@ class GetTaskByIdUseCaseTest {
             iconRes = 1,
             time = "08:00",
             stars = 3,
-            status = TaskStatus.PENDING
+            status = TaskStatus.PENDING,
+            category = "HIGIENE_PESSOAL"
         )
         every { repository.getTaskById(taskId) } returns flowOf(task)
 
@@ -84,4 +85,3 @@ class GetTaskByIdUseCaseTest {
         verify(exactly = 1) { repository.getTaskById(taskId) }
     }
 }
-

@@ -3,6 +3,7 @@ package com.pequenospassos.data.repository
 import com.pequenospassos.data.database.dao.TaskDao
 import com.pequenospassos.domain.model.Task
 import com.pequenospassos.domain.model.TaskStatus
+import com.pequenospassos.domain.model.TaskCategory
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -36,8 +37,8 @@ class TaskRepositoryImplTest {
     fun `getAllTasksOrderedByTime retorna flow do DAO`() = runTest {
         // Arrange
         val tasks = listOf(
-            Task(id = 1, title = "Tarefa 1", iconRes = 1, time = "08:00", stars = 3),
-            Task(id = 2, title = "Tarefa 2", iconRes = 1, time = "09:00", stars = 4)
+            Task(id = 1, title = "Tarefa 1", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL"),
+            Task(id = 2, title = "Tarefa 2", iconRes = 1, time = "09:00", stars = 4, category = "ALIMENTACAO")
         )
         coEvery { dao.getAllTasksOrderedByTime() } returns flowOf(tasks)
 
@@ -53,7 +54,7 @@ class TaskRepositoryImplTest {
     @Test
     fun `getTaskById retorna flow do DAO`() = runTest {
         // Arrange
-        val task = Task(id = 1, title = "Tarefa", iconRes = 1, time = "10:00", stars = 3)
+        val task = Task(id = 1, title = "Tarefa", iconRes = 1, time = "10:00", stars = 3, category = "BANHO")
         coEvery { dao.getTaskById(1L) } returns flowOf(task)
 
         // Act
@@ -68,7 +69,7 @@ class TaskRepositoryImplTest {
     fun `getTasksByStatus retorna flow filtrado`() = runTest {
         // Arrange
         val tasks = listOf(
-            Task(id = 1, title = "Pendente", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.PENDING)
+            Task(id = 1, title = "Pendente", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.PENDING, category = "VESTIR")
         )
         coEvery { dao.getTasksByStatus(TaskStatus.PENDING) } returns flowOf(tasks)
 
@@ -83,7 +84,7 @@ class TaskRepositoryImplTest {
     @Test
     fun `insertTask sucesso retorna Result success com ID`() = runTest {
         // Arrange
-        val task = Task(title = "Nova Tarefa", iconRes = 1, time = "10:00", stars = 3)
+        val task = Task(title = "Nova Tarefa", iconRes = 1, time = "10:00", stars = 3, category = "LEITURA")
         coEvery { dao.insertTask(task) } returns 42L
 
         // Act
@@ -98,7 +99,7 @@ class TaskRepositoryImplTest {
     @Test
     fun `insertTask com erro retorna Result failure`() = runTest {
         // Arrange
-        val task = Task(title = "Tarefa", iconRes = 1, time = "10:00", stars = 3)
+        val task = Task(title = "Tarefa", iconRes = 1, time = "10:00", stars = 3, category = "ESCRITA")
         val exception = RuntimeException("Insert error")
         coEvery { dao.insertTask(task) } throws exception
 
@@ -113,7 +114,7 @@ class TaskRepositoryImplTest {
     @Test
     fun `updateTask sucesso retorna Result success`() = runTest {
         // Arrange
-        val task = Task(id = 1, title = "Atualizada", iconRes = 1, time = "10:00", stars = 3)
+        val task = Task(id = 1, title = "Atualizada", iconRes = 1, time = "10:00", stars = 3, category = "MATEMATICA")
         coEvery { dao.updateTask(task) } returns Unit
 
         // Act
@@ -153,7 +154,7 @@ class TaskRepositoryImplTest {
     @Test
     fun `deleteTask sucesso retorna Result success`() = runTest {
         // Arrange
-        val task = Task(id = 1, title = "Tarefa", iconRes = 1, time = "10:00", stars = 3)
+        val task = Task(id = 1, title = "Tarefa", iconRes = 1, time = "10:00", stars = 3, category = "OUTROS")
         coEvery { dao.deleteTask(task) } returns Unit
 
         // Act
@@ -204,4 +205,3 @@ class TaskRepositoryImplTest {
         coVerify(exactly = 1) { dao.deleteAll() }
     }
 }
-

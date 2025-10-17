@@ -54,7 +54,7 @@ class StepRepositoryImplTest {
     @Test
     fun `getTaskWithSteps retorna flow do DAO`() = runTest {
         // Arrange
-        val task = Task(id = 1, title = "Tarefa", iconRes = 1, time = "10:00", stars = 3)
+        val task = Task(id = 1, title = "Tarefa", iconRes = 1, time = "10:00", stars = 3, category = "BANHO")
         val steps = listOf(
             Step(id = 1, taskId = 1, title = "Step 1", order = 0)
         )
@@ -213,4 +213,3 @@ class StepRepositoryImplTest {
         assertEquals(exception, result.exceptionOrNull())
     }
 }
-
