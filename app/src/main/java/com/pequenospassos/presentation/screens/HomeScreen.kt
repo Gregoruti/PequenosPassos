@@ -40,6 +40,10 @@ fun HomeScreen(navController: NavController) {
             color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(32.dp))
+        Button(onClick = { navController.navigate("task_form") }, modifier = Modifier.fillMaxWidth()) {
+            Text("Nova Tarefa")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = { /* Navegar para Cadastro */ }, modifier = Modifier.fillMaxWidth()) {
             Text("Cadastro")
         }

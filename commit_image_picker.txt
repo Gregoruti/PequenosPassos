@@ -1,0 +1,68 @@
+feat(mvp-07): Implement ImagePicker component with camera and gallery
+
+Component Features:
+- Camera capture with ActivityResultContract
+- Gallery selection with content picker
+- Image preview with aspect ratio preserved
+- Remove button with confirmation
+- Automatic image resizing (max 1024px by default)
+- Local storage with FileProvider
+- Permission handling (Camera, Read External Storage)
+- Material 3 design with rounded corners
+- Two variants: ImagePicker (with preview) and CompactImagePicker
+
+Files Created:
+1. ImagePicker.kt (presentation/components)
+   - ImagePicker composable with camera and gallery launchers
+   - CompactImagePicker without preview (space-saving variant)
+   - ImagePreview internal composable with remove button
+   - Helper functions for image handling:
+     * createTempImageFile() - Creates temp file for camera
+     * resizeAndSaveImage() - Resizes and saves to local storage
+     * calculateNewDimensions() - Maintains aspect ratio
+
+2. ImagePickerPreview.kt (presentation/components)
+   - 4 preview variants for development
+   - Empty state, dark mode, compact version, multiple pickers
+
+3. ImagePickerTest.kt (test)
+   - 13 unit tests covering dimension calculations
+   - Tests for aspect ratio preservation
+   - Edge cases: landscape, portrait, square images
+   - Size limits validation (max 1024px)
+
+4. file_paths.xml (res/xml)
+   - FileProvider configuration for image sharing
+   - Pictures directory for camera images
+   - Cache directory for temporary files
+
+5. AndroidManifest.xml (updated)
+   - Added CAMERA permission
+   - Added READ_EXTERNAL_STORAGE permission (maxSdk 32)
+   - Added camera feature (not required)
+   - Added FileProvider configuration
+
+Image Processing:
+- Automatic resizing maintaining aspect ratio
+- Quality: JPEG 90% compression
+- Max size: 1024px (configurable)
+- File naming: IMG_yyyyMMdd_HHmmss.jpg
+- Storage: External files directory (Pictures/)
+
+Permission Handling:
+- Camera permission request for Android 13+
+- Gallery access through content picker
+- FileProvider for secure file sharing
+- Runtime permission launcher integrated
+
+Features:
+- Preview with 200dp height
+- Remove button with Material 3 error container colors
+- Placeholder state with icon and text
+- Two-button layout: Camera | Gallery
+- Coil library for image loading (already in dependencies)
+- Error handling for file operations
+
+This completes the third (and most complex) component of MVP-07 Phase 2.
+Next: Create comprehensive documentation and integration examples.
+

@@ -13,8 +13,11 @@ import org.junit.Test
  * - Métodos de status (isCompleted, isPending, isCanceled)
  * - Conversão de horário para minutos
  * - Enum TaskStatus
+ * - Validação de category (MVP-07)
+ * - Suporte a imageUrl opcional (MVP-07)
  *
  * @since MVP-02 (13/10/2025)
+ * @updated MVP-07 (16/10/2025) - Testes para novos campos
  */
 class TaskTest {
 
@@ -26,7 +29,8 @@ class TaskTest {
             title = "Escovar os dentes",
             iconRes = 1,
             time = "08:00",
-            stars = 3
+            stars = 3,
+            category = "HIGIENE_PESSOAL"
         )
 
         // Act
@@ -43,7 +47,8 @@ class TaskTest {
             title = "",
             iconRes = 1,
             time = "08:00",
-            stars = 3
+            stars = 3,
+            category = "HIGIENE_PESSOAL"
         )
 
         // Act & Assert
@@ -53,70 +58,70 @@ class TaskTest {
     @Test
     fun `Task com horário inválido deve falhar na validação`() {
         // Arrange & Act & Assert
-        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "25:00", stars = 3).isValid())
-        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "08:60", stars = 3).isValid())
-        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "8:00", stars = 3).isValid())
-        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "08-00", stars = 3).isValid())
-        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "0800", stars = 3).isValid())
+        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "25:00", stars = 3, category = "HIGIENE_PESSOAL").isValid())
+        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "08:60", stars = 3, category = "HIGIENE_PESSOAL").isValid())
+        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "8:00", stars = 3, category = "HIGIENE_PESSOAL").isValid())
+        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "08-00", stars = 3, category = "HIGIENE_PESSOAL").isValid())
+        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "0800", stars = 3, category = "HIGIENE_PESSOAL").isValid())
     }
 
     @Test
     fun `Task com horários válidos deve passar na validação`() {
         // Arrange & Act & Assert
-        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "00:00", stars = 3).isValid())
-        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "08:30", stars = 3).isValid())
-        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "12:45", stars = 3).isValid())
-        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "23:59", stars = 3).isValid())
+        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "00:00", stars = 3, category = "HIGIENE_PESSOAL").isValid())
+        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "08:30", stars = 3, category = "HIGIENE_PESSOAL").isValid())
+        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "12:45", stars = 3, category = "HIGIENE_PESSOAL").isValid())
+        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "23:59", stars = 3, category = "HIGIENE_PESSOAL").isValid())
     }
 
     @Test
     fun `Task com stars fora do intervalo 1-5 deve falhar na validação`() {
         // Arrange & Act & Assert
-        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 0).isValid())
-        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 6).isValid())
-        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = -1).isValid())
+        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 0, category = "HIGIENE_PESSOAL").isValid())
+        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 6, category = "HIGIENE_PESSOAL").isValid())
+        assertFalse(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = -1, category = "HIGIENE_PESSOAL").isValid())
     }
 
     @Test
     fun `Task com stars entre 1-5 deve passar na validação`() {
         // Arrange & Act & Assert
-        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 1).isValid())
-        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3).isValid())
-        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 5).isValid())
+        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 1, category = "HIGIENE_PESSOAL").isValid())
+        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL").isValid())
+        assertTrue(Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 5, category = "HIGIENE_PESSOAL").isValid())
     }
 
     @Test
     fun `isCompleted deve retornar true apenas para status COMPLETED`() {
         // Arrange & Act & Assert
-        assertTrue(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.COMPLETED).isCompleted())
-        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.PENDING).isCompleted())
-        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.CANCELED).isCompleted())
+        assertTrue(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.COMPLETED).isCompleted())
+        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.PENDING).isCompleted())
+        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.CANCELED).isCompleted())
     }
 
     @Test
     fun `isPending deve retornar true apenas para status PENDING`() {
         // Arrange & Act & Assert
-        assertTrue(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.PENDING).isPending())
-        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.COMPLETED).isPending())
-        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.CANCELED).isPending())
+        assertTrue(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.PENDING).isPending())
+        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.COMPLETED).isPending())
+        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.CANCELED).isPending())
     }
 
     @Test
     fun `isCanceled deve retornar true apenas para status CANCELED`() {
         // Arrange & Act & Assert
-        assertTrue(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.CANCELED).isCanceled())
-        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.PENDING).isCanceled())
-        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.COMPLETED).isCanceled())
+        assertTrue(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.CANCELED).isCanceled())
+        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.PENDING).isCanceled())
+        assertFalse(Task(title = "T", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.COMPLETED).isCanceled())
     }
 
     @Test
     fun `getTimeInMinutes deve converter horário corretamente`() {
         // Arrange & Act & Assert
-        assertEquals(0, Task(title = "T", iconRes = 1, time = "00:00", stars = 3).getTimeInMinutes())
-        assertEquals(480, Task(title = "T", iconRes = 1, time = "08:00", stars = 3).getTimeInMinutes())
-        assertEquals(510, Task(title = "T", iconRes = 1, time = "08:30", stars = 3).getTimeInMinutes())
-        assertEquals(720, Task(title = "T", iconRes = 1, time = "12:00", stars = 3).getTimeInMinutes())
-        assertEquals(1439, Task(title = "T", iconRes = 1, time = "23:59", stars = 3).getTimeInMinutes())
+        assertEquals(0, Task(title = "T", iconRes = 1, time = "00:00", stars = 3, category = "HIGIENE_PESSOAL").getTimeInMinutes())
+        assertEquals(480, Task(title = "T", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL").getTimeInMinutes())
+        assertEquals(510, Task(title = "T", iconRes = 1, time = "08:30", stars = 3, category = "HIGIENE_PESSOAL").getTimeInMinutes())
+        assertEquals(720, Task(title = "T", iconRes = 1, time = "12:00", stars = 3, category = "HIGIENE_PESSOAL").getTimeInMinutes())
+        assertEquals(1439, Task(title = "T", iconRes = 1, time = "23:59", stars = 3, category = "HIGIENE_PESSOAL").getTimeInMinutes())
     }
 
     @Test
@@ -126,7 +131,8 @@ class TaskTest {
             title = "Tarefa",
             iconRes = 1,
             time = "08:00",
-            stars = 3
+            stars = 3,
+            category = "HIGIENE_PESSOAL"
         )
 
         // Assert
@@ -144,7 +150,8 @@ class TaskTest {
             title = "Tarefa",
             iconRes = 1,
             time = "08:00",
-            stars = 3
+            stars = 3,
+            category = "HIGIENE_PESSOAL"
         )
 
         val afterCreation = System.currentTimeMillis()
@@ -190,4 +197,3 @@ class TaskTest {
         assertEquals(3, TaskStatus.values().size)
     }
 }
-

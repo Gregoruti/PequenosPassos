@@ -20,8 +20,10 @@ import org.junit.Assert.*
  *
  * Valida operações CRUD de tarefas no Room Database.
  * Testa ordenação automática por horário.
+ * Valida novos campos category e imageUrl (MVP-07).
  *
  * @since MVP-03 (14/10/2025) - DIA 1 - Fundação
+ * @updated MVP-07 (16/10/2025) - Testes para novos campos
  * @author PequenosPassos Development Team
  */
 @RunWith(AndroidJUnit4::class)
@@ -54,6 +56,7 @@ class TaskDaoTest {
             iconRes = 1,
             time = "08:00",
             stars = 3,
+            category = "HIGIENE_PESSOAL",
             status = TaskStatus.PENDING
         )
 
@@ -66,14 +69,57 @@ class TaskDaoTest {
         assertEquals("Escovar os dentes", retrieved?.title)
         assertEquals("08:00", retrieved?.time)
         assertEquals(3, retrieved?.stars)
+        assertEquals("HIGIENE_PESSOAL", retrieved?.category)
+    }
+
+    @Test
+    fun insertTaskWithImageUrl() = runBlocking {
+        // Arrange
+        val task = Task(
+            title = "Escovar os dentes",
+            iconRes = 1,
+            time = "08:00",
+            stars = 3,
+            category = "HIGIENE_PESSOAL",
+            imageUrl = "https://example.com/escova.jpg"
+        )
+
+        // Act
+        val taskId = dao.insertTask(task)
+        val retrieved = dao.getTaskById(taskId).first()
+
+        // Assert
+        assertNotNull(retrieved)
+        assertEquals("https://example.com/escova.jpg", retrieved?.imageUrl)
+    }
+
+    @Test
+    fun insertTaskWithNullImageUrl() = runBlocking {
+        // Arrange
+        val task = Task(
+            title = "Escovar os dentes",
+            iconRes = 1,
+            time = "08:00",
+            stars = 3,
+            category = "HIGIENE_PESSOAL",
+            imageUrl = null
+        )
+
+        // Act
+        val taskId = dao.insertTask(task)
+        val retrieved = dao.getTaskById(taskId).first()
+
+        // Assert
+        assertNotNull(retrieved)
+        assertNull("imageUrl deve ser null", retrieved?.imageUrl)
     }
 
     @Test
     fun getAllTasksOrderedByTime() = runBlocking {
         // Arrange
-        val task1 = Task(title = "Almoço", iconRes = 1, time = "12:00", stars = 5)
-        val task2 = Task(title = "Café", iconRes = 1, time = "07:00", stars = 3)
-        val task3 = Task(title = "Jantar", iconRes = 1, time = "19:00", stars = 5)
+        val task1 = Task(title = "Almoço", iconRes = 1, time = "12:00", stars = 5, category = "ALIMENTACAO")
+        val task2 = Task(title = "Café", iconRes = 1, time = "07:00", stars = 3, category = "ALIMENTACAO")
+        val task3 = Task(title = "Jantar", iconRes = 1, time = "19:00", stars = 5, category = "ALIMENTACAO")
 
         // Act
         dao.insertTask(task1)
@@ -96,7 +142,8 @@ class TaskDaoTest {
             title = "Tarefa Original",
             iconRes = 1,
             time = "10:00",
-            stars = 2
+            stars = 2,
+            category = "HIGIENE_PESSOAL"
         )
         val taskId = dao.insertTask(task)
 
@@ -118,6 +165,7 @@ class TaskDaoTest {
             iconRes = 1,
             time = "10:00",
             stars = 3,
+            category = "HIGIENE_PESSOAL",
             status = TaskStatus.PENDING
         )
         val taskId = dao.insertTask(task)
@@ -138,7 +186,8 @@ class TaskDaoTest {
             title = "Tarefa",
             iconRes = 1,
             time = "10:00",
-            stars = 3
+            stars = 3,
+            category = "HIGIENE_PESSOAL"
         )
         val taskId = dao.insertTask(task)
         val taskToDelete = task.copy(id = taskId)
@@ -155,9 +204,9 @@ class TaskDaoTest {
     @Test
     fun getTasksByStatus() = runBlocking {
         // Arrange
-        val task1 = Task(title = "Pendente 1", iconRes = 1, time = "08:00", stars = 3, status = TaskStatus.PENDING)
-        val task2 = Task(title = "Completa", iconRes = 1, time = "09:00", stars = 3, status = TaskStatus.COMPLETED)
-        val task3 = Task(title = "Pendente 2", iconRes = 1, time = "10:00", stars = 3, status = TaskStatus.PENDING)
+        val task1 = Task(title = "Pendente 1", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.PENDING)
+        val task2 = Task(title = "Completa", iconRes = 1, time = "09:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.COMPLETED)
+        val task3 = Task(title = "Pendente 2", iconRes = 1, time = "10:00", stars = 3, category = "HIGIENE_PESSOAL", status = TaskStatus.PENDING)
 
         dao.insertTask(task1)
         dao.insertTask(task2)
@@ -176,8 +225,8 @@ class TaskDaoTest {
     @Test
     fun getTaskCount() = runBlocking {
         // Arrange
-        val task1 = Task(title = "Tarefa 1", iconRes = 1, time = "08:00", stars = 3)
-        val task2 = Task(title = "Tarefa 2", iconRes = 1, time = "09:00", stars = 3)
+        val task1 = Task(title = "Tarefa 1", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
+        val task2 = Task(title = "Tarefa 2", iconRes = 1, time = "09:00", stars = 3, category = "HIGIENE_PESSOAL")
 
         // Act
         val countBefore = dao.getTaskCount()
@@ -193,8 +242,8 @@ class TaskDaoTest {
     @Test
     fun deleteAllTasks() = runBlocking {
         // Arrange
-        dao.insertTask(Task(title = "Tarefa 1", iconRes = 1, time = "08:00", stars = 3))
-        dao.insertTask(Task(title = "Tarefa 2", iconRes = 1, time = "09:00", stars = 3))
+        dao.insertTask(Task(title = "Tarefa 1", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL"))
+        dao.insertTask(Task(title = "Tarefa 2", iconRes = 1, time = "09:00", stars = 3, category = "HIGIENE_PESSOAL"))
 
         // Act
         dao.deleteAll()
@@ -204,4 +253,3 @@ class TaskDaoTest {
         assertEquals(0, count)
     }
 }
-

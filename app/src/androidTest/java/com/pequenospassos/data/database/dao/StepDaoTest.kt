@@ -20,8 +20,10 @@ import org.junit.Assert.*
  *
  * Valida operações CRUD de steps e relacionamento com Task.
  * Testa cascade delete e TaskWithSteps.
+ * Valida novos campos imageUrl e durationSeconds (MVP-07).
  *
  * @since MVP-03 (14/10/2025) - DIA 1 - Fundação
+ * @updated MVP-07 (16/10/2025) - Testes para novos campos
  * @author PequenosPassos Development Team
  */
 @RunWith(AndroidJUnit4::class)
@@ -50,7 +52,7 @@ class StepDaoTest {
     @Test
     fun insertAndGetSteps() = runBlocking {
         // Arrange
-        val task = Task(title = "Escovar dentes", iconRes = 1, time = "08:00", stars = 3)
+        val task = Task(title = "Escovar dentes", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
         val taskId = taskDao.insertTask(task)
 
         val step1 = Step(taskId = taskId, title = "Pegar escova", order = 0)
@@ -69,9 +71,75 @@ class StepDaoTest {
     }
 
     @Test
+    fun insertStepWithImageUrl() = runBlocking {
+        // Arrange
+        val task = Task(title = "Escovar dentes", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
+        val taskId = taskDao.insertTask(task)
+
+        val step = Step(
+            taskId = taskId,
+            title = "Pegar escova",
+            order = 0,
+            imageUrl = "https://example.com/escova.jpg"
+        )
+
+        // Act
+        val stepId = stepDao.insertStep(step)
+        val steps = stepDao.getStepsByTask(taskId).first()
+
+        // Assert
+        assertEquals(1, steps.size)
+        assertEquals("https://example.com/escova.jpg", steps[0].imageUrl)
+    }
+
+    @Test
+    fun insertStepWithCustomDuration() = runBlocking {
+        // Arrange
+        val task = Task(title = "Escovar dentes", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
+        val taskId = taskDao.insertTask(task)
+
+        val step = Step(
+            taskId = taskId,
+            title = "Escovar por 2 minutos",
+            order = 0,
+            durationSeconds = 120
+        )
+
+        // Act
+        val stepId = stepDao.insertStep(step)
+        val steps = stepDao.getStepsByTask(taskId).first()
+
+        // Assert
+        assertEquals(1, steps.size)
+        assertEquals(120, steps[0].durationSeconds)
+    }
+
+    @Test
+    fun insertStepWithDefaultDuration() = runBlocking {
+        // Arrange
+        val task = Task(title = "Escovar dentes", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
+        val taskId = taskDao.insertTask(task)
+
+        val step = Step(
+            taskId = taskId,
+            title = "Pegar escova",
+            order = 0
+            // durationSeconds não especificado, deve usar padrão 60s
+        )
+
+        // Act
+        val stepId = stepDao.insertStep(step)
+        val steps = stepDao.getStepsByTask(taskId).first()
+
+        // Assert
+        assertEquals(1, steps.size)
+        assertEquals(60, steps[0].durationSeconds)
+    }
+
+    @Test
     fun stepsOrderedByOrder() = runBlocking {
         // Arrange
-        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3)
+        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
         val taskId = taskDao.insertTask(task)
 
         // Inserir fora de ordem
@@ -96,7 +164,7 @@ class StepDaoTest {
     @Test
     fun updateStep() = runBlocking {
         // Arrange
-        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3)
+        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
         val taskId = taskDao.insertTask(task)
         val step = Step(taskId = taskId, title = "Step Original", order = 0, isCompleted = false)
         val stepId = stepDao.insertStep(step)
@@ -116,7 +184,7 @@ class StepDaoTest {
     @Test
     fun updateStepCompletion() = runBlocking {
         // Arrange
-        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3)
+        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
         val taskId = taskDao.insertTask(task)
         val step = Step(taskId = taskId, title = "Step", order = 0, isCompleted = false)
         val stepId = stepDao.insertStep(step)
@@ -133,7 +201,7 @@ class StepDaoTest {
     @Test
     fun deleteStep() = runBlocking {
         // Arrange
-        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3)
+        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
         val taskId = taskDao.insertTask(task)
         val step = Step(taskId = taskId, title = "Step", order = 0)
         val stepId = stepDao.insertStep(step)
@@ -151,7 +219,7 @@ class StepDaoTest {
     @Test
     fun cascadeDeleteStepsWhenTaskDeleted() = runBlocking {
         // Arrange
-        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3)
+        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
         val taskId = taskDao.insertTask(task)
 
         stepDao.insertStep(Step(taskId = taskId, title = "Step 1", order = 0))
@@ -170,7 +238,7 @@ class StepDaoTest {
     @Test
     fun getTaskWithSteps() = runBlocking {
         // Arrange
-        val task = Task(title = "Escovar dentes", iconRes = 1, time = "08:00", stars = 3)
+        val task = Task(title = "Escovar dentes", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
         val taskId = taskDao.insertTask(task)
 
         stepDao.insertStep(Step(taskId = taskId, title = "Step 1", order = 0))
@@ -190,7 +258,7 @@ class StepDaoTest {
     @Test
     fun insertMultipleSteps() = runBlocking {
         // Arrange
-        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3)
+        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
         val taskId = taskDao.insertTask(task)
 
         val steps = listOf(
@@ -211,7 +279,7 @@ class StepDaoTest {
     @Test
     fun getStepCountByTask() = runBlocking {
         // Arrange
-        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3)
+        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
         val taskId = taskDao.insertTask(task)
 
         stepDao.insertStep(Step(taskId = taskId, title = "Step 1", order = 0))
@@ -227,7 +295,7 @@ class StepDaoTest {
     @Test
     fun deleteStepsByTask() = runBlocking {
         // Arrange
-        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3)
+        val task = Task(title = "Tarefa", iconRes = 1, time = "08:00", stars = 3, category = "HIGIENE_PESSOAL")
         val taskId = taskDao.insertTask(task)
 
         stepDao.insertStep(Step(taskId = taskId, title = "Step 1", order = 0))
@@ -242,4 +310,3 @@ class StepDaoTest {
         assertEquals(0, count)
     }
 }
-

@@ -1,0 +1,19 @@
+test(mvp-07): Add validation tests for Phase 1
+
+- Added 18 new tests for MVP-07 fields
+- Updated 43 existing tests with category parameter
+- Created validation documentation
+- Total: 61+ tests covering all Phase 1 changes
+
+Tests added:
+- TaskTest: 6 new tests (category, imageUrl)
+- StepTest: 7 new tests (imageUrl, durationSeconds)
+- TaskDaoTest: 2 new + 8 updated tests
+- StepDaoTest: 3 new + 10 updated tests
+
+All tests validate:
+- category field (required in Task)
+- imageUrl field (optional in Task/Step)
+- durationSeconds field (15-600s range in Step)
+- Database persistence and queries
+

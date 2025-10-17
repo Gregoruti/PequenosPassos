@@ -1,0 +1,50 @@
+feat(mvp-07): Implement TimerInput component with slider (5-600s)
+
+Component Features:
+- Slider for duration selection (5-600 seconds / 5s to 10 minutes)
+- Visual display with automatic conversion to readable format
+- 8 quick value buttons (5s, 15s, 30s, 60s, 90s, 120s, 300s, 600s)
+- Material 3 Slider with custom colors
+- Error state support with custom messages
+- Two variants: TimerInput (with quick values) and SimpleTimerInput
+
+Files Created:
+1. TimerInput.kt (presentation/components)
+   - TimerInput composable with slider and quick values
+   - SimpleTimerInput for basic slider only
+   - QuickValueButtons with 8 predefined values
+   - QuickValueChip for individual quick value selection
+   - Helper functions: formatDuration() and formatDurationShort()
+
+2. TimerInputPreview.kt (presentation/components)
+   - 9 preview variants for development
+   - Default (60s), Min (5s), Max (600s), Medium (120s)
+   - With error, simple version, dark mode, no quick values, multiple
+
+3. TimerInputTest.kt (test)
+   - 23 unit tests covering all functionality
+   - Tests for formatDuration() - full format with spaces
+   - Tests for formatDurationShort() - compact format for buttons
+   - Edge cases: 0s, 1s, 61s, 900s, 1800s
+   - Range validation (5-600s)
+   - Consistency tests between formats
+
+Helper Functions:
+- formatDuration(seconds): "1 min 30s", "5s", "10 min"
+- formatDurationShort(seconds): "1m30s", "5s", "10m"
+
+Quick Values Distribution:
+- Row 1: 5s, 15s, 30s, 60s (common short durations)
+- Row 2: 90s, 120s, 300s, 600s (longer durations)
+
+Features:
+- Range validation (5-600 seconds)
+- Visual feedback with colored slider
+- Card display showing selected time
+- Emoji indicator (⏱️) for visual appeal
+- Fully responsive layout
+- Dark mode support
+
+This completes the second component of MVP-07 Phase 2.
+Next: ImagePicker component (camera + gallery selection)
+

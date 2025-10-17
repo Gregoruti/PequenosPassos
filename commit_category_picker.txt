@@ -1,0 +1,48 @@
+feat(mvp-07): Implement CategoryPicker component with 27 categories
+
+Component Features:
+- Dropdown with 27 task categories organized in 6 groups
+- Material 3 ExposedDropdownMenu with custom styling
+- Category groups with visual headers and emojis
+- Two variants: CategoryPicker (grouped) and SimpleCategoryPicker
+- Error state support with custom messages
+- Dark mode support
+
+Files Created:
+1. TaskCategory.kt (domain/model)
+   - TaskCategory enum with 27 categories
+   - CategoryGroup enum with 6 groups
+   - Helper methods: getCategoriesByGroup(), fromString(), default()
+   - Each category has: displayName, emoji, and group
+
+2. CategoryPicker.kt (presentation/components)
+   - CategoryPicker composable with grouped categories
+   - SimpleCategoryPicker for basic dropdown
+   - CategoryGroupHeader and CategoryItem internal composables
+   - Support for error states and custom labels
+
+3. CategoryPickerPreview.kt (presentation/components)
+   - 6 preview variants for development
+   - Empty, with selection, with error, dark mode, etc.
+
+4. TaskCategoryTest.kt (test)
+   - 22 unit tests covering all functionality
+   - Tests for category count, grouping, display names, emojis
+   - Validation of unique names and correct distribution
+
+Category Distribution (27 total):
+- Autocuidado e Rotina Pessoal: 6 categories
+- Saúde, Regulação e Terapias: 9 categories
+- Desenvolvimento Cognitivo: 4 categories
+- Interação e Socialização: 3 categories
+- Atividades Cotidianas: 3 categories
+- Outros: 2 categories
+
+All categories include:
+- Portuguese display name
+- Representative emoji
+- Group classification
+- Full display format (emoji + name)
+
+This completes the first component of MVP-07 Phase 2.
+

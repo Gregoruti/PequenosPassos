@@ -10,11 +10,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.pequenospassos.presentation.screens.AsrTestScreen
 import com.pequenospassos.presentation.screens.DebugScreen
 import com.pequenospassos.presentation.screens.HomeScreen
 import com.pequenospassos.presentation.screens.SplashScreen
 import com.pequenospassos.presentation.screens.TtsTestScreen
+import com.pequenospassos.presentation.screens.taskform.TaskFormScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -54,6 +57,20 @@ fun PequenosPassosApp() {
         composable("debug") { DebugScreen(navController) }
         composable("tts_test") { TtsTestScreen(navController) }
         composable("asr_test") { AsrTestScreen(navController) }
+        
+        // Rota para criar nova tarefa
+        composable("task_form") { 
+            TaskFormScreen(navController = navController, taskId = null) 
+        }
+        
+        // Rota para editar tarefa existente
+        composable(
+            route = "task_form/{taskId}",
+            arguments = listOf(navArgument("taskId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getLong("taskId")
+            TaskFormScreen(navController = navController, taskId = taskId)
+        }
     }
 }
 

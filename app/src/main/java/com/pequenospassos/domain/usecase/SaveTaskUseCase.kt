@@ -38,6 +38,8 @@ class SaveTaskUseCase @Inject constructor(
      * @param iconRes Recurso de ícone
      * @param time Horário no formato HH:mm
      * @param stars Quantidade de estrelas (1-5)
+     * @param category Categoria da tarefa (obrigatório - MVP-07)
+     * @param imageUrl URL da imagem da tarefa (opcional - MVP-07)
      * @param steps Lista de títulos de steps (opcional)
      * @return AppResult com ID da tarefa criada ou erro
      */
@@ -47,12 +49,21 @@ class SaveTaskUseCase @Inject constructor(
         iconRes: Int,
         time: String,
         stars: Int,
+        category: String,
+        imageUrl: String? = null,
         steps: List<String> = emptyList()
     ): AppResult<Long> {
         // Validação: título é obrigatório
         if (title.isBlank()) {
             return AppResult.Error(
                 IllegalArgumentException("Título é obrigatório")
+            )
+        }
+
+        // Validação: categoria é obrigatória
+        if (category.isBlank()) {
+            return AppResult.Error(
+                IllegalArgumentException("Categoria é obrigatória")
             )
         }
 
@@ -75,7 +86,9 @@ class SaveTaskUseCase @Inject constructor(
             description = description.trim(),
             iconRes = iconRes,
             time = time,
-            stars = stars
+            stars = stars,
+            category = category,
+            imageUrl = imageUrl
         )
 
         return try {
@@ -115,4 +128,3 @@ class SaveTaskUseCase @Inject constructor(
         }
     }
 }
-

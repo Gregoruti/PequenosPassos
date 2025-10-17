@@ -86,14 +86,14 @@ Implementar as **4 telas principais de interface** do aplicativo com funcionalid
 
 #### ⏱️ Timer Configurável
 ```kotlin
-- Slider visual: 15s ════●════ 600s
-- Dropdown rápido: 15s, 30s, 60s, 90s, 120s, 300s, 600s
+- Slider visual: 5s ════●════ 600s
+- Dropdown rápido: 5s, 15s, 30s, 60s, 90s, 120s, 300s, 600s
 - Valor exibido em segundos
-- Range: 15-600 segundos (15s a 10min)
+- Range: 5-600 segundos (5s a 10min)
 ```
 
 **Validações de Timer**:
-- Mínimo: 15 segundos
+- Mínimo: 5 segundos
 - Máximo: 600 segundos (10 minutos)
 - Padrão: 60 segundos
 

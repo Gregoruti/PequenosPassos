@@ -64,7 +64,7 @@ data class Step(
 
     /**
      * Duração do timer em segundos para este step.
-     * Range: 15-600 segundos (15s a 10 minutos).
+     * Range: 5-600 segundos (5s a 10 minutos).
      * Padrão: 60 segundos.
      *
      * @since MVP-07
@@ -86,11 +86,11 @@ data class Step(
     /**
      * Valida se a duração do timer está dentro do range permitido.
      *
-     * @return true se duração entre 15 e 600 segundos
+     * @return true se duração entre 5 e 600 segundos
      * @since MVP-07
      */
     fun isValidDuration(): Boolean {
-        return durationSeconds in 15..600
+        return durationSeconds in 5..600
     }
 }
 

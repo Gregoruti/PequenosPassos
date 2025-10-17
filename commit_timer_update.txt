@@ -1,0 +1,19 @@
+refactor(mvp-07): Update minimum timer duration from 15s to 5s
+
+Updated timer range throughout the project:
+- Step.kt: Changed durationSeconds validation from 15-600s to 5-600s
+- StepTest.kt: Updated tests to validate 5s minimum (added test for 5s, changed fail test to 4s)
+- Documentation updated (5 files):
+  - MVP07_PANORAMA_GERAL.md
+  - MVP07_WIREFRAMES.md
+  - MVP07_FASE1_VALIDATION.md
+  - MVP07_FASE1_CHECKLIST.md
+  - CHANGELOG.md
+
+Rationale:
+- More flexible for quick tasks (5s minimum instead of 15s)
+- Slider component confirmed as UI choice
+- Better user experience for short steps
+
+All tests remain passing with new validation range.
+

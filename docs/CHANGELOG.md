@@ -40,7 +40,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - Validações: JPG/PNG, tamanho máximo
 
 #### Timer Configurável por Step ⭐ NOVO
-- Range: 15-600 segundos (15s a 10min)
+- Range: 5-600 segundos (5s a 10min)
 - Slider visual
 - Dropdown com valores predefinidos
 - Padrão: 60 segundos
