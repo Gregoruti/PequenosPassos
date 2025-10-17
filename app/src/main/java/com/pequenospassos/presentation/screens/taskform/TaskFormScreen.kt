@@ -1,5 +1,6 @@
 package com.pequenospassos.presentation.screens.taskform
 
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -16,7 +17,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.pequenospassos.domain.model.Step
 import com.pequenospassos.presentation.components.CategoryPicker
+import com.pequenospassos.presentation.components.CompactImagePicker
 import com.pequenospassos.presentation.components.ImagePicker
+import com.pequenospassos.presentation.components.TimerInput
 
 /**
  * Tela de formulário para criar/editar tarefas.
@@ -372,6 +375,8 @@ private fun StepDialog(
     onConfirm: (Step) -> Unit
 ) {
     var title by remember { mutableStateOf(step?.title ?: "") }
+    var imageUri by remember { mutableStateOf<Uri?>(step?.imageUrl?.let { Uri.parse(it) }) }
+    var duration by remember { mutableStateOf(step?.durationSeconds ?: 60) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -385,15 +390,29 @@ private fun StepDialog(
                     onValueChange = { title = it },
                     label = { Text("Título do Step") },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 3,
+                    minLines = 2,
                     maxLines = 5
                 )
 
-                // TODO: Adicionar ImagePicker para o step
-                // TODO: Adicionar duração customizada
+                // Image picker for step (compact)
+                CompactImagePicker(
+                    imageUri = imageUri,
+                    onImageSelected = { uri -> imageUri = uri },
+                    onImageRemoved = { imageUri = null },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Duration input using existing TimerInput component
+                TimerInput(
+                    durationSeconds = duration,
+                    onDurationChange = { duration = it },
+                    label = "Duração do Step",
+                    showQuickValues = true,
+                    isError = false
+                )
 
                 Text(
-                    text = "Nota: Funcionalidades de imagem e duração customizada para steps serão implementadas em breve.",
+                    text = "Nota: Duração mínima 5s, máxima 600s.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -409,8 +428,8 @@ private fun StepDialog(
                             order = step?.order ?: (stepNumber - 1),
                             title = title,
                             isCompleted = step?.isCompleted ?: false,
-                            imageUrl = step?.imageUrl,
-                            durationSeconds = step?.durationSeconds ?: 60
+                            imageUrl = imageUri?.toString(),
+                            durationSeconds = duration.coerceIn(5, 600)
                         )
                         onConfirm(newStep)
                     }
