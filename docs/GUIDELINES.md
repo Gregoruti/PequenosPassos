@@ -66,7 +66,7 @@ data/                # Fontes de dados
 - Testes no mesmo package, mas em src/test ou src/androidTest
 
 ### 3.3 Comentários e Documentação
-```kotlin
+``` 
 /**
  * Descrição da classe/função.
  *
@@ -92,17 +92,17 @@ data/                # Fontes de dados
 - UI: Testes críticos
 
 ### 4.3 Padrão de Testes
-```kotlin
+```
 @Test
 fun `should return success when valid data`() {
     // Given (Arrange)
-    val input = ...
+    // val input = /* placeholder */
     
     // When (Act)
-    val result = ...
+    // val result = /* placeholder */
     
     // Then (Assert)
-    assertEquals(expected, result)
+    // assertEquals(expected, result)
 }
 ```
 
@@ -298,12 +298,11 @@ git status
 ```
 
 2. **Abrir arquivo e resolver manualmente:**
-```kotlin
-<<<<<<< HEAD (main)
-// Código da main
-=======
-// Seu código na branch
->>>>>>> feature/mvp-07-fase1
+```
+// Exemplo de conflito (resolva escolhendo ou combinando as versões):
+//  - Versão da main: mantenha ou copie trechos necessários
+//  - Versão da branch: mantenha ou copie trechos necessários
+// Após combinar, remova os marcadores de conflito (<<<<<<<, =======, >>>>>>>) e deixe o código final desejado.
 ```
 
 3. **Escolher qual versão manter ou combinar ambas**
