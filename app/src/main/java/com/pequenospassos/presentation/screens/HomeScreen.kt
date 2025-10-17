@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.pequenospassos.BuildConfig
@@ -31,15 +32,23 @@ fun HomeScreen(navController: NavController) {
             .fillMaxSize()
             .background(Color.White)
             .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Espaçamento superior flexível
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Título em negrito, centralizado verticalmente no topo
         Text(
             text = "Pequenos Passos",
-            style = MaterialTheme.typography.headlineMedium,
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary
         )
-        Spacer(modifier = Modifier.height(32.dp))
+
+        // Espaçamento entre título e botões
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Botões
         Button(onClick = { navController.navigate("task_form") }, modifier = Modifier.fillMaxWidth()) {
             Text("Nova Tarefa")
         }
@@ -59,11 +68,26 @@ fun HomeScreen(navController: NavController) {
         Button(onClick = { navController.navigate("debug") }, modifier = Modifier.fillMaxWidth()) {
             Text("Debug")
         }
-        Spacer(modifier = Modifier.height(32.dp))
+
+        // Espaçamento flexível antes do rodapé
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Rodapé: TCC - 2025
         Text(
-            text = "Versão: ${BuildConfig.VERSION_NAME}",
+            text = "TCC - 2025",
             style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Versão do app
+        Text(
+            text = "Versão ${BuildConfig.VERSION_NAME}",
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.secondary
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
