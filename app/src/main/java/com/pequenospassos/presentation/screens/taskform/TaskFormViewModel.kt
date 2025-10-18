@@ -145,7 +145,7 @@ class TaskFormViewModel @Inject constructor(
 
                 when (result) {
                     is com.pequenospassos.domain.model.AppResult.Success -> {
-                        _state.update { it.copy(isLoading = false, errorMessage = null) }
+                        _state.update { it.copy(isLoading = false, errorMessage = null, isSaved = true) }
                         // Sucesso - navegação será tratada na tela
                     }
                     is com.pequenospassos.domain.model.AppResult.Error -> {

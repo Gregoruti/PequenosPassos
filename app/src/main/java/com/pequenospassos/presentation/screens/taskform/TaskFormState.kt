@@ -32,7 +32,8 @@ data class TaskFormState(
     val imageUrl: Uri? = null,
     val steps: List<Step> = emptyList(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isSaved: Boolean = false // MVP-07: Flag para indicar salvamento bem-sucedido
 ) {
     /**
      * Valida se o formulário pode ser salvo.
@@ -77,4 +78,3 @@ sealed class TaskFormEvent {
     object SaveTask : TaskFormEvent()
     object CancelForm : TaskFormEvent()
 }
-

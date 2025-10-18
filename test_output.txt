@@ -1,0 +1,105 @@
+> Task :app:generateModelUuid UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:kaptGenerateStubsDebugKotlin UP-TO-DATE
+> Task :app:kaptDebugKotlin UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:hiltAggregateDepsDebug UP-TO-DATE
+> Task :app:hiltJavaCompileDebug UP-TO-DATE
+> Task :app:transformDebugClassesWithAsm UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:buildKotlinToolingMetadata
+> Task :app:generateReleaseBuildConfig
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:checkReleaseAarMetadata
+> Task :app:processReleaseNavigationResources
+> Task :app:compileReleaseNavigationResources
+> Task :app:generateReleaseResValues
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:parseReleaseLocalResources
+> Task :app:mergeReleaseResources
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:processReleaseManifestForPackage
+> Task :app:javaPreCompileRelease
+> Task :app:preReleaseUnitTestBuild UP-TO-DATE
+> Task :app:javaPreCompileReleaseUnitTest
+> Task :app:processReleaseResources
+
+> Task :app:kaptGenerateStubsDebugUnitTestKotlin
+w: Kapt currently doesn't support language version 2.0+. Falling back to 1.9.
+
+> Task :app:kaptDebugUnitTestKotlin
+warning: The following options were not recognized by any processor: '[dagger.fastInit, dagger.hilt.android.internal.disableAndroidSuperclassValidation, dagger.hilt.android.internal.projectType, dagger.hilt.internal.useAggregatingRootProcessor, kapt.kotlin.generated]'
+
+> Task :app:kaptGenerateStubsReleaseKotlin
+w: Kapt currently doesn't support language version 2.0+. Falling back to 1.9.
+
+> Task :app:compileDebugUnitTestKotlin FAILED
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/data/repository/StepRepositoryImplTest.kt:57:80 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/data/repository/TaskRepositoryImplTest.kt:39:75 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/data/repository/TaskRepositoryImplTest.kt:40:75 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/data/repository/TaskRepositoryImplTest.kt:56:80 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/data/repository/TaskRepositoryImplTest.kt:71:86 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/data/repository/TaskRepositoryImplTest.kt:86:77 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/data/repository/TaskRepositoryImplTest.kt:101:72 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/data/repository/TaskRepositoryImplTest.kt:116:84 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/data/repository/TaskRepositoryImplTest.kt:156:80 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/GetTaskByIdUseCaseTest.kt:46:13 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/GetTasksOrderedByTimeUseCaseTest.kt:39:100 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/GetTasksOrderedByTimeUseCaseTest.kt:40:102 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/GetTasksOrderedByTimeUseCaseTest.kt:41:102 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/SaveTaskUseCaseTest.kt:45:57 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/SaveTaskUseCaseTest.kt:45:57 Argument type mismatch: actual type is 'kotlin.collections.List<T>', but 'kotlin.String' was expected.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/SaveTaskUseCaseTest.kt:61:50 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/SaveTaskUseCaseTest.kt:77:50 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/SaveTaskUseCaseTest.kt:93:50 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/SaveTaskUseCaseTest.kt:109:50 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/SaveTaskUseCaseTest.kt:130:57 Argument type mismatch: actual type is 'kotlin.collections.List<kotlin.String>', but 'kotlin.String' was expected.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/SaveTaskUseCaseTest.kt:149:50 No value passed for parameter 'category'.
+e: file:///D:/Softwares/PequenosPassos/app/src/test/java/com/pequenospassos/domain/usecase/SaveTaskUseCaseTest.kt:170:57 Argument type mismatch: actual type is 'kotlin.collections.List<kotlin.String>', but 'kotlin.String' was expected.
+
+> Task :app:kaptReleaseKotlin
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugUnitTestKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 29s
+53 actionable tasks: 27 executed, 26 up-to-date

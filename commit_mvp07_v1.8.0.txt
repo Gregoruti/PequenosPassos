@@ -1,0 +1,77 @@
+feat(MVP-07): Correções críticas e implementação de cadastro de criança
+
+## 🎯 Resumo das Implementações (v1.8.0)
+
+### 1. ✅ Wireframe Atualizado
+- Adicionada visualização de miniatura dos steps
+- Atualizada paleta de cores (fence text)
+- Documentação completa em MVP07_WIREFRAMES.md
+
+### 2. 🐛 Correção: Crash da Câmera
+- Implementado tratamento de permissões em runtime
+- Adicionado `rememberPermissionState(Manifest.permission.CAMERA)`
+- Verificação de permissão antes de abrir câmera
+- Arquivo: `ImagePicker.kt`
+
+### 3. 🖼️ Correção: Rotacionamento de Imagens
+- Implementada correção de orientação EXIF
+- Adicionada dependência `androidx.exifinterface:exifinterface:1.3.7`
+- Função `correctImageOrientation()` para rotação automática
+- Arquivo: `ImagePicker.kt`
+
+### 4. 🎨 Implementação: Miniatura do Step
+- StepCard agora exibe miniatura visual da imagem (120x80dp)
+- Preview com bordas arredondadas
+- Label "🖼️ Miniatura do Step:"
+- Arquivo: `TaskFormScreen.kt`
+
+### 5. 💾 Correção: Botão "Salvar" em Nova Tarefa
+- Adicionada flag `isSaved` no `TaskFormState`
+- ViewModel seta flag após salvamento bem-sucedido
+- Snackbar mostra "Nova tarefa adicionada!"
+- Navegação automática de volta após salvar
+- Arquivos: `TaskFormState.kt`, `TaskFormViewModel.kt`, `TaskFormScreen.kt`
+
+### 6. 👶 Implementação: Tela de Cadastro da Criança
+- Nova tela completa de cadastro (`ChildRegistrationScreen.kt`)
+- Campos: Nome, Data de Nascimento, Observações
+- Formatação automática de data (DD/MM/AAAA)
+- Validação completa com mensagens de erro
+- Snackbar de confirmação
+- Rota adicionada em `MainActivity.kt`
+- Botão "Cadastro" agora funcional em `HomeScreen.kt`
+
+### 7. 📦 Atualização de Versão
+- versionCode: 8 → 9
+- versionName: "1.7.0" → "1.8.0"
+
+## 📄 Documentação Criada
+- `MVP07_CORREÇÕES_IMPLEMENTADAS.md` - Resumo geral
+- `MVP07_CORRECAO_BOTAO_SALVAR.md` - Detalhes do botão salvar
+- `MVP07_CORRECAO_BOTAO_CADASTRO.md` - Detalhes do cadastro
+
+## 🔧 Arquivos Modificados
+- `app/build.gradle.kts` - Versão + dependência ExifInterface
+- `ImagePicker.kt` - Permissões câmera + correção EXIF
+- `TaskFormState.kt` - Flag isSaved
+- `TaskFormViewModel.kt` - Lógica de salvamento
+- `TaskFormScreen.kt` - Snackbar + miniatura steps
+- `MainActivity.kt` - Rota child_registration
+- `HomeScreen.kt` - Navegação botão Cadastro
+
+## 🆕 Arquivos Criados
+- `ChildRegistrationScreen.kt` - Tela completa de cadastro
+
+## ✅ Testes Pendentes
+- [ ] Teste prático da câmera (permissões)
+- [ ] Validar rotacionamento de imagens
+- [ ] Testar salvamento de tarefas
+- [ ] Testar cadastro de criança
+- [ ] Validar miniaturas dos steps
+
+---
+
+**Versão**: 1.8.0 (Build 9)
+**Data**: 18/10/2025
+**MVP**: 07 - Interface com Imagens, Timer e Categorias
+

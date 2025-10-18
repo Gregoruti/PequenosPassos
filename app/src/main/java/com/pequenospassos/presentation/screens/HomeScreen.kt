@@ -53,7 +53,7 @@ fun HomeScreen(navController: NavController) {
             Text("Nova Tarefa")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { /* Navegar para Cadastro */ }, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = { navController.navigate("child_registration") }, modifier = Modifier.fillMaxWidth()) {
             Text("Cadastro")
         }
         Spacer(modifier = Modifier.height(16.dp))

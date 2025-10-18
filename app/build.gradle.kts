@@ -19,8 +19,8 @@ android {
         applicationId = "com.example.pequenospassos"
         minSdk = 24
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.7.0"
+        versionCode = 9
+        versionName = "1.8.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -73,6 +73,9 @@ dependencies {
 
     // Image Loading - MVP Dependencies
     implementation(libs.coil.compose)
+
+    // ExifInterface for image orientation correction - MVP-07
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
 
     // ViewModel Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)

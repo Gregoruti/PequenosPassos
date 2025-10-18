@@ -1,9 +1,12 @@
 package com.pequenospassos.presentation.screens.taskform
 
 import android.net.Uri
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -12,9 +15,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.pequenospassos.domain.model.Step
 import com.pequenospassos.presentation.components.CategoryPicker
 import com.pequenospassos.presentation.components.CompactImagePicker
@@ -48,17 +54,23 @@ fun TaskFormScreen(
     val state by viewModel.state.collectAsState()
     var showStepDialog by remember { mutableStateOf(false) }
     var editingStepIndex by remember { mutableStateOf<Int?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     // Carregar tarefa se for edição
     LaunchedEffect(taskId) {
         taskId?.let { viewModel.loadTask(it) }
     }
 
-    // Navegação após salvar com sucesso
-    LaunchedEffect(state.isLoading) {
-        if (!state.isLoading && state.errorMessage == null && taskId != null) {
-            // Se não está mais carregando e não há erro, a tarefa foi salva
-            // Você pode adicionar uma flag no state para controlar melhor isso
+    // Observar salvamento bem-sucedido
+    LaunchedEffect(state.isSaved) {
+        if (state.isSaved) {
+            // Mostrar mensagem de sucesso
+            snackbarHostState.showSnackbar(
+                message = if (taskId == null) "Nova tarefa adicionada!" else "Tarefa atualizada!",
+                duration = SnackbarDuration.Short
+            )
+            // Navegar de volta
+            navController.navigateUp()
         }
     }
 
@@ -76,7 +88,8 @@ fun TaskFormScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -317,49 +330,81 @@ private fun StepCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Step ${index + 1}",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = step.title,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                if (step.imageUrl != null) {
-                    Text(
-                        text = "🖼️ Imagem anexada",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
-            }
+            // Header com título e botões de ação
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onEdit) {
-                    Icon(
-                        imageVector = Icons.Default.Add, // Use Edit icon if available
-                        contentDescription = "Editar step"
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Step ${index + 1}",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = step.title,
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Remover step",
-                        tint = MaterialTheme.colorScheme.error
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    IconButton(onClick = onEdit) {
+                        Icon(
+                            imageVector = Icons.Default.Add, // Use Edit icon if available
+                            contentDescription = "Editar step"
+                        )
+                    }
+                    IconButton(onClick = onDelete) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Remover step",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            }
+
+            // Miniatura da imagem do step (se houver)
+            if (step.imageUrl != null) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "🖼️ Miniatura do Step:",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Image(
+                        painter = rememberAsyncImagePainter(step.imageUrl),
+                        contentDescription = "Miniatura do step",
+                        modifier = Modifier
+                            .size(120.dp, 80.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.outline,
+                                shape = RoundedCornerShape(8.dp)
+                            ),
+                        contentScale = ContentScale.Crop
                     )
                 }
             }
+
+            // Timer duration
+            Text(
+                text = "⏱️ Timer: ${step.durationSeconds}s",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

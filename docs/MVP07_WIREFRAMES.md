@@ -146,27 +146,35 @@ Implementar **4 telas principais** de interface do usuário com suporte a:
 │  Step 1 ┌───────────────────┐ [✕]  │
 │         │ Molhar a escova   │      │
 │         └───────────────────┘      │
-│         🖼️ [Adicionar Imagem]       │ ← Imagem do Step (execução)
-│         ⏱️ Timer: [60s ▼]           │
-│         ────────────────────────    │
-│         15s ═════●═══════ 600s      │
+│         Nome do passo: Molhar a escova          │
+│         🖼️ Miniatura do Step:                   │
+│           ┌──────────────┐                      │
+│           │  [thumb.jpg] │                      │ ← Miniatura do Step (exibição)
+│           └──────────────┘                      │
+│         🖼️ [Adicionar Imagem]  [✕ Remover]     │
+│         ⏱️ Timer: [60s ▼]                        │
+│         ────────────────────────                │
+│         15s ═════●═══════ 600s                  │
 │                                     │
 │  Step 2 ┌───────────────────┐ [✕]  │
 │         │ Colocar creme     │      │
 │         └───────────────────┘      │
-│         🖼️ [📷 imagem.jpg]  [✕]    │ ← Imagem do Step
-│         ┌─────────────────┐        │
-│         │ [🚰 Molhando]   │        │ ← Preview
-│         └─────────────────┘        │
-│         ⏱️ Timer: [90s ▼]           │
-│         ────────────────────────    │
-│         15s ══════════●══ 600s      │
+│         Nome do passo: Colocar creme            │
+│         🖼️ Miniatura do Step:                   │
+│           ┌──────────────┐                      │
+│           │ [🚰 Molhando]│                      │ ← Preview
+│           └──────────────┘                      │
+│         🖼️ [📷 imagem.jpg]  [✕ Remover]        │
+│         ⏱️ Timer: [90s ▼]                        │
+│         ────────────────────────                │
+│         15s ══════════●══ 600s                  │
 │                                     │
 │  Step 3 ┌───────────────────┐ [✕]  │
 │         │ Escovar dentes    │      │
 │         └───────────────────┘      │
-│         🖼️ [Câmera 📸] [Galeria 🖼️] │ ← Imagem do Step
-│         ⏱️ Timer: [120s ▼]          │
+│         Nome do passo: Escovar dentes           │
+│         🖼️ [Câmera 📸] [Galeria 🖼️]             │ ← Imagem do Step
+│         ⏱️ Timer: [120s ▼]                       │
 │                                     │
 │  ┌─────────────────────────────┐   │
 │  │  ➕ Adicionar Passo         │   │ ← Add Step Button
@@ -1134,7 +1142,7 @@ TaskExecutionScreen
 
 ## 🎨 PALETA DE CORES (Material 3)
 
-```kotlin
+```text
 // Modo Claro
 Primary: #6750A4      (roxo)
 Secondary: #625B71    (cinza-roxo)
@@ -1157,20 +1165,6 @@ Cancelled: #9E9E9E    (cinza)
 // Category Fallback Box
 PrimaryContainer: #E8DEF8  (roxo claro para emoji)
 ```
-
----
-
-## 📱 RESPONSIVIDADE
-
-### Tamanhos Suportados
-- **Compact**: Phones (width < 600dp) - prioridade
-- **Medium**: Tablets 7" (width 600-840dp) - futuro
-- **Expanded**: Tablets 10"+ (width > 840dp) - futuro
-
-### Adaptações
-- **Compact**: Layouts verticais, imagens 60-80dp
-- **Medium**: Alguns layouts horizontais, imagens maiores
-- **Expanded**: Two-pane layouts (futuro MVP)
 
 ---
 
@@ -1218,5 +1212,3 @@ PrimaryContainer: #E8DEF8  (roxo claro para emoji)
 **Versão**: 1.1 (ATUALIZADO com categorias e imagens)  
 **Aprovação**: ⏳ Pendente  
 **Próxima Ação**: Aguardando aprovação para iniciar implementação
-
-

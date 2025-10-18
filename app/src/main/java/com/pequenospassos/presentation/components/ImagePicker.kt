@@ -1,8 +1,10 @@
 package com.pequenospassos.presentation.components
 
+import android.Manifest
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -23,7 +25,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.exifinterface.media.ExifInterface
 import coil.compose.rememberAsyncImagePainter
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -56,6 +62,7 @@ import java.util.*
  * @since MVP-07 (16/10/2025)
  * @author PequenosPassos Development Team
  */
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ImagePicker(
     imageUri: Uri?,
@@ -68,6 +75,9 @@ fun ImagePicker(
 ) {
     val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
+
+    // Camera permission state
+    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
     // Temporary file for camera capture
     var tempPhotoUri by remember { mutableStateOf<Uri?>(null) }
@@ -122,9 +132,15 @@ fun ImagePicker(
             // Camera button
             OutlinedButton(
                 onClick = {
-                    // Check permission and launch camera
-                    tempPhotoUri = createTempImageFile(context)
-                    tempPhotoUri?.let { cameraLauncher.launch(it) }
+                    // Check camera permission
+                    if (cameraPermissionState.status.isGranted) {
+                        // Permission granted, launch camera
+                        tempPhotoUri = createTempImageFile(context)
+                        tempPhotoUri?.let { cameraLauncher.launch(it) }
+                    } else {
+                        // Request permission
+                        cameraPermissionState.launchPermissionRequest()
+                    }
                 },
                 modifier = Modifier.weight(1f)
             ) {
@@ -163,8 +179,13 @@ fun ImagePicker(
                 TextButton(
                     onClick = {
                         showDialog = false
-                        tempPhotoUri = createTempImageFile(context)
-                        tempPhotoUri?.let { cameraLauncher.launch(it) }
+                        // Check camera permission before launching
+                        if (cameraPermissionState.status.isGranted) {
+                            tempPhotoUri = createTempImageFile(context)
+                            tempPhotoUri?.let { cameraLauncher.launch(it) }
+                        } else {
+                            cameraPermissionState.launchPermissionRequest()
+                        }
                     }
                 ) {
                     Text("Câmera")
@@ -308,16 +329,19 @@ private fun resizeAndSaveImage(context: Context, sourceUri: Uri, maxSize: Int): 
             return null
         }
 
+        // Correct orientation if needed
+        val rotatedBitmap = correctImageOrientation(context, originalBitmap, sourceUri)
+
         // Calculate new dimensions
         val (newWidth, newHeight) = calculateNewDimensions(
-            originalBitmap.width,
-            originalBitmap.height,
+            rotatedBitmap.width,
+            rotatedBitmap.height,
             maxSize
         )
 
         // Resize bitmap
         val resizedBitmap = Bitmap.createScaledBitmap(
-            originalBitmap,
+            rotatedBitmap,
             newWidth,
             newHeight,
             true
@@ -335,6 +359,7 @@ private fun resizeAndSaveImage(context: Context, sourceUri: Uri, maxSize: Int): 
 
         // Clean up
         originalBitmap.recycle()
+        rotatedBitmap.recycle()
         resizedBitmap.recycle()
 
         // Return URI
@@ -351,6 +376,45 @@ private fun resizeAndSaveImage(context: Context, sourceUri: Uri, maxSize: Int): 
     } catch (e: Exception) {
         e.printStackTrace()
         null
+    }
+}
+
+/**
+ * Corrige a orientação da imagem com base nos metadados EXIF.
+ */
+private fun correctImageOrientation(context: Context, bitmap: Bitmap, uri: Uri): Bitmap {
+    return try {
+        // Obter os metadados EXIF da imagem
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val exif = inputStream?.let { ExifInterface(it) }
+
+        // Obter a orientação da imagem
+        val orientation = exif?.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+        // Se a orientação não for normal, aplicar a rotação necessária
+        if (orientation != null && orientation != ExifInterface.ORIENTATION_NORMAL) {
+            val matrix = Matrix()
+
+            when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+                ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+                ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+            }
+
+            // Criar uma nova bitmap com a rotação aplicada
+            val rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+
+            // Limpar a bitmap original
+            bitmap.recycle()
+
+            rotatedBitmap
+        } else {
+            // Se a orientação é normal ou não pôde ser determinada, retornar a bitmap original
+            bitmap
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        bitmap // Retornar a bitmap original em caso de erro
     }
 }
 
