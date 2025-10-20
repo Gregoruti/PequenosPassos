@@ -97,10 +97,33 @@ fun ImagePicker(
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let {
-            // Resize and save image
-            val resizedUri = resizeAndSaveImage(context, it, maxSize)
-            resizedUri?.let { newUri -> onImageSelected(newUri) }
+        if (uri != null) {
+            android.util.Log.d("ImagePicker", "Gallery URI received: $uri")
+            try {
+                // Take persistable URI permission
+                val takeFlags = android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                try {
+                    context.contentResolver.takePersistableUriPermission(uri, takeFlags)
+                    android.util.Log.d("ImagePicker", "Persistable permission granted")
+                } catch (e: SecurityException) {
+                    android.util.Log.w("ImagePicker", "Could not take persistable permission: ${e.message}")
+                }
+
+                // Resize and save image
+                android.util.Log.d("ImagePicker", "Starting resize and save...")
+                val resizedUri = resizeAndSaveImage(context, uri, maxSize)
+
+                if (resizedUri != null) {
+                    android.util.Log.d("ImagePicker", "Image saved successfully: $resizedUri")
+                    onImageSelected(resizedUri)
+                } else {
+                    android.util.Log.e("ImagePicker", "resizeAndSaveImage returned null!")
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("ImagePicker", "Error processing gallery image", e)
+            }
+        } else {
+            android.util.Log.w("ImagePicker", "Gallery returned null URI")
         }
     }
 
@@ -320,16 +343,34 @@ private fun createTempImageFile(context: Context): Uri? {
  */
 private fun resizeAndSaveImage(context: Context, sourceUri: Uri, maxSize: Int): Uri? {
     return try {
-        // Decode bitmap com checagem de null
-        val inputStream = try { context.contentResolver.openInputStream(sourceUri) } catch (e: Exception) { null }
-        val originalBitmap = inputStream?.use { BitmapFactory.decodeStream(it) }
+        android.util.Log.d("ImagePicker", "resizeAndSaveImage: Starting - sourceUri=$sourceUri")
 
-        if (originalBitmap == null) {
-            // Não foi possível decodificar a imagem
+        // Decode bitmap com checagem de null
+        val inputStream = try {
+            android.util.Log.d("ImagePicker", "resizeAndSaveImage: Opening input stream...")
+            context.contentResolver.openInputStream(sourceUri)
+        } catch (e: Exception) {
+            android.util.Log.e("ImagePicker", "resizeAndSaveImage: Failed to open input stream", e)
+            null
+        }
+
+        if (inputStream == null) {
+            android.util.Log.e("ImagePicker", "resizeAndSaveImage: Input stream is null!")
             return null
         }
 
+        android.util.Log.d("ImagePicker", "resizeAndSaveImage: Decoding bitmap...")
+        val originalBitmap = inputStream.use { BitmapFactory.decodeStream(it) }
+
+        if (originalBitmap == null) {
+            android.util.Log.e("ImagePicker", "resizeAndSaveImage: Failed to decode bitmap!")
+            return null
+        }
+
+        android.util.Log.d("ImagePicker", "resizeAndSaveImage: Bitmap decoded - ${originalBitmap.width}x${originalBitmap.height}")
+
         // Correct orientation if needed
+        android.util.Log.d("ImagePicker", "resizeAndSaveImage: Correcting orientation...")
         val rotatedBitmap = correctImageOrientation(context, originalBitmap, sourceUri)
 
         // Calculate new dimensions
@@ -338,8 +379,10 @@ private fun resizeAndSaveImage(context: Context, sourceUri: Uri, maxSize: Int): 
             rotatedBitmap.height,
             maxSize
         )
+        android.util.Log.d("ImagePicker", "resizeAndSaveImage: New dimensions - ${newWidth}x${newHeight}")
 
         // Resize bitmap
+        android.util.Log.d("ImagePicker", "resizeAndSaveImage: Resizing bitmap...")
         val resizedBitmap = Bitmap.createScaledBitmap(
             rotatedBitmap,
             newWidth,
@@ -353,27 +396,38 @@ private fun resizeAndSaveImage(context: Context, sourceUri: Uri, maxSize: Int): 
         val storageDir = context.getExternalFilesDir("Pictures") ?: context.cacheDir
         val imageFile = File(storageDir, fileName)
 
+        android.util.Log.d("ImagePicker", "resizeAndSaveImage: Saving to ${imageFile.absolutePath}")
+
         FileOutputStream(imageFile).use { out ->
-            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+            val compressed = resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+            android.util.Log.d("ImagePicker", "resizeAndSaveImage: Compression result = $compressed")
         }
 
         // Clean up
         originalBitmap.recycle()
-        rotatedBitmap.recycle()
+        if (rotatedBitmap != originalBitmap) {
+            rotatedBitmap.recycle()
+        }
         resizedBitmap.recycle()
+
+        android.util.Log.d("ImagePicker", "resizeAndSaveImage: Image saved, getting FileProvider URI...")
 
         // Return URI
         try {
-            FileProvider.getUriForFile(
+            val resultUri = FileProvider.getUriForFile(
                 context,
                 "${context.packageName}.fileprovider",
                 imageFile
             )
+            android.util.Log.d("ImagePicker", "resizeAndSaveImage: Success! Result URI = $resultUri")
+            resultUri
         } catch (e: IllegalArgumentException) {
+            android.util.Log.e("ImagePicker", "resizeAndSaveImage: FileProvider error", e)
             e.printStackTrace()
             null
         }
     } catch (e: Exception) {
+        android.util.Log.e("ImagePicker", "resizeAndSaveImage: Unexpected error", e)
         e.printStackTrace()
         null
     }
@@ -404,8 +458,10 @@ private fun correctImageOrientation(context: Context, bitmap: Bitmap, uri: Uri):
             // Criar uma nova bitmap com a rotação aplicada
             val rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 
-            // Limpar a bitmap original
-            bitmap.recycle()
+            // Limpar a bitmap original SOMENTE se for diferente da rotacionada
+            if (rotatedBitmap != bitmap) {
+                bitmap.recycle()
+            }
 
             rotatedBitmap
         } else {
