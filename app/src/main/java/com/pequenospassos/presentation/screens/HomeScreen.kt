@@ -57,11 +57,11 @@ fun HomeScreen(navController: NavController) {
             Text("Cadastro")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { /* Navegar para Teste Rápido */ }, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = { navController.navigate("task_list") }, modifier = Modifier.fillMaxWidth()) {
             Text("Teste Rápido")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { /* Navegar para Atividades */ }, modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = { navController.navigate("task_list") }, modifier = Modifier.fillMaxWidth()) {
             Text("Atividades")
         }
         Spacer(modifier = Modifier.height(16.dp))

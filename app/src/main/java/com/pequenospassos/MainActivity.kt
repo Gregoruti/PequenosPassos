@@ -19,6 +19,7 @@ import com.pequenospassos.presentation.screens.SplashScreen
 import com.pequenospassos.presentation.screens.TtsTestScreen
 import com.pequenospassos.presentation.screens.childregistration.ChildRegistrationScreen
 import com.pequenospassos.presentation.screens.taskform.TaskFormScreen
+import com.pequenospassos.presentation.screens.tasklist.TaskListScreen
 import com.pequenospassos.presentation.screens.execution.TaskExecutionScreen
 import dagger.hilt.android.AndroidEntryPoint
 import com.pequenospassos.presentation.theme.PequenosPassosTheme
@@ -83,6 +84,9 @@ fun PequenosPassosApp() {
             val taskId = backStackEntry.arguments?.getLong("taskId") ?: 0L
             TaskExecutionScreen(navController = navController, taskId = taskId)
         }
+
+        // Rota para lista de tarefas (Atividades)
+        composable("task_list") { TaskListScreen(navController) }
 
         // Rota para cadastro da criança
         composable("child_registration") { ChildRegistrationScreen(navController) }
