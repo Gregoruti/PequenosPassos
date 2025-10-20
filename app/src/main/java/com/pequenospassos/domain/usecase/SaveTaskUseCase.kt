@@ -40,7 +40,7 @@ class SaveTaskUseCase @Inject constructor(
      * @param stars Quantidade de estrelas (1-5)
      * @param category Categoria da tarefa (obrigatório - MVP-07)
      * @param imageUrl URL da imagem da tarefa (opcional - MVP-07)
-     * @param steps Lista de títulos de steps (opcional)
+     * @param steps Lista de Steps completos com imageUrl e durationSeconds (MVP-07)
      * @return AppResult com ID da tarefa criada ou erro
      */
     suspend operator fun invoke(
@@ -51,7 +51,7 @@ class SaveTaskUseCase @Inject constructor(
         stars: Int,
         category: String,
         imageUrl: String? = null,
-        steps: List<String> = emptyList()
+        steps: List<Step> = emptyList()
     ): AppResult<Long> {
         // Validação: título é obrigatório
         if (title.isBlank()) {
@@ -96,14 +96,13 @@ class SaveTaskUseCase @Inject constructor(
             val taskId = taskRepository.insertTask(task).getOrThrow()
 
             // Inserir steps se houver
-            steps.forEachIndexed { index, stepTitle ->
-                if (stepTitle.isNotBlank()) {
-                    val step = Step(
+            steps.forEachIndexed { index, step ->
+                if (step.title.isNotBlank()) {
+                    val stepToSave = step.copy(
                         taskId = taskId,
-                        title = stepTitle.trim(),
-                        order = index + 1
+                        order = index
                     )
-                    stepRepository.insertStep(step).getOrThrow()
+                    stepRepository.insertStep(stepToSave).getOrThrow()
                 }
             }
 

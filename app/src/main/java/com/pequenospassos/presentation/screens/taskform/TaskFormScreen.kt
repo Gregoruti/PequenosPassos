@@ -375,28 +375,19 @@ private fun StepCard(
 
             // Miniatura da imagem do step (se houver)
             if (step.imageUrl != null) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        text = "🖼️ Miniatura do Step:",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Image(
-                        painter = rememberAsyncImagePainter(step.imageUrl),
-                        contentDescription = "Miniatura do step",
-                        modifier = Modifier
-                            .size(120.dp, 80.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .border(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.outline,
-                                shape = RoundedCornerShape(8.dp)
-                            ),
-                        contentScale = ContentScale.Crop
-                    )
-                }
+                Image(
+                    painter = rememberAsyncImagePainter(step.imageUrl),
+                    contentDescription = "Miniatura do step",
+                    modifier = Modifier
+                        .size(120.dp, 80.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outline,
+                            shape = RoundedCornerShape(8.dp)
+                        ),
+                    contentScale = ContentScale.Crop
+                )
             }
 
             // Timer duration

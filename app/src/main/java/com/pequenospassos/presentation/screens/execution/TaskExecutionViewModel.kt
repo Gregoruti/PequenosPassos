@@ -63,6 +63,11 @@ class TaskExecutionViewModel @Inject constructor(
                 // Coletar steps do Flow
                 steps = getStepsByTaskUseCase(taskId).firstOrNull()?.sortedBy { it.order } ?: emptyList()
 
+                // Debug: verificar dados dos steps carregados
+                steps.forEachIndexed { index, step ->
+                    println("TaskExecutionVM: Step ${index + 1} - title: '${step.title}', imageUrl: '${step.imageUrl}', duration: ${step.durationSeconds}s")
+                }
+
                 if (steps.isEmpty()) {
                     _state.value = _state.value.copy(
                         isLoading = false,

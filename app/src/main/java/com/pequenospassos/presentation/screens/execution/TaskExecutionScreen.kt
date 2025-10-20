@@ -10,8 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.pequenospassos.presentation.components.CircularTimer
@@ -38,7 +38,7 @@ import com.pequenospassos.presentation.components.CircularTimer
 fun TaskExecutionScreen(
     navController: NavController,
     taskId: Long,
-    viewModel: TaskExecutionViewModel = viewModel()
+    viewModel: TaskExecutionViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -108,7 +108,7 @@ fun TaskExecutionScreen(
                         .fillMaxSize()
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // Indicador de progresso
                     Text(
@@ -116,35 +116,6 @@ fun TaskExecutionScreen(
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Imagem do step (se disponível)
-                    state.currentStep?.imageUrl?.let { imageUrl ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth(0.8f)
-                                .aspectRatio(1f),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                        ) {
-                            AsyncImage(
-                                model = Uri.parse(imageUrl),
-                                contentDescription = "Imagem do passo",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Timer circular
-                    CircularTimer(
-                        remainingSeconds = state.remainingSeconds,
-                        totalSeconds = state.currentStep?.durationSeconds ?: 60
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
 
                     // Título do step
                     Card(
@@ -161,12 +132,89 @@ fun TaskExecutionScreen(
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    // Imagem do step (se disponível)
+                    if (!state.currentStep?.imageUrl.isNullOrEmpty()) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        ) {
+                            AsyncImage(
+                                model = state.currentStep?.imageUrl,
+                                contentDescription = "Imagem do passo",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Fit,
+                                onError = {
+                                    // Log de erro para debug
+                                    println("TaskExecution: Erro ao carregar imagem: ${state.currentStep?.imageUrl}")
+                                },
+                                onSuccess = {
+                                    println("TaskExecution: Imagem carregada com sucesso: ${state.currentStep?.imageUrl}")
+                                }
+                            )
+                        }
+                    } else {
+                        // Debug: verificar se imageUrl está null ou vazia
+                        println("TaskExecution: Step ${state.currentStepIndex + 1} - imageUrl: '${state.currentStep?.imageUrl}'")
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
+
+                    // Timer com barra de progresso horizontal
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            // Display do tempo
+                            Text(
+                                text = formatTime(state.remainingSeconds),
+                                style = MaterialTheme.typography.displayMedium,
+                                color = getTimerColor(
+                                    state.remainingSeconds,
+                                    state.currentStep?.durationSeconds ?: 60
+                                )
+                            )
+
+                            // Barra de progresso
+                            val progress = if (state.currentStep?.durationSeconds ?: 0 > 0) {
+                                state.remainingSeconds.toFloat() / (state.currentStep?.durationSeconds ?: 60).toFloat()
+                            } else {
+                                0f
+                            }
+
+                            LinearProgressIndicator(
+                                progress = progress.coerceIn(0f, 1f),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(12.dp),
+                                color = getTimerColor(
+                                    state.remainingSeconds,
+                                    state.currentStep?.durationSeconds ?: 60
+                                ),
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+
+                            Text(
+                                text = "restante de ${formatTime(state.currentStep?.durationSeconds ?: 60)}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
 
                     // Botões de controle
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         // Botão Pausar/Retomar
                         OutlinedButton(
@@ -176,7 +224,6 @@ fun TaskExecutionScreen(
                             Text(if (state.isPaused) "▶️ Retomar" else "⏸️ Pausar")
                         }
 
-                        Spacer(modifier = Modifier.width(16.dp))
 
                         // Botão Próximo/Concluir
                         Button(
@@ -213,5 +260,35 @@ fun TaskExecutionScreen(
                 )
             }
         }
+    }
+}
+
+/**
+ * Formata segundos em formato MM:SS.
+ */
+private fun formatTime(seconds: Int): String {
+    val minutes = seconds / 60
+    val secs = seconds % 60
+    return String.format("%02d:%02d", minutes, secs)
+}
+
+/**
+ * Retorna a cor do timer baseada no tempo restante.
+ * - Verde: > 60% do tempo
+ * - Amarelo: 30-60% do tempo
+ * - Vermelho: < 30% do tempo
+ */
+@Composable
+private fun getTimerColor(remainingSeconds: Int, totalSeconds: Int): androidx.compose.ui.graphics.Color {
+    val progress = if (totalSeconds > 0) {
+        remainingSeconds.toFloat() / totalSeconds.toFloat()
+    } else {
+        0f
+    }
+
+    return when {
+        progress > 0.6f -> androidx.compose.ui.graphics.Color(0xFF4CAF50) // Verde
+        progress > 0.3f -> androidx.compose.ui.graphics.Color(0xFFFFC107) // Amarelo
+        else -> androidx.compose.ui.graphics.Color(0xFFF44336) // Vermelho
     }
 }

@@ -128,10 +128,10 @@ class TaskFormViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                // Extrair títulos dos steps
-                val stepTitles = currentState.steps.map { it.title }
+                // Passar steps completos (com imageUrl e durationSeconds) - MVP-07
+                val stepsToSave = currentState.steps
 
-                // Salvar tarefa com steps usando a assinatura correta
+                // Salvar tarefa com steps completos
                 val result = saveTaskUseCase(
                     title = currentState.title,
                     description = currentState.description,
@@ -140,7 +140,7 @@ class TaskFormViewModel @Inject constructor(
                     stars = currentState.stars,
                     category = currentState.category!!.name,
                     imageUrl = currentState.imageUrl?.toString(),
-                    steps = stepTitles
+                    steps = stepsToSave
                 )
 
                 when (result) {
