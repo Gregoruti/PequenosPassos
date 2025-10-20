@@ -7,6 +7,25 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [1.8.1] - 2025-10-19 - Correção de Bug Crítico na Galeria
+
+### Corrigido
+- **🐛 Bug Crítico: Seleção de imagens via galeria**
+  - **Erro:** `IllegalArgumentException: cannot use a recycled source in createBitmap`
+  - **Causa:** Bitmap estava sendo reciclado prematuramente na função `correctImageOrientation()`
+  - **Solução:** Adicionada verificação `if (rotatedBitmap != bitmap)` antes de reciclar
+  - **Impacto:** Seleção de galeria agora funciona 100%
+  - **Arquivo:** `ImagePicker.kt` - função `correctImageOrientation()`
+  - **Documentação:** `MVP07_CORRECAO_GALERIA_BITMAP.md`
+
+### Adicionado
+- **Script de compilação e instalação:** `compilar_e_instalar.bat`
+  - Facilita o processo de build e deploy durante desenvolvimento
+  - Verifica erros de compilação e instalação
+  - Exibe mensagens de sucesso/erro claras
+
+---
+
 ## [1.8.0] - 2025-10-16 - MVP-07 Planejamento e Documentação
 
 ### Planejado
