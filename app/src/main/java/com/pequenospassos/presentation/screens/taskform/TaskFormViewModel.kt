@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pequenospassos.domain.model.TaskCategory
 import com.pequenospassos.domain.usecase.GetTaskByIdUseCase
+import com.pequenospassos.domain.usecase.GetStepsByTaskUseCase
 import com.pequenospassos.domain.usecase.SaveTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,13 +23,16 @@ import javax.inject.Inject
  *
  * @property saveTaskUseCase Use case para salvar tarefa
  * @property getTaskByIdUseCase Use case para buscar tarefa (modo edição)
+ * @property getStepsByTaskUseCase Use case para buscar steps da tarefa (modo edição)
  *
  * @since MVP-07 (16/10/2025)
+ * @updated v1.9.5 (20/10/2025) - Corrigido carregamento de steps na edição
  */
 @HiltViewModel
 class TaskFormViewModel @Inject constructor(
     private val saveTaskUseCase: SaveTaskUseCase,
-    private val getTaskByIdUseCase: GetTaskByIdUseCase
+    private val getTaskByIdUseCase: GetTaskByIdUseCase,
+    private val getStepsByTaskUseCase: GetStepsByTaskUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskFormState())
@@ -92,20 +96,50 @@ class TaskFormViewModel @Inject constructor(
      */
     fun loadTask(taskId: Long) {
         viewModelScope.launch {
-            getTaskByIdUseCase(taskId).collect { task ->
-                task?.let {
-                    _state.update { state ->
-                        state.copy(
-                            taskId = it.id,
-                            title = it.title,
-                            description = it.description,
-                            time = it.time,
-                            stars = it.stars,
-                            category = TaskCategory.fromString(it.category),
-                            imageUrl = it.imageUrl?.let { url -> Uri.parse(url) }
-                            // Steps serão carregados separadamente
-                        )
+            try {
+                _state.update { it.copy(isLoading = true) }
+
+                // Carregar dados da tarefa e steps em paralelo
+                val taskJob = launch {
+                    getTaskByIdUseCase(taskId).collect { task ->
+                        task?.let {
+                            _state.update { state ->
+                                state.copy(
+                                    taskId = it.id,
+                                    title = it.title,
+                                    description = it.description,
+                                    time = it.time,
+                                    stars = it.stars,
+                                    category = TaskCategory.fromString(it.category),
+                                    imageUrl = it.imageUrl?.let { url -> Uri.parse(url) }
+                                )
+                            }
+                        }
                     }
+                }
+
+                // Carregar steps da tarefa (observável contínuo)
+                val stepsJob = launch {
+                    getStepsByTaskUseCase(taskId).collect { steps ->
+                        println("TaskFormVM: Carregando ${steps.size} steps para edição")
+                        _state.update { state ->
+                            state.copy(
+                                steps = steps.sortedBy { it.order },
+                                isLoading = false
+                            )
+                        }
+                    }
+                }
+
+                // Não esperamos os jobs terminarem pois são flows contínuos
+            } catch (e: Exception) {
+                println("TaskFormVM: Erro ao carregar tarefa: ${e.message}")
+                e.printStackTrace()
+                _state.update {
+                    it.copy(
+                        errorMessage = "Erro ao carregar tarefa: ${e.message}",
+                        isLoading = false
+                    )
                 }
             }
         }
@@ -131,8 +165,9 @@ class TaskFormViewModel @Inject constructor(
                 // Passar steps completos (com imageUrl e durationSeconds) - MVP-07
                 val stepsToSave = currentState.steps
 
-                // Salvar tarefa com steps completos
+                // Salvar tarefa com steps completos (passa taskId se for edição)
                 val result = saveTaskUseCase(
+                    taskId = currentState.taskId, // null para criar, > 0 para editar
                     title = currentState.title,
                     description = currentState.description,
                     iconRes = 0, // TODO: Implementar seleção de ícone
@@ -175,3 +210,4 @@ class TaskFormViewModel @Inject constructor(
         _state.update { it.copy(errorMessage = null) }
     }
 }
+

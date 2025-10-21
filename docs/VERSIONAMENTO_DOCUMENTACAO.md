@@ -89,6 +89,11 @@ v1.0.0 (12/10/2025) - MVP-01
 
 **Changelog:**
 ```
+v1.7.2 (21/10/2025) - MVP-07 v1.9.6
+  - Adicionada entrada da versão 1.9.6 (bugfix steps edição)
+  - Documentado erro UNIQUE constraint e correção
+  - Atualizado histórico de modificações
+
 v1.7.1 (17/10/2025) - MVP-07 Fase 3
   - Adicionadas implementações de TaskExecutionScreen
   - Adicionado CircularTimer component

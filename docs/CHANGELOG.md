@@ -7,6 +7,247 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
+## [1.9.6] - 2025-10-21 - CORREÇÃO: UNIQUE Constraint ao Editar Steps 🐛
+
+### Corrigido
+- **🐛 BUG CRÍTICO: Erro ao salvar steps editados**
+  - **Problema:** Ao editar steps de tarefa existente, app exibia erro "UNIQUE constraint failed: steps.id"
+  - **Causa:** `SaveTaskUseCase` sempre fazia INSERT de steps, mesmo para edições (steps com IDs existentes)
+  - **Solução:**
+    - Adicionado parâmetro `taskId` opcional ao `SaveTaskUseCase` (null = criar, > 0 = editar)
+    - Implementada lógica para diferenciar UPDATE vs INSERT de tarefa
+    - Steps antigos são deletados antes de inserir os novos (evita conflito de IDs)
+    - Steps novos sempre inseridos com `id = 0` (forçar novo registro)
+    - `TaskFormViewModel` agora passa `taskId` ao use case corretamente
+  - **Impacto:** Edição completa de steps agora funciona perfeitamente
+  - **Arquivos:** 
+    - `SaveTaskUseCase.kt` - Reescrito para suportar edição
+    - `TaskFormViewModel.kt` - Passa taskId ao use case
+  - **Documentação:** `MVP07_BUGFIX_STEPS_EDICAO_V1.9.6.md`
+
+### Modificado
+- **SaveTaskUseCase:**
+  - Constructor agora aceita `taskId: Long? = null` como primeiro parâmetro
+  - Usa `updateTask()` quando taskId > 0 (edição)
+  - Usa `insertTask()` quando taskId é null (criação)
+  - Deleta steps antigos antes de inserir novos (edição)
+  - Documentação atualizada com versão 1.9.6
+
+- **TaskFormViewModel:**
+  - Método `saveTask()` passa `currentState.taskId` ao use case
+  - Comentários atualizados explicando criação vs edição
+
+### Técnico
+- **Estratégia de Persistência:** DELETE ALL + INSERT ALL (mais simples e confiável)
+- **Room Database:** Cascade delete garante consistência de dados
+- **Validação:** Testes manuais completos (criar, editar, adicionar, remover, reordenar steps)
+
+### Versionamento
+- **versionCode:** 15 → **16**
+- **versionName:** 1.9.5 → **1.9.6**
+
+---
+
+## [1.9.5] - 2025-10-20 - CORREÇÃO: Steps Não Apareciam na Edição 🐛
+
+### Corrigido
+- **🐛 BUG: Steps não apareciam ao editar tarefa existente**
+  - **Problema:** Ao clicar em "✏️ Editar" em uma tarefa, os steps não eram carregados
+  - **Causa:** `TaskFormViewModel` não estava usando `GetStepsByTaskUseCase` para carregar steps
+  - **Solução:** 
+    - Adicionado `GetStepsByTaskUseCase` ao construtor do ViewModel
+    - Implementada função de carregamento de steps na `loadTask()`
+    - Steps agora são carregados e ordenados corretamente
+    - Adicionados logs de debug para rastreamento
+  - **Impacto:** Edição de tarefas agora mostra todos os steps existentes
+  - **Arquivo:** `TaskFormViewModel.kt` - função `loadTask()`
+
+### Modificado
+- **TaskFormViewModel:**
+  - Constructor agora recebe 3 use cases (incluindo `GetStepsByTaskUseCase`)
+  - Função `loadTask()` completamente reescrita
+  - Carregamento de task e steps em paralelo via coroutines
+  - Try-catch para melhor tratamento de erros
+
+### Versionamento
+- **versionCode:** 14 → **15**
+- **versionName:** 1.9.4 → **1.9.5**
+
+---
+
+## [1.9.4] - 2025-10-20 - CORREÇÃO CRÍTICA: Bug de Crash na Conclusão 🐛
+
+### Corrigido
+- **🐛 BUG CRÍTICO: App crashava ao concluir última tarefa**
+  - **Problema:** App fechava ao clicar "✓ Concluir" no último step
+  - **Causa:** Erro de sintaxe no `MainActivity.kt` - chave `}` faltante na rota `task_execution`
+  - **Solução:** 
+    - Adicionada chave `}` faltante após composable `task_execution`
+    - Removidas chaves `}` duplicadas/extras
+    - Sintaxe Kotlin corrigida completamente
+  - **Impacto:** Tela de conclusão agora funciona perfeitamente
+  - **Arquivo:** `MainActivity.kt` - linhas 80-110
+  - **Documentação:** `MVP07_BUGFIX_CRASH_V1.9.4.md`
+
+### Modificado
+- **📱 Navegação Corrigida**
+  - Tela de conclusão navega corretamente para `task_list`
+  - Botão atualizado: "✓ Voltar para Atividades"
+  - Decode correto do título da tarefa (URLDecoder)
+
+### Versionamento
+- **versionCode:** 13 → **14**
+- **versionName:** 1.9.3 → **1.9.4**
+
+---
+
+## [1.9.3] - 2025-10-20 - Preview de Imagem e Tela de Conclusão ⭐
+
+### Adicionado
+- **🖼️ Preview de Imagem no StepDialog** ✅
+  - Card verde com "✅ Imagem Selecionada" após seleção
+  - Miniatura da imagem (80dp) aparece no dialog
+  - Feedback visual claro para o usuário
+  - Confirmação imediata de que imagem foi adicionada
+
+- **🎉 Tela de Conclusão com Feedback Positivo** ⭐ NOVO
+  - 10 mensagens de parabéns diferentes (aleatórias)
+  - 8 mensagens de sucesso variadas (aleatórias)
+  - Exibição de estrelas ganhas com animação
+  - Estrelas aparecem uma por uma com rotação
+  - Animações suaves (spring, bounce)
+  - Emoji grande de celebração
+  - Evita repetição/mecanização
+  - Reforço positivo adequado para crianças com TEA
+  - Arquivo: `TaskCompletionScreen.kt`
+
+### Modificado
+- **TaskExecutionScreen:** Navegação para tela de conclusão ao concluir
+- **TaskExecutionViewModel:** Campo `taskStars` adicionado ao estado
+- **MainActivity:** Rota `task_completion/{taskTitle}/{stars}` adicionada
+
+---
+
+## [1.9.2] - 2025-10-20 - MVP-07 Reorganização da Arquitetura de Navegação 🏗️
+
+### 🎯 Motivação
+Separar área de **configuração** (adultos) da área de **execução** (crianças) para prevenir exclusões e edições acidentais por crianças com TEA.
+
+### Adicionado
+- **📱 TaskManagementScreen** - Nova tela de gerenciamento (Edição de Tarefas) ⭐ NOVO
+  - Lista todas as tarefas com opções de edição e exclusão
+  - Botão ✏️ (editar tarefa) - navega para TaskFormScreen
+  - Botão 🗑️ (deletar tarefa) - com dialog de confirmação
+  - FAB para adicionar nova tarefa
+  - **Área de Configuração** - protegida para adultos
+  - Arquivo: `presentation/screens/taskmanagement/TaskManagementScreen.kt`
+
+- **🖼️ Miniatura de Imagem nas Tarefas**
+  - TaskListScreen agora exibe miniatura (80dp × 80dp) da imagem principal da tarefa
+  - Posicionada à esquerda do card
+  - Fallback: emoji da categoria em box colorido se não houver imagem
+  - Melhora visual e identificação rápida das tarefas
+
+### Modificado
+- **🏠 HomeScreen**
+  - Botão "Nova Tarefa" **renomeado** para **"Edição de Tarefas"**
+  - Navegação alterada: `task_form` → `task_management`
+  - Clareza no propósito: área de configuração separada
+
+- **📱 TaskListScreen** (Atividades) - **SIMPLIFICADA** 🔒
+  - **REMOVIDO:** Botão 🗑️ de exclusão (prevenção de acidentes)
+  - **REMOVIDO:** FloatingActionButton de adicionar tarefa
+  - **ADICIONADO:** Miniatura da imagem da tarefa à esquerda
+  - Foco exclusivo: **executar tarefas**
+  - Área de execução segura para crianças
+  - EmptyState atualizado: direciona para "Edição de Tarefas"
+
+- **🗺️ Navegação (MainActivity)**
+  - Nova rota: `task_management` → TaskManagementScreen
+  - Separação clara:
+    - **Configuração:** task_management (com edição/exclusão)
+    - **Execução:** task_list (somente executar)
+
+### Arquitetura
+```
+HomeScreen
+  ├── "Edição de Tarefas" → TaskManagementScreen (Área de Configuração)
+  │    ├── ✏️ Editar → TaskFormScreen
+  │    ├── 🗑️ Deletar → Dialog de confirmação
+  │    └── ➕ FAB → Nova tarefa
+  │
+  └── "Atividades" → TaskListScreen (Área de Execução) 🔒
+       └── ▶️ Executar → TaskExecutionScreen
+```
+
+### Segurança 🛡️
+- Crianças com TEA não podem mais deletar ou editar tarefas acidentalmente
+- Área de execução (Atividades) completamente isolada
+- Área de configuração (Edição de Tarefas) para adultos/responsáveis
+
+### Documentação Atualizada
+- `MVP07_WIREFRAMES.md` - Wireframes da nova arquitetura
+- `SPECIFICATION_FOR_APP.md` - Navegação atualizada
+
+---
+
+## [1.9.1] - 2025-10-20 - MVP-07 Fase 3 - Funcionalidade de Exclusão de Tarefas
+
+### Adicionado
+- **🗑️ Exclusão de Tarefas**
+  - **DeleteTaskUseCase**: Use case para deletar tarefas com validação
+  - Exclusão em cascata: ao deletar tarefa, todos os steps são removidos automaticamente
+  - Validação: verifica se tarefa existe antes de deletar
+  - Arquivo: `domain/usecase/DeleteTaskUseCase.kt`
+
+### Modificado (MOVIDO para TaskManagementScreen na v1.9.2)
+- **📱 TaskManagementScreen** (era TaskListScreen)
+  - Botão de exclusão (ícone de lixeira) nos cards de tarefa
+  - Dialog de confirmação antes de deletar
+  - Feedback visual após exclusão bem-sucedida
+  - Tratamento de erros na exclusão
+
+- **🎨 TaskListViewModel**
+  - Adicionado `deleteTask(taskId: Long)` para processar exclusões
+  - Estados para controlar confirmação de exclusão
+  - Atualização automática da lista após exclusão
+
+
+---
+
+## [1.9.0] - 2025-10-20 - MVP-07 Fase 3 - Correções Críticas
+
+### Corrigido
+- **🐛 Bug: Imagem dos steps não aparecia durante execução**
+  - **Causa:** TaskExecutionViewModel carregava steps sem incluir imageUrl e durationSeconds
+  - **Solução:** Modificado `loadTask()` para usar `getStepsByTask()` que retorna steps completos
+  - **Impacto:** Imagens agora aparecem corretamente na TaskExecutionScreen
+  - **Arquivo:** `TaskExecutionViewModel.kt`
+
+- **🐛 Bug: Timer sempre fixo em 60 segundos**
+  - **Causa:** Mesma do bug anterior - steps incompletos sem durationSeconds
+  - **Solução:** Com steps completos, `durationSeconds` agora é respeitado
+  - **Impacto:** Timer usa duração configurada em cada step
+  - **Arquivo:** `TaskExecutionViewModel.kt`
+
+### Modificado
+- **🔧 Script compilar_e_testar.bat**
+  - Adicionado fallback: desinstala e reinstala quando instalação falha
+  - Melhoria na detecção de erros
+  - Mensagens mais claras de status
+
+- **📱 Versionamento**
+  - Incrementado versionCode: `10` → `11`
+  - Versão exibida na HomeScreen para facilitar debug
+
+### Documentação
+- **📝 MVP07_CORRECOES_V1.9.0.md**
+  - Documentação detalhada dos problemas e soluções
+  - Logs de debug adicionados para diagnóstico
+  - Hipóteses e análise dos bugs
+
+---
+
 ## [1.8.1] - 2025-10-19 - Correção de Bug Crítico na Galeria
 
 ### Corrigido

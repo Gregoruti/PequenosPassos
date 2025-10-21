@@ -19,8 +19,8 @@ android {
         applicationId = "com.example.pequenospassos"
         minSdk = 24
         targetSdk = 36
-        versionCode = 11
-        versionName = "1.9.0"
+        versionCode = 16
+        versionName = "1.9.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -88,6 +88,9 @@ dependencies {
     // Testing dependencies
     testImplementation(libs.junit)
     testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("org.mockito:mockito-core:5.7.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 
     androidTestImplementation(libs.androidx.junit)

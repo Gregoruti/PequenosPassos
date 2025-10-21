@@ -22,6 +22,7 @@ import javax.inject.Singleton
  * @property stepRepository Repositório de steps
  *
  * @since MVP-05 (14/10/2025) - DIA 1 - Fundação
+ * @updated v1.9.5 (21/10/2025) - Corrigido para suportar edição de tarefas
  * @author PequenosPassos Development Team
  * @validationStatus ✅ Implementado - MVP-05
  */
@@ -33,6 +34,7 @@ class SaveTaskUseCase @Inject constructor(
     /**
      * Salva uma tarefa com validações e steps opcionais.
      *
+     * @param taskId ID da tarefa (null para criar nova, > 0 para editar existente)
      * @param title Título da tarefa
      * @param description Descrição detalhada (opcional)
      * @param iconRes Recurso de ícone
@@ -41,9 +43,10 @@ class SaveTaskUseCase @Inject constructor(
      * @param category Categoria da tarefa (obrigatório - MVP-07)
      * @param imageUrl URL da imagem da tarefa (opcional - MVP-07)
      * @param steps Lista de Steps completos com imageUrl e durationSeconds (MVP-07)
-     * @return AppResult com ID da tarefa criada ou erro
+     * @return AppResult com ID da tarefa criada ou atualizada ou erro
      */
     suspend operator fun invoke(
+        taskId: Long? = null,
         title: String,
         description: String = "",
         iconRes: Int,
@@ -82,6 +85,7 @@ class SaveTaskUseCase @Inject constructor(
         }
 
         val task = Task(
+            id = taskId ?: 0,
             title = title.trim(),
             description = description.trim(),
             iconRes = iconRes,
@@ -92,21 +96,34 @@ class SaveTaskUseCase @Inject constructor(
         )
 
         return try {
-            // Salvar a tarefa
-            val taskId = taskRepository.insertTask(task).getOrThrow()
+            // Salvar ou atualizar a tarefa
+            val finalTaskId = if (taskId != null && taskId > 0) {
+                // Atualizar tarefa existente
+                taskRepository.updateTask(task).getOrThrow()
+                taskId
+            } else {
+                // Inserir nova tarefa
+                taskRepository.insertTask(task).getOrThrow()
+            }
 
-            // Inserir steps se houver
+            // Deletar steps antigos (se for edição) para evitar conflitos
+            if (taskId != null && taskId > 0) {
+                stepRepository.deleteStepsByTask(finalTaskId).getOrThrow()
+            }
+
+            // Inserir steps novos (sempre insert após deletar os antigos)
             steps.forEachIndexed { index, step ->
                 if (step.title.isNotBlank()) {
                     val stepToSave = step.copy(
-                        taskId = taskId,
+                        id = 0, // Forçar ID = 0 para criar novo registro
+                        taskId = finalTaskId,
                         order = index
                     )
                     stepRepository.insertStep(stepToSave).getOrThrow()
                 }
             }
 
-            AppResult.Success(taskId)
+            AppResult.Success(finalTaskId)
         } catch (e: Exception) {
             AppResult.Error(e)
         }
@@ -127,3 +144,4 @@ class SaveTaskUseCase @Inject constructor(
         }
     }
 }
+

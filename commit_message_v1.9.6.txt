@@ -1,0 +1,48 @@
+🐛 fix(v1.9.6): Corrigido erro UNIQUE constraint ao editar steps
+
+## Problema Resolvido
+- Erro "UNIQUE constraint failed: steps.id" ao salvar steps editados
+- SaveTaskUseCase não diferenciava criação vs edição de tarefas
+- Steps editados tentavam INSERT com IDs existentes
+
+## Solução Implementada
+### SaveTaskUseCase.kt
+- Adicionado parâmetro taskId opcional (null = criar, > 0 = editar)
+- Implementada lógica UPDATE vs INSERT de tarefa
+- Steps antigos deletados antes de inserir novos (edição)
+- Steps sempre inseridos com id = 0 (forçar novo registro)
+
+### TaskFormViewModel.kt
+- Passa currentState.taskId ao SaveTaskUseCase
+- Mantém distinção correta entre criação e edição
+
+## Validação
+✅ Criar nova tarefa com steps - OK
+✅ Editar tarefa - modificar step - OK
+✅ Editar tarefa - adicionar step - OK
+✅ Editar tarefa - remover step - OK
+✅ Editar tarefa - reordenar steps - OK
+✅ Build compilado sem erros
+
+## Versionamento
+- versionCode: 15 → 16
+- versionName: 1.9.5 → 1.9.6
+
+## Documentação
+- ✅ MVP07_BUGFIX_STEPS_EDICAO_V1.9.6.md (criado)
+- ✅ CHANGELOG.md (atualizado)
+- ✅ VERSIONAMENTO_DOCUMENTACAO.md (atualizado)
+- ✅ app/build.gradle.kts (versionCode/versionName)
+
+## Arquivos Modificados
+- app/build.gradle.kts
+- app/src/main/java/com/pequenospassos/domain/usecase/SaveTaskUseCase.kt
+- app/src/main/java/com/pequenospassos/presentation/screens/taskform/TaskFormViewModel.kt
+- docs/CHANGELOG.md
+- docs/VERSIONAMENTO_DOCUMENTACAO.md
+- docs/MVP07_BUGFIX_STEPS_EDICAO_V1.9.6.md (novo)
+
+Relacionado: v1.9.5 (steps não apareciam na edição)
+Tipo: bugfix
+Impacto: Funcionalidade de edição 100% operacional
+
