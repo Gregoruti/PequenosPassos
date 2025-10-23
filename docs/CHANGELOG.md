@@ -77,9 +77,11 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - 🔊 **Leitura automática do título da tarefa:** Ao iniciar uma tarefa, o título é lido em voz alta
 - 🔊 **Leitura personalizada dos passos:** Cada passo é lido com o nome da criança ("Maria, pegar a escova")
 - 🔊 **Leitura das mensagens de tempo esgotado:** Mensagens personalizadas são faladas quando o tempo acaba
+- 🔊 **Leitura das mensagens de sucesso:** Ao completar a tarefa, fala a mensagem de reforço com o nome da criança ("Maria, você tirou nota 10!")
 - 🔊 **Velocidade ajustada para crianças:** Taxa de fala configurada em 0.9x para melhor compreensão
 - 🔊 **Gerenciamento inteligente de fila:** Sistema de fila para múltiplas falas sem sobreposição
-- 🔊 **Limpeza automática de recursos:** TTS é parado e liberado adequadamente ao sair da tela
+- 🔊 **Limpeza automática de recursos:** TTS é parado e liberado adequadamente ao sair das telas
+- 🔊 **Filtro de emojis:** Remove emojis das mensagens para leitura mais natural do TTS
 
 ### Técnico
 - 📦 Criado `TtsManager.kt` como serviço singleton com Hilt
