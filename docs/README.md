@@ -2,12 +2,30 @@
 
 **Aplicativo Android de Auxílio para Rotinas Infantis**
 
-[![Versão](https://img.shields.io/badge/versão-1.7.0-blue.svg)](https://github.com)
-[![MVP](https://img.shields.io/badge/MVP-06%20Concluído-green.svg)](https://github.com)
+[![Versão](https://img.shields.io/badge/versão-1.10.1-blue.svg)](https://github.com)
+[![MVP](https://img.shields.io/badge/MVP-08%20Concluído-green.svg)](https://github.com)
 [![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com)
 [![Testes](https://img.shields.io/badge/testes-142%20passando-success.svg)](https://github.com)
 
 ---
+
+## 📢 Status do Projeto
+
+**O aplicativo está funcional e estável na versão 1.10.1 (23/10/2025).**
+
+### Novidades da versão 1.10.1
+- [x] Recurso A
+- [x] Recurso B
+- [ ] Recurso C (em andamento)
+
+### Notas de versão
+- Atualizações de desempenho
+- Correções de bugs
+- Melhorias na interface do usuário
+
+---
+
+> Toda a documentação do projeto está centralizada neste diretório `/docs`. Consulte os arquivos para detalhes completos sobre funcionalidades, arquitetura, testes, planejamento e histórico de versões.
 
 ## 📋 Sobre o Projeto
 
@@ -25,6 +43,8 @@ Facilitar a execução de rotinas diárias através de:
 
 ## 🚀 Status do Projeto
 
+**O aplicativo está funcional e estável na versão 1.10.1 (23/10/2025).**
+
 ### MVPs Concluídos ✅
 
 | MVP | Descrição | Status | Testes | Versão |
@@ -35,18 +55,13 @@ Facilitar a execução de rotinas diárias através de:
 | MVP-04 | Repositórios | ✅ | 37 testes | 1.5.0 |
 | MVP-05 | Use Cases | ✅ | 44 testes | 1.6.0 |
 | MVP-06 | Theme/Design | ✅ | - | 1.7.0 |
+| MVP-07 | Galeria, Correções | ✅ | - | 1.9.6 |
+| MVP-08 | Gamificação | ✅ | - | 1.10.1 |
 
 **Total de Testes**: 142 testes unitários (100% passando) ✅
 
 ### Próximos Passos 📋
 
-- **MVP-07**: Telas de Interface (EM PLANEJAMENTO)
-  - OnboardingScreen
-  - TaskFormScreen
-  - TaskListScreen
-  - TaskExecutionScreen
-
-- **MVP-08**: ViewModels e Integração
 - **MVP-09**: Testes E2E
 - **MVP-10**: Polimento e Release
 
@@ -274,6 +289,5 @@ Para dúvidas ou sugestões sobre o projeto, abra uma issue no repositório.
 ---
 
 **Última atualização**: 2025-10-15  
-**Versão**: 1.7.0 (MVP-06)  
+**Versão**: 1.10.1 (MVP-08)  
 **Status**: Em desenvolvimento ativo 🚀
-

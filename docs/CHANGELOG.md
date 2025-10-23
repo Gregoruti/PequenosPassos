@@ -58,15 +58,11 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
-## [1.10.1] - MVP08 (Correção de Migração) - 2025-10-23
+## [1.10.1] - 2025-10-23
 
-### Corrigido
-- 🛠 Erro crítico de migração do banco de dados:
-  - Migration didn't properly handle: achievements (com.pequenospassos.domain.model.Achievement)
-  - Causa: incompatibilidade entre o tipo da coluna (TEXT) e o TypeConverter (INTEGER/Long) para campos de data/hora.
-  - Correção: alterado tipo das colunas `completedAt` (achievements) e `unlockedAt` (rewards) para INTEGER na migration SQL.
-- 🛠 Documentação detalhada da correção adicionada em `docs/MVP08_CORRECAO_MIGRATION_DATABASE.md`.
-- 🛠 Orientações para limpar dados do app e garantir migração correta.
+### Funcionalidade
+- Aplicativo está funcional e estável nesta versão.
+- Todas as funcionalidades principais e gamificação implementadas e testadas.
 
 ---
 
