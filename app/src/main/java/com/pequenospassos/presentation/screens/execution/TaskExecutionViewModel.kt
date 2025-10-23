@@ -80,6 +80,7 @@ class TaskExecutionViewModel @Inject constructor(
                 _state.value = _state.value.copy(
                     isLoading = false,
                     taskTitle = task.title,
+                    taskStars = task.stars,
                     currentStepIndex = 0,
                     totalSteps = steps.size,
                     currentStep = steps[0],
@@ -202,6 +203,7 @@ data class TaskExecutionState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val taskTitle: String = "",
+    val taskStars: Int = 5,
     val currentStepIndex: Int = 0,
     val totalSteps: Int = 0,
     val currentStep: Step? = null,

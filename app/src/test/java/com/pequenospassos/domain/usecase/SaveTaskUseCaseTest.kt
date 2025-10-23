@@ -1,6 +1,7 @@
 package com.pequenospassos.domain.usecase
 
 import com.pequenospassos.domain.model.AppResult
+import com.pequenospassos.domain.model.Step
 import com.pequenospassos.domain.repository.StepRepository
 import com.pequenospassos.domain.repository.TaskRepository
 import io.mockk.coEvery
@@ -127,7 +128,11 @@ class SaveTaskUseCaseTest {
         val time = "08:00"
         val stars = 3
         val category = "HIGIENE_PESSOAL"
-        val steps = listOf("Passo 1", "Passo 2", "Passo 3")
+        val steps = listOf(
+            Step(id = 0, taskId = 0, order = 0, title = "Passo 1", durationSeconds = 60),
+            Step(id = 0, taskId = 0, order = 1, title = "Passo 2", durationSeconds = 60),
+            Step(id = 0, taskId = 0, order = 2, title = "Passo 3", durationSeconds = 60)
+        )
         val taskId = 1L
 
         coEvery { taskRepository.insertTask(any()) } returns Result.success(taskId)
@@ -164,11 +169,13 @@ class SaveTaskUseCaseTest {
     @Test
     fun `invoke com erro ao salvar step retorna Error`() = runTest {
         // Arrange
-        val title = "Tarefa"
+        val title = "Tarefa com steps"
         val time = "08:00"
         val stars = 3
         val category = "ESCRITA"
-        val steps = listOf("Passo 1")
+        val steps = listOf(
+            Step(id = 0, taskId = 0, order = 0, title = "Passo 1", durationSeconds = 60)
+        )
         val taskId = 1L
         val exception = RuntimeException("Step error")
 

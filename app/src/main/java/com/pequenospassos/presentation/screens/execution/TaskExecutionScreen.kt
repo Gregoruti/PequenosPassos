@@ -47,11 +47,16 @@ fun TaskExecutionScreen(
         viewModel.loadTask(taskId)
     }
 
-    // Navegar para home ao concluir
+    // Navegar para tela de conclusão ao concluir
     LaunchedEffect(state.isCompleted) {
         if (state.isCompleted) {
-            navController.navigate("home") {
-                popUpTo("home") { inclusive = false }
+            // Passar apenas os dados necessários de forma segura
+            val taskTitle = state.taskTitle.replace("/", "-") // Remover caracteres problemáticos
+            val stars = state.taskStars
+
+            // Usar navegação com argumentos seguros
+            navController.navigate("task_completion/${java.net.URLEncoder.encode(taskTitle, "UTF-8")}/$stars") {
+                popUpTo("task_list") { inclusive = false }
             }
         }
     }

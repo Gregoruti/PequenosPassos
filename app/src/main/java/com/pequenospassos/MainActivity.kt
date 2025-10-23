@@ -20,7 +20,9 @@ import com.pequenospassos.presentation.screens.TtsTestScreen
 import com.pequenospassos.presentation.screens.childregistration.ChildRegistrationScreen
 import com.pequenospassos.presentation.screens.taskform.TaskFormScreen
 import com.pequenospassos.presentation.screens.tasklist.TaskListScreen
+import com.pequenospassos.presentation.screens.taskmanagement.TaskManagementScreen
 import com.pequenospassos.presentation.screens.execution.TaskExecutionScreen
+import com.pequenospassos.presentation.screens.completion.TaskCompletionScreen
 import dagger.hilt.android.AndroidEntryPoint
 import com.pequenospassos.presentation.theme.PequenosPassosTheme
 
@@ -85,8 +87,29 @@ fun PequenosPassosApp() {
             TaskExecutionScreen(navController = navController, taskId = taskId)
         }
 
-        // Rota para lista de tarefas (Atividades)
+        // Rota para tela de conclusão (MVP-07 v1.9.3)
+        composable(
+            route = "task_completion/{taskTitle}/{stars}",
+            arguments = listOf(
+                navArgument("taskTitle") { type = NavType.StringType },
+                navArgument("stars") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val taskTitle = backStackEntry.arguments?.getString("taskTitle") ?: ""
+            val stars = backStackEntry.arguments?.getInt("stars") ?: 5
+            TaskCompletionScreen(
+                navController = navController,
+                taskTitle = taskTitle,
+                stars = stars
+            )
+        }
+
+        // Rota para lista de tarefas (Atividades) - Área de Execução
         composable("task_list") { TaskListScreen(navController) }
+
+        // Rota para gerenciamento de tarefas (Edição de Tarefas) - Área de Configuração
+        composable("task_management") { TaskManagementScreen(navController) }
+
 
         // Rota para cadastro da criança
         composable("child_registration") { ChildRegistrationScreen(navController) }

@@ -49,8 +49,8 @@ fun HomeScreen(navController: NavController) {
         Spacer(modifier = Modifier.weight(1f))
 
         // Botões
-        Button(onClick = { navController.navigate("task_form") }, modifier = Modifier.fillMaxWidth()) {
-            Text("Nova Tarefa")
+        Button(onClick = { navController.navigate("task_management") }, modifier = Modifier.fillMaxWidth()) {
+            Text("Edição de Tarefas")
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = { navController.navigate("child_registration") }, modifier = Modifier.fillMaxWidth()) {

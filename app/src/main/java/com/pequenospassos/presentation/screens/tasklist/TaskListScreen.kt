@@ -3,6 +3,7 @@ package com.pequenospassos.presentation.screens.tasklist
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -10,22 +11,30 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.pequenospassos.domain.model.TaskCategory
+import java.io.File
 
 /**
  * Tela de Lista de Tarefas (Atividades).
  *
+ * Área de execução para crianças - SIMPLIFICADA
  * Exibe todas as tarefas cadastradas com opções de:
  * - Visualizar detalhes (categoria, imagens, duração)
- * - Executar tarefa
- * - Adicionar nova tarefa (FAB)
+ * - Miniatura da imagem da tarefa (à esquerda)
+ * - Executar tarefa (botão único)
+ *
+ * SEM opções de edição/exclusão (prevenção de acidentes).
+ * Para editar/excluir, use "Edição de Tarefas" na HomeScreen.
  *
  * Melhorias MVP-07 Fase 3:
+ * - Miniatura da imagem principal da tarefa (80dp × 80dp)
  * - Emoji da categoria no card
  * - Nome da categoria
  * - Contador de imagens nos steps (🖼️ × N)
@@ -36,6 +45,7 @@ import com.pequenospassos.domain.model.TaskCategory
  * @param viewModel ViewModel injetado via Hilt
  *
  * @since MVP-07 (18/10/2025)
+ * @version v1.9.2 (20/10/2025) - Removida exclusão, adicionada miniatura
  * @author PequenosPassos Development Team
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,13 +71,6 @@ fun TaskListScreen(
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate("task_form") }
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Nova Tarefa")
-            }
         }
     ) { paddingValues ->
         Box(
@@ -83,7 +86,7 @@ fun TaskListScreen(
                 }
                 tasks.isEmpty() -> {
                     EmptyState(
-                        onAddTask = { navController.navigate("task_form") }
+                        onAddTask = { navController.navigate("task_management") }
                     )
                 }
                 else -> {
@@ -138,7 +141,7 @@ private fun EmptyState(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Adicione sua primeira tarefa para começar!",
+            text = "Use 'Edição de Tarefas' na tela inicial para criar tarefas!",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -149,13 +152,15 @@ private fun EmptyState(
         Button(onClick = onAddTask) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Adicionar Tarefa")
+            Text("Ir para Edição de Tarefas")
         }
     }
 }
 
 /**
  * Card de tarefa na lista com indicadores visuais MVP-07.
+ * Versão simplificada para área de execução (sem edição/exclusão).
+ * Inclui miniatura da imagem da tarefa à esquerda.
  */
 @Composable
 private fun TaskCard(
@@ -169,116 +174,159 @@ private fun TaskCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Linha 1: Emoji da categoria + Título + Horário
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    modifier = Modifier.weight(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // Miniatura da imagem da tarefa (à esquerda)
+            // Debug: Log para verificar imageUrl
+            println("TaskListScreen: Task '${task.title}' - imageUrl: '${task.imageUrl}'")
+
+            if (!task.imageUrl.isNullOrEmpty()) {
+                val imageFile = File(task.imageUrl)
+                println("TaskListScreen: Verificando arquivo - exists: ${imageFile.exists()}, path: ${imageFile.absolutePath}")
+
+                // Exibir imagem com AsyncImage (Coil lida com arquivos locais)
+                AsyncImage(
+                    model = task.imageUrl,
+                    contentDescription = "Imagem da tarefa ${task.title}",
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(4.dp),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                    onSuccess = {
+                        println("TaskListScreen: Imagem carregada com sucesso para '${task.title}'")
+                    },
+                    onError = { error ->
+                        println("TaskListScreen: Erro ao carregar imagem para '${task.title}': ${error.result.throwable?.message}")
+                    }
+                )
+            } else {
+                println("TaskListScreen: Usando fallback (emoji) para '${task.title}'")
+                // Fallback: Box com emoji da categoria
+                Surface(
+                    modifier = Modifier.size(80.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    // Emoji da categoria
-                    Text(
-                        text = category.emoji,
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    // Título da tarefa
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = category.emoji,
+                            style = MaterialTheme.typography.displayMedium
+                        )
+                    }
+                }
+            }
+
+            // Conteúdo da tarefa (à direita)
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                // Linha 1: Título + Horário
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
                         text = task.title,
                         style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
-                }
-                // Horário
-                Text(
-                    text = "🕐 ${task.time}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Linha 2: Nome da categoria + Estrelas
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = category.displayName,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "⭐".repeat(task.stars),
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-
-            // Linha 3: Indicadores de Steps (somente se houver steps)
-            if (taskWithMetadata.stepCount > 0) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    // Contador de steps
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "📝 ${taskWithMetadata.stepCount} ${if (taskWithMetadata.stepCount == 1) "passo" else "passos"}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    // Contador de imagens (somente se houver)
-                    if (taskWithMetadata.imageCount > 0) {
-                        Text(
-                            text = "🖼️ × ${taskWithMetadata.imageCount}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-
-                    // Duração total
-                    Text(
-                        text = "⏱️ ${taskWithMetadata.getFormattedDuration()}",
-                        style = MaterialTheme.typography.bodySmall,
+                        text = "🕐 ${task.time}",
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-            }
 
-            // Descrição (se houver)
-            if (task.description.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = task.description,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
 
-            Spacer(modifier = Modifier.height(12.dp))
+                // Linha 2: Nome da categoria + Estrelas
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = category.displayName,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "⭐".repeat(task.stars),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
 
-            // Botão de execução (full width)
-            Button(
-                onClick = onExecute,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("▶️ Executar Tarefa")
+                // Linha 3: Indicadores de Steps (somente se houver steps)
+                if (taskWithMetadata.stepCount > 0) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Contador de steps
+                        Text(
+                            text = "📝 ${taskWithMetadata.stepCount}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        // Contador de imagens (somente se houver)
+                        if (taskWithMetadata.imageCount > 0) {
+                            Text(
+                                text = "🖼️ ${taskWithMetadata.imageCount}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        // Duração total
+                        Text(
+                            text = "⏱️ ${taskWithMetadata.getFormattedDuration()}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+
+                // Descrição (se houver)
+                if (task.description.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = task.description,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Botão de execução (full width)
+                Button(
+                    onClick = onExecute,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("▶️ Executar Tarefa")
+                }
             }
         }
     }
 }
+

@@ -37,20 +37,55 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 - Organizar tarefas por tipo
 - Sistema de estrelas (1-5)
 
-### 2.3 Tarefas com Steps
+### 2.3 Tarefas com Steps ⭐ IMPLEMENTADO (v1.9.0)
 - Dividir tarefas em pequenos passos
 - Ordem sequencial de execução
 - Descrição textual de cada passo
-- **Suporte a imagens** por step (galeria ou câmera)
-- **Timer configurável** por step (duração em segundos)
+- **✅ Suporte a imagens** por step (galeria ou câmera)
+  - Seleção via câmera ou galeria
+  - Preview de imagem
+  - Redimensionamento automático (max 1024px)
+  - Armazenamento local seguro
+- **✅ Timer configurável** por step (5-600 segundos)
+  - Slider visual para seleção
+  - Dropdown com valores predefinidos
+  - Padrão: 60 segundos
+  - Validação de range (5s a 10min)
 - Marcação de conclusão por step
-
-### 2.4 Execução de Tarefas
+### 2.7 Sistema de Recompensas
+- Estrelas por tarefa concluída (1-5)
 - Modo guiado passo a passo
-- Leitura das instruções por voz (TTS)
+- **✅ Exibição de imagens** dos steps durante execução
+- Histórico de conquistas (planejado)
+  - Cores dinâmicas (Verde > Amarelo > Vermelho)
+  - Animação suave
+  - Controles de pausar/retomar
+- Leitura das instruções por voz (TTS) - planejado
 - Barra de progresso visual
 - Feedback motivacional
 - Estatísticas de conclusão
+
+### 2.5 Organização por Categorias ⭐ IMPLEMENTADO (v1.9.0)
+- **27 categorias** organizadas em 5 grupos temáticos:
+  - 🏠 Casa (limpeza, organização, tarefas domésticas)
+  - 🧘 Autocuidado (higiene, saúde, bem-estar)
+  - 🎓 Escola (estudos, lições, projetos)
+  - 🎨 Lazer (hobbies, jogos, criatividade)
+  - 🍽️ Alimentação (refeições, lanches, culinária)
+- Cada categoria com emoji visual
+- Campo obrigatório no cadastro de tarefas
+- Exibição de categoria nos cards de lista
+
+### 2.6 Gestão de Tarefas ⭐ IMPLEMENTADO (v1.9.1)
+- Criar tarefas personalizadas
+- Editar tarefas existentes
+- **✅ Deletar tarefas** com confirmação
+  - Dialog de confirmação antes de excluir
+  - Exclusão em cascata (remove todos os steps)
+  - Feedback visual após exclusão
+- Definir horários para tarefas
+- Organizar tarefas por categoria
+- Sistema de estrelas (1-5)
 
 ### 2.5 Sistema de Recompensas
 - Estrelas por tarefa concluída
@@ -63,7 +98,7 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 ## 3. Tecnologias Utilizadas
 
 ### 3.1 Plataforma
-- **Android**: minSdk 24 (Android 7.0)
+#### Task ⭐ ATUALIZADO (v1.9.0)
 - **Linguagem**: Kotlin 100%
 - **Framework UI**: Jetpack Compose
 
@@ -73,17 +108,21 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 - **Injeção de Dependências**: Hilt/Dagger
 
 ### 3.3 Banco de Dados
+- categoryId: String (obrigatório) ✅ IMPLEMENTADO
+- imageUrl: String? (imagem principal da tarefa) ✅ IMPLEMENTADO
 - **Room**: Banco local SQLite
 - **Tabelas**: app_settings, child_profiles, tasks, steps
 
-### 3.4 Recursos de Acessibilidade
+#### Step ⭐ ATUALIZADO (v1.9.0)
 - **TTS**: Text-to-Speech nativo do Android
 - **ASR**: Vosk (reconhecimento offline) - planejado
 - **Imagens visuais**: Suporte a fotos nos steps para auxílio visual
 - **Timers visuais**: Contagem regressiva clara e grande
-- **Cores**: Alto contraste e modo claro/escuro
+- title: String (obrigatório)
+- description: String (opcional)
 
----
+- imageUrl: String? (path local da imagem) ✅ IMPLEMENTADO
+- durationSeconds: Int (5-600s, padrão 60) ✅ IMPLEMENTADO
 
 ## 4. Estrutura de Dados
 
@@ -93,8 +132,9 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 ```kotlin
 - id: Long
 - name: String (obrigatório, mín. 2 caracteres)
-- birthDate: String (formato YYYY-MM-DD)
+### 5.1 Implementados
 - notes: String (opcional)
+**MVP-05 (Base):**
 - createdAt: Long (timestamp)
 ```
 
@@ -106,30 +146,64 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 - description: String
 - scheduledTime: String (HH:mm)
 - type: TaskType (MORNING, AFTERNOON, NIGHT, ANYTIME)
+**MVP-07 Fase 3 (v1.9.1):** ⭐ NOVO
+11. **DeleteTaskUseCase**: Deleta tarefa com validação e cascata de steps
+
 - status: TaskStatus (PENDING, COMPLETED, CANCELLED)
 - stars: Int (1-5)
 - createdAt: Long
-```
 
 #### Step
 ```kotlin
 - id: Long
 - taskId: Long (FK)
-- order: Int
+### 6.1 Implementadas
 - description: String
+**MVP-01 a MVP-06:**
 - isCompleted: Boolean
-- imageUrl: String? (futuro)
+2. **HomeScreen**: Menu principal com botões e indicador de versão
 ```
 
 #### AppSettings
 ```kotlin
-- id: Long (sempre 1)
-- isFirstRun: Boolean
-- onboardingCompleted: Boolean
-```
+**MVP-07 (v1.9.0-1.9.5):** ⭐ IMPLEMENTADO
+6. **OnboardingScreen**: Cadastro inicial do perfil da criança
+7. **TaskFormScreen**: Criar/editar tarefas com categorias, imagens e timer
+   - CategoryPicker integrado
+   - ImagePicker para imagem principal
+   - StepDialog com imagens e timer configurável
+   - **Preview de imagem no StepDialog** ✅ (v1.9.3)
+   - **Carregamento de steps na edição** ✅ (v1.9.5)
+   - Validações completas
+8. **TaskManagementScreen**: Gerenciamento de tarefas (Área de Configuração) ⭐ (v1.9.2)
+   - Lista todas as tarefas
+   - Botão ✏️ editar tarefa
+   - Botão 🗑️ deletar tarefa com confirmação
+   - FAB para adicionar nova tarefa
+   - **Área protegida para adultos/responsáveis**
+9. **TaskListScreen**: Listar tarefas (Área de Execução - Simplificada) 🔒 (v1.9.2)
+   - **Miniatura da imagem da tarefa** (80dp × 80dp) à esquerda ⭐ (v1.9.2)
+   - Indicadores visuais (categoria, imagens, duração)
+   - Botão executar tarefa (único)
+   - **SEM opções de edição/exclusão** (segurança para crianças TEA)
+10. **TaskExecutionScreen**: Executar tarefa passo a passo
+   - Timer circular visual
+   - Exibição de imagens dos steps
+   - Progresso visual
+   - Duração configurável por step
+   - **Navegação para tela de conclusão** ✅ (v1.9.3-1.9.4)
+11. **TaskCompletionScreen**: Tela de conclusão com feedback positivo ⭐ NOVO (v1.9.3)
+   - 10 mensagens de parabéns variadas (aleatórias)
+   - 8 mensagens de sucesso diferentes (aleatórias)
+   - Exibição de estrelas ganhas com animação
+   - Reforço positivo adequado para crianças com TEA
+   - Botão para voltar às atividades
 
----
+### 6.2 Planejadas (MVP-08+)
 
+10. **TaskCompletionScreen**: Resultado da execução com estatísticas
+11. **SettingsScreen**: Configurações do aplicativo
+12. **StatisticsScreen**: Histórico e estatísticas de conclusão
 ## 5. Casos de Uso (Use Cases)
 
 ### 5.1 Implementados (MVP-05)
@@ -147,9 +221,13 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 
 ### 5.2 Planejados (MVP-08+)
 
+- **Categoria**: Obrigatória (seleção de 27 categorias) ⭐ NOVO
 - GetTaskStatisticsUseCase
 - DeleteTaskUseCase
 - ReorderStepsUseCase
+- **Título do step**: Obrigatório (mínimo 1 caractere) ⭐ NOVO
+- **Timer do step**: Entre 5-600 segundos (5s a 10min) ⭐ NOVO
+- **Imagens**: Formato JPG/PNG, redimensionamento automático (max 1024px) ⭐ NOVO
 - GetCompletedTasksUseCase
 - GetPendingTasksUseCase
 
@@ -222,21 +300,37 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 ## 9. Sistema de Temas
 
 ### 9.1 Cores (Material Design 3)
-
+- **MVP-07**: Telas de interface ✅ IMPLEMENTADO (v1.9.0-1.9.5)
 **Modo Claro:**
-- Primary: #6750A4 (roxo)
-- Secondary: #625B71 (cinza-roxo)
+  - ✅ TaskFormScreen (com categorias, imagens, timer e preview)
+  - ✅ TaskManagementScreen (edição/exclusão de tarefas)
+  - ✅ TaskListScreen (com miniaturas e metadados)
 - Tertiary: #7D5260 (rosa-acinzentado)
+  - ✅ TaskCompletionScreen (feedback positivo com estrelas)
 - Background: #FFFBFE
 - Surface: #FFFBFE
 
-**Modo Escuro:**
-- Primary: #D0BCFF
-- Secondary: #CCC2DC
-- Tertiary: #EFB8C8
-- Background: #1C1B1F
-- Surface: #1C1B1F
-
+### Fase 2: Interface (MVPs 07-08) ✅ MVP-07 CONCLUÍDO
+  - **🐛 Bugs Corrigidos:**
+    - ✅ v1.8.1: Galeria de imagens (bitmap recycled)
+    - ✅ v1.9.0: Imagens dos steps não apareciam
+    - ✅ v1.9.0: Timer fixo em 60 segundos
+    - ✅ v1.9.4: Crash ao concluir tarefa (sintaxe MainActivity)
+    - ✅ v1.9.5: Steps não apareciam na edição
+- **MVP-07**: Telas de interface ✅ IMPLEMENTADO (v1.9.0-1.9.1)
+  - ✅ OnboardingScreen (cadastro de perfil)
+  - ✅ TaskFormScreen (com categorias, imagens e timer)
+  - ✅ TaskListScreen (com metadados e exclusão)
+  - ✅ TaskExecutionScreen (com timer visual e imagens)
+  - ✅ CategoryPicker (27 categorias em 5 grupos)
+  - ✅ ImagePicker (galeria e câmera)
+  - ✅ CircularTimer (timer visual animado)
+  - ✅ DeleteTaskUseCase (exclusão de tarefas)
+- **MVP-08**: Melhorias e features avançadas 📋 PRÓXIMO
+  - Timer em barra (substituindo circular)
+  - Síntese de voz (TTS) integrada
+  - Reconhecimento de voz (ASR)
+  - Estatísticas e histórico
 ### 9.2 Tipografia
 
 - Display: Grande, impactante

@@ -20,6 +20,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.pequenospassos.domain.model.Step
 import com.pequenospassos.presentation.components.CategoryPicker
@@ -437,6 +438,41 @@ private fun StepDialog(
                     onImageRemoved = { imageUri = null },
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                // Preview da imagem selecionada
+                if (imageUri != null) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "✅ Imagem Selecionada",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            AsyncImage(
+                                model = imageUri,
+                                contentDescription = "Preview da imagem do step",
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .clip(RoundedCornerShape(8.dp)),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+                    }
+                }
 
                 // Duration input using existing TimerInput component
                 TimerInput(

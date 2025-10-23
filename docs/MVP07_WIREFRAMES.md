@@ -336,7 +336,7 @@ Implementar **4 telas principais** de interface do usuário com suporte a:
 
 ┌─────────────────────────────────────┐
 │  ┌───────┐  🕐 08:30  ⭐⭐⭐⭐⭐     │
-│  │ 🪥    │  Escovar dentes         │
+│  │ 🪥    │  Escovar dentes    🗑️  │ ← Botão excluir
 │  │[foto] │  ─────────────────      │
 │  └───────┘  3 passos [PENDENTE]    │
 │  🧼 Higiene                         │
@@ -346,6 +346,26 @@ Implementar **4 telas principais** de interface do usuário com suporte a:
 │  ✖️ Cancelar                        │   (SEM Editar!)
 │  ─────────────────────────────────  │
 └─────────────────────────────────────┘
+
+───── AO CLICAR NO BOTÃO 🗑️ DELETAR ─────  ⭐ NOVO (v1.9.1)
+
+┌─────────────────────────────────────┐
+│  ╔═════════════════════════════╗   │
+│  ║  ⚠️ Confirmar Exclusão      ║   │ ← Dialog
+│  ║                             ║   │
+│  ║  Tem certeza que deseja     ║   │
+│  ║  excluir a tarefa           ║   │
+│  ║  "Escovar dentes"?          ║   │
+│  ║                             ║   │
+│  ║  Esta ação não pode ser     ║   │
+│  ║  desfeita. Todos os passos  ║   │
+│  ║  serão removidos.           ║   │
+│  ║                             ║   │
+│  ║  ┌─────────┐  ┌──────────┐ ║   │
+│  ║  │Cancelar │  │ Excluir  │ ║   │
+│  ║  └─────────┘  └──────────┘ ║   │
+│  ╚═════════════════════════════╝   │
+└─────────────────────────────────────┘
 ```
 
 ### Características:
@@ -354,6 +374,10 @@ Implementar **4 telas principais** de interface do usuário com suporte a:
   - **🖼️ Imagem da tarefa** (miniatura 60dp, lado esquerdo) ⭐ NOVO
     - Se houver imagem: exibe foto
     - Se não: exibe emoji da categoria em box colorido
+  - **🗑️ Botão de exclusão** (canto superior direito) ⭐ NOVO (v1.9.1)
+    - Dialog de confirmação antes de deletar
+    - Mensagem clara sobre exclusão permanente
+    - Exclusão em cascata (tarefa + todos os steps)
   - Horário e estrelas no topo direito
   - Nome da tarefa (headline)
   - Contador de steps e status

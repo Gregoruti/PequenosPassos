@@ -20,112 +20,61 @@ Validar automaticamente todas as funcionalidades implementadas nos MVPs 01-07, i
 
 ## 📋 COBERTURA DE TESTES
 
-### ✅ Testes Existentes (20 arquivos)
+### ✅ Testes Existentes (30 arquivos)
 
-#### MVP-02: Entidades de Domínio
+#### MVP-02: Entidades de Domínio (5 arquivos)
 - ✅ `TaskTest.kt` - Validação de tarefas
 - ✅ `TaskCategoryTest.kt` - Categorias (27 categorias)
 - ✅ `StepTest.kt` - Steps com imageUrl e durationSeconds
 - ✅ `ChildProfileTest.kt` - Perfil da criança
 - ✅ `AppSettingsTest.kt` - Configurações do app
 
-#### MVP-04: Use Cases (Base)
+#### MVP-03: Repositórios (4 arquivos)
+- ✅ `TaskRepositoryImplTest.kt` - Repositório de tarefas
+- ✅ `StepRepositoryImplTest.kt` - Repositório de steps
+- ✅ `ChildProfileRepositoryImplTest.kt` - Repositório de perfil
+- ✅ `AppSettingsRepositoryImplTest.kt` - Repositório de configurações
+
+#### MVP-04: Use Cases (11 arquivos)
 - ✅ `GetTaskByIdUseCaseTest.kt` - Buscar tarefa por ID
 - ✅ `GetTasksOrderedByTimeUseCaseTest.kt` - Listar tarefas ordenadas
+- ✅ `GetStepsByTaskUseCaseTest.kt` - Buscar steps de uma tarefa
+- ✅ `SaveTaskUseCaseTest.kt` - Salvar tarefa
+- ✅ `DeleteTaskUseCaseTest.kt` - Deletar tarefa
+- ✅ `UpdateTaskStatusUseCaseTest.kt` - Atualizar status
+- ✅ `UpdateStepCompletionUseCaseTest.kt` - Completar step
+- ✅ `SaveChildProfileUseCaseTest.kt` - Salvar perfil
+- ✅ `GetChildProfileUseCaseTest.kt` - Buscar perfil
+- ✅ `CheckFirstRunUseCaseTest.kt` - Verificar primeira execução
+- ✅ `CompleteOnboardingUseCaseTest.kt` - Completar onboarding
 
-#### MVP-06: Theme e Design
+#### MVP-06: Theme e Design (3 arquivos)
 - ✅ `ColorTest.kt` - Paleta de cores
 - ✅ `TypographyTest.kt` - Tipografia
 - ✅ `ShapeTest.kt` - Formas e bordas
 
-#### MVP-07: Componentes
-- ✅ `CategoryPickerTest.kt` - Seletor de categorias
+#### MVP-07: Apresentação (4 arquivos)
+- ✅ `TaskFormViewModelTest.kt` - ViewModel do formulário
+- ✅ `TaskExecutionViewModelTest.kt` - ViewModel de execução
 - ✅ `ImagePickerTest.kt` - Seletor de imagens
-- ✅ `TimerInputTest.kt` - Input de timer
-- ✅ `CircularTimerTest.kt` - Timer visual
-
-#### Outros
-- ✅ `TtsManagerTest.kt` - Síntese de voz
-- ✅ `AsrManagerTest.kt` - Reconhecimento de voz
 - ✅ `NavigationTest.kt` - Navegação entre telas
+
+#### Outros (3 arquivos)
+- ✅ `TtsManagerTest.kt` - Síntese de voz
 - ✅ `AssetValidatorTest.kt` - Validação de assets
-
----
-
-### ⭐ Testes Novos Criados (4 arquivos)
-
-#### v1.9.1: DeleteTaskUseCase
-**Arquivo:** `DeleteTaskUseCaseTest.kt`
-
-**Testes:**
-1. ✅ `invoke deve deletar tarefa existente com sucesso`
-2. ✅ `invoke deve retornar erro quando tarefa nao existe`
-3. ✅ `invoke deve propagar excecao do repositorio`
-
-**Validações:**
-- Exclusão de tarefa com validação
-- Cascade automático (steps também removidos)
-- Tratamento de erros
-
----
-
-#### v1.9.5: GetStepsByTaskUseCase
-**Arquivo:** `GetStepsByTaskUseCaseTest.kt`
-
-**Testes:**
-1. ✅ `invoke deve retornar steps ordenados por order`
-2. ✅ `invoke deve retornar steps com imageUrl e durationSeconds`
-3. ✅ `invoke deve retornar lista vazia quando tarefa nao tem steps`
-
-**Validações:**
-- Carregamento de steps de uma tarefa
-- Ordenação por campo 'order'
-- Steps completos com todos os campos (v1.9.0)
-
----
-
-#### v1.9.5: TaskFormViewModel
-**Arquivo:** `TaskFormViewModelTest.kt`
-
-**Testes:**
-1. ✅ `loadTask deve carregar tarefa e steps corretamente`
-2. ✅ `onEvent TitleChanged deve atualizar titulo`
-3. ✅ `onEvent CategorySelected deve atualizar categoria`
-4. ✅ `onEvent StepAdded deve adicionar step a lista`
-5. ✅ `onEvent StepRemoved deve remover step e reordenar`
-
-**Validações:**
-- Carregamento completo para edição (v1.9.5)
-- Steps aparecem na edição (BUG CORRIGIDO)
-- Eventos de formulário
-- Gestão de steps (adicionar, editar, remover)
-
----
-
-#### v1.9.0 + v1.9.3: TaskExecutionViewModel
-**Arquivo:** `TaskExecutionViewModelTest.kt`
-
-**Testes:**
-1. ✅ `loadTask deve carregar tarefa com titulo e stars`
-2. ✅ `loadTask deve carregar steps com imageUrl e durationSeconds`
-3. ✅ `nextStep deve avancar para proximo step com timer correto`
-4. ✅ `nextStep no ultimo step deve marcar tarefa como completa`
-5. ✅ `togglePause deve alternar estado de pausa`
-
-**Validações:**
-- Steps com imageUrl e durationSeconds (v1.9.0 - BUG CORRIGIDO)
-- Timer respeitando durationSeconds (v1.9.0 - BUG CORRIGIDO)
-- Campo taskStars para tela de conclusão (v1.9.3)
-- Navegação entre steps
-- Pausar/Retomar timer
+- ✅ `ExampleUnitTest.kt` - Teste de exemplo
 
 ---
 
 ## 📊 ESTATÍSTICAS
 
-### Total de Arquivos de Teste: 24
-- Existentes: 20
-- Novos (v1.9.x): 4
+### Total de Arquivos de Teste: 30
+- Entidades de Domínio: 5
+- Repositórios: 4
+- Use Cases: 11
+- Theme e Design: 3
+- Apresentação (ViewModels): 4
+- Outros (Utils): 3
 
 ### Total de Casos de Teste Estimado: ~150+
 - Entidades: ~30 testes

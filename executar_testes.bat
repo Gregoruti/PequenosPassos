@@ -1,34 +1,39 @@
 @echo off
-echo ============================================
-echo  EXECUCAO DE TESTES UNITARIOS - MVP 01-07
-echo ============================================
-echo.
-echo [1/4] Parando daemon do Gradle...
-call gradlew.bat --stop
+echo ========================================
+echo Executando Testes Unitarios - MVP-07
+echo ========================================
 echo.
 
-echo [2/4] Limpando cache de build...
-if exist app\build rmdir /S /Q app\build
-echo Cache limpo!
+echo [1/3] Compilando projeto...
+call gradlew.bat compileDebugUnitTestKotlin
+if %ERRORLEVEL% NEQ 0 (
+    echo ERRO na compilacao dos testes!
+    pause
+    exit /b 1
+)
+
+echo.
+echo [2/3] Executando testes unitarios...
+call gradlew.bat test --continue
+
+echo.
+echo [3/3] Gerando relatorio HTML...
+echo.
+echo Relatorio gerado em: app\build\reports\tests\testDebugUnitTest\index.html
 echo.
 
-echo [3/4] Executando testes unitarios...
-echo (Isso pode levar 2-3 minutos)
-echo.
-call gradlew.bat testDebugUnitTest --console=plain
-echo.
+if %ERRORLEVEL% EQU 0 (
+    echo ========================================
+    echo TESTES CONCLUIDOS COM SUCESSO!
+    echo ========================================
+) else (
+    echo ========================================
+    echo ALGUNS TESTES FALHARAM - Verifique o relatorio
+    echo ========================================
+)
 
-echo [4/4] Gerando relatorio de cobertura...
-call gradlew.bat jacocoTestReport
 echo.
-
-echo ============================================
-echo  TESTES CONCLUIDOS!
-echo ============================================
-echo.
-echo Relatorios disponiveis em:
-echo - app\build\reports\tests\testDebugUnitTest\index.html
-echo - app\build\reports\jacoco\test\html\index.html
-echo.
-pause
+echo Pressione qualquer tecla para abrir o relatorio...
+pause >nul
+start app\build\reports\tests\testDebugUnitTest\index.html
 
