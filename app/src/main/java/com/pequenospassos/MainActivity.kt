@@ -89,18 +89,21 @@ fun PequenosPassosApp() {
 
         // Rota para tela de conclusão (MVP-07 v1.9.3)
         composable(
-            route = "task_completion/{taskTitle}/{stars}",
+            route = "task_completion/{taskTitle}/{stars}/{childName}",
             arguments = listOf(
                 navArgument("taskTitle") { type = NavType.StringType },
-                navArgument("stars") { type = NavType.IntType }
+                navArgument("stars") { type = NavType.IntType },
+                navArgument("childName") { type = NavType.StringType; defaultValue = "Amiguinho" }
             )
         ) { backStackEntry ->
             val taskTitle = backStackEntry.arguments?.getString("taskTitle") ?: ""
             val stars = backStackEntry.arguments?.getInt("stars") ?: 5
+            val childName = backStackEntry.arguments?.getString("childName") ?: "Amiguinho"
             TaskCompletionScreen(
                 navController = navController,
                 taskTitle = taskTitle,
-                stars = stars
+                stars = stars,
+                childName = childName
             )
         }
 

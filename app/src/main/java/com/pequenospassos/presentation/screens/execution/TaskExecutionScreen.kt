@@ -53,9 +53,10 @@ fun TaskExecutionScreen(
             // Passar apenas os dados necessários de forma segura
             val taskTitle = state.taskTitle.replace("/", "-") // Remover caracteres problemáticos
             val stars = state.taskStars
+            val childName = state.childName.ifEmpty { "Amiguinho" }
 
             // Usar navegação com argumentos seguros
-            navController.navigate("task_completion/${java.net.URLEncoder.encode(taskTitle, "UTF-8")}/$stars") {
+            navController.navigate("task_completion/${java.net.URLEncoder.encode(taskTitle, "UTF-8")}/$stars/${java.net.URLEncoder.encode(childName, "UTF-8")}") {
                 popUpTo("task_list") { inclusive = false }
             }
         }
@@ -250,8 +251,7 @@ fun TaskExecutionScreen(
             if (state.showTimeUpDialog) {
                 AlertDialog(
                     onDismissRequest = { viewModel.dismissTimeUpDialog() },
-                    title = { Text("⏰ Tempo Esgotado!") },
-                    text = { Text("O tempo para este passo terminou. Deseja adicionar mais tempo ou continuar?") },
+                    title = { Text("😊 ${state.timeUpMessage}") },
                     confirmButton = {
                         Button(onClick = { viewModel.nextStep() }) {
                             Text("Próximo")

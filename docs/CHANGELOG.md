@@ -61,8 +61,16 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 ## [1.10.1] - 2025-10-23
 
 ### Funcionalidade
-- Aplicativo está funcional e estável nesta versão.
-- Todas as funcionalidades principais e gamificação implementadas e testadas.
+- ✨ Aplicativo está funcional e estável nesta versão.
+- ✨ Todas as funcionalidades principais e gamificação implementadas e testadas.
+
+### Melhorias de UX
+- 🎨 **Mensagem de tempo esgotado personalizada:** Substituída a mensagem "Tempo Esgotado!" por mensagens sutis e encorajadoras que usam o nome da criança
+- 🎨 **7 frases alternativas aleatórias:** Evita repetição e torna a experiência mais natural ("Nome, podemos ir para o próximo passo?", "Nome, vamos continuar a atividade?", etc.)
+- 🎨 **Diálogo simplificado:** Removido texto explicativo adicional, mantendo apenas a pergunta personalizada com o nome da criança
+- 🎨 **Abordagem sem pressão:** Mensagens acolhedoras ao invés de alertas estressantes
+- 🎨 **Mantidos botões +30s e Próximo:** Criança mantém controle sobre o tempo
+- 🎨 **Mensagem de conclusão personalizada:** Nome da criança incluído nas felicitações ao completar tarefa ("Nome, você tirou nota 10! 🏆", "Nome, parabéns! 🎉", etc.)
 
 ---
 

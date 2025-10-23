@@ -6,6 +6,7 @@ import com.pequenospassos.domain.model.Step
 import com.pequenospassos.domain.model.Task
 import com.pequenospassos.domain.usecase.GetTaskByIdUseCase
 import com.pequenospassos.domain.usecase.GetStepsByTaskUseCase
+import com.pequenospassos.domain.usecase.GetChildProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -30,7 +31,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskExecutionViewModel @Inject constructor(
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
-    private val getStepsByTaskUseCase: GetStepsByTaskUseCase
+    private val getStepsByTaskUseCase: GetStepsByTaskUseCase,
+    private val getChildProfileUseCase: GetChildProfileUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskExecutionState())
@@ -41,12 +43,33 @@ class TaskExecutionViewModel @Inject constructor(
     private var steps: List<Step> = emptyList()
 
     /**
+     * Lista de mensagens alternativas para quando o tempo se esgota.
+     * Mensagens são sutis e encorajadoras, sem pressionar a criança.
+     */
+    private fun getRandomTimeUpMessage(childName: String): String {
+        val messages = listOf(
+            "$childName, podemos ir para o próximo passo?",
+            "$childName, vamos continuar a atividade?",
+            "$childName, que tal seguirmos em frente?",
+            "$childName, já podemos avançar?",
+            "$childName, está pronto para o próximo passo?",
+            "$childName, vamos para a próxima parte?",
+            "$childName, deseja continuar?"
+        )
+        return messages.random()
+    }
+
+    /**
      * Carrega a tarefa e seus steps.
      */
     fun loadTask(taskId: Long) {
         viewModelScope.launch {
             try {
                 _state.value = _state.value.copy(isLoading = true, errorMessage = null)
+
+                // Coletar o perfil da criança
+                val childProfile = getChildProfileUseCase().firstOrNull()
+                val childName = childProfile?.name ?: "Amiguinho"
 
                 // Coletar task do Flow
                 val task = getTaskByIdUseCase(taskId).firstOrNull()
@@ -85,7 +108,8 @@ class TaskExecutionViewModel @Inject constructor(
                     totalSteps = steps.size,
                     currentStep = steps[0],
                     remainingSeconds = steps[0].durationSeconds,
-                    isPaused = false
+                    isPaused = false,
+                    childName = childName
                 )
 
                 // Iniciar timer
@@ -117,7 +141,11 @@ class TaskExecutionViewModel @Inject constructor(
 
             // Timer chegou a zero
             if (_state.value.remainingSeconds == 0) {
-                _state.value = _state.value.copy(showTimeUpDialog = true)
+                val message = getRandomTimeUpMessage(_state.value.childName)
+                _state.value = _state.value.copy(
+                    showTimeUpDialog = true,
+                    timeUpMessage = message
+                )
             }
         }
     }
@@ -210,5 +238,8 @@ data class TaskExecutionState(
     val remainingSeconds: Int = 0,
     val isPaused: Boolean = false,
     val showTimeUpDialog: Boolean = false,
-    val isCompleted: Boolean = false
+    val isCompleted: Boolean = false,
+    val childName: String = "",
+    val timeUpMessage: String = ""
 )
+

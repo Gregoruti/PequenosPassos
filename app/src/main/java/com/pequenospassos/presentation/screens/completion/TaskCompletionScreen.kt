@@ -27,6 +27,7 @@ import androidx.navigation.NavController
  * @param navController Controlador de navegação
  * @param taskTitle Título da tarefa concluída
  * @param stars Quantidade de estrelas ganhas (1-5)
+ * @param childName Nome da criança (opcional, padrão "Amiguinho")
  *
  * @since v1.9.3 (20/10/2025)
  * @author PequenosPassos Development Team
@@ -35,7 +36,8 @@ import androidx.navigation.NavController
 fun TaskCompletionScreen(
     navController: NavController,
     taskTitle: String,
-    stars: Int
+    stars: Int,
+    childName: String = "Amiguinho"
 ) {
     // Decodificar o título se necessário
     val decodedTitle = try {
@@ -44,18 +46,18 @@ fun TaskCompletionScreen(
         taskTitle
     }
 
-    // Mensagens motivacionais variadas
+    // Mensagens motivacionais variadas com nome da criança
     val congratulationsMessages = listOf(
-        "🎉 Parabéns!",
-        "👏 Muito bem!",
-        "✨ Você conseguiu!",
-        "🌟 Excelente!",
-        "🏆 Você tirou nota 10!",
-        "💪 Incrível!",
-        "🎊 Perfeito!",
-        "⭐ Fantástico!",
-        "🎯 Você é demais!",
-        "🥇 Campeão!"
+        "$childName, parabéns! 🎉",
+        "$childName, muito bem! 👏",
+        "$childName, você conseguiu! ✨",
+        "$childName, excelente! 🌟",
+        "$childName, você tirou nota 10! 🏆",
+        "$childName, incrível! 💪",
+        "$childName, perfeito! 🎊",
+        "$childName, fantástico! ⭐",
+        "$childName, você é demais! 🎯",
+        "$childName, campeão! 🥇"
     )
 
     val successMessages = listOf(
