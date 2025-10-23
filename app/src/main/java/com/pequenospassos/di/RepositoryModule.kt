@@ -1,11 +1,15 @@
 package com.pequenospassos.di
 
+import com.pequenospassos.data.repository.AchievementRepositoryImpl
 import com.pequenospassos.data.repository.AppSettingsRepositoryImpl
 import com.pequenospassos.data.repository.ChildProfileRepositoryImpl
+import com.pequenospassos.data.repository.RewardRepositoryImpl
 import com.pequenospassos.data.repository.StepRepositoryImpl
 import com.pequenospassos.data.repository.TaskRepositoryImpl
+import com.pequenospassos.domain.repository.AchievementRepository
 import com.pequenospassos.domain.repository.AppSettingsRepository
 import com.pequenospassos.domain.repository.ChildProfileRepository
+import com.pequenospassos.domain.repository.RewardRepository
 import com.pequenospassos.domain.repository.StepRepository
 import com.pequenospassos.domain.repository.TaskRepository
 import dagger.Binds
@@ -17,8 +21,9 @@ import javax.inject.Singleton
 /**
  * Módulo Hilt para injeção de dependência dos Repositories.
  *
+ * @updated MVP-08 (23/10/2025) - Adicionados repositories de gamificação
  * Fornece bindings entre interfaces de repositório (domain) e
- * suas implementações (data), seguindo Clean Architecture.
+ * @validationStatus ✅ Implementado - MVP-04, MVP-08
  *
  * @since MVP-04 (14/10/2025) - DIA 1 - Fundação
  * @author PequenosPassos Development Team
@@ -70,6 +75,30 @@ abstract class RepositoryModule {
      * @param impl Implementação concreta
      * @return Interface do repositório
      */
+
+    /**
+     * Fornece a implementação de AchievementRepository (MVP-08).
+     *
+     * @param impl Implementação concreta
+     * @return Interface do repositório
+     */
+    @Binds
+    @Singleton
+    abstract fun bindAchievementRepository(
+        impl: AchievementRepositoryImpl
+    ): AchievementRepository
+
+    /**
+     * Fornece a implementação de RewardRepository (MVP-08).
+     *
+     * @param impl Implementação concreta
+     * @return Interface do repositório
+     */
+    @Binds
+    @Singleton
+    abstract fun bindRewardRepository(
+        impl: RewardRepositoryImpl
+    ): RewardRepository
     @Binds
     @Singleton
     abstract fun bindAppSettingsRepository(

@@ -1,6 +1,7 @@
 package com.pequenospassos.presentation.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,12 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.Assignment
-import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.PersonAdd
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,17 +36,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.pequenospassos.R
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 /**
  * Tela Home principal do PequenosPassos v2.0
@@ -70,8 +70,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun HomeScreen(navController: NavController) {
     // Estado para hora atual (atualiza a cada minuto)
-    var currentTime by remember { mutableStateOf(LocalTime.now()) }
-    var currentDayOfWeek by remember { mutableStateOf(LocalDate.now().dayOfWeek) }
+    var currentCalendar by remember { mutableStateOf(Calendar.getInstance()) }
 
     // TODO: Carregar do banco de dados quando ChildProfile estiver implementado
     val childName: String? = null // Placeholder
@@ -81,8 +80,7 @@ fun HomeScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         while (true) {
             delay(60000L) // 1 minuto
-            currentTime = LocalTime.now()
-            currentDayOfWeek = LocalDate.now().dayOfWeek
+            currentCalendar = Calendar.getInstance()
         }
     }
 
@@ -99,8 +97,7 @@ fun HomeScreen(navController: NavController) {
             item {
                 HeaderSection(
                     childName = childName,
-                    currentTime = currentTime,
-                    currentDayOfWeek = currentDayOfWeek
+                    currentCalendar = currentCalendar
                 )
             }
 
@@ -138,10 +135,11 @@ fun HomeScreen(navController: NavController) {
 @Composable
 private fun HeaderSection(
     childName: String?,
-    currentTime: LocalTime,
-    currentDayOfWeek: DayOfWeek
+    currentCalendar: Calendar
 ) {
-    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
+    val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
+    val currentTime = timeFormatter.format(currentCalendar.time)
+    val dayOfWeek = currentCalendar.get(Calendar.DAY_OF_WEEK)
 
     Card(
         modifier = Modifier
@@ -176,14 +174,13 @@ private fun HeaderSection(
 
             // Data
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.CalendarToday,
-                    contentDescription = "Ícone de calendário",
-                    tint = MaterialTheme.colorScheme.secondary
+                Text(
+                    text = "📅",
+                    fontSize = 24.sp
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Hoje é ${getDayOfWeekName(currentDayOfWeek)}",
+                    text = "Hoje é ${getDayOfWeekName(dayOfWeek)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -192,14 +189,13 @@ private fun HeaderSection(
 
             // Hora
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.AccessTime,
-                    contentDescription = "Ícone de relógio",
-                    tint = MaterialTheme.colorScheme.secondary
+                Text(
+                    text = "🕐",
+                    fontSize = 24.sp
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "Agora são ${currentTime.format(timeFormatter)}",
+                    text = "Agora são $currentTime",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -227,8 +223,13 @@ private fun GamificationSection(totalStars: Int) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Mensagem muda conforme número de estrelas
             Text(
-                text = "⭐ Você já tem $totalStars Estrelas! ⭐",
+                text = if (totalStars == 0) {
+                    "⭐ Vamos ganhar estrelas? ⭐"
+                } else {
+                    "⭐ Você já tem $totalStars Estrelas! ⭐"
+                },
                 style = MaterialTheme.typography.titleLarge,
                 color = Color(0xFFFFB300), // Amarelo escuro
                 textAlign = TextAlign.Center
@@ -236,28 +237,30 @@ private fun GamificationSection(totalStars: Int) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Exibir até 5 estrelas visualmente
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                val starsToShow = minOf(totalStars, 5)
-                repeat(starsToShow) {
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Estrela",
-                        tint = Color(0xFFFFD700), // Dourado
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
+            // Exibir até 5 estrelas visualmente (apenas se tiver estrelas)
+            if (totalStars > 0) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val starsToShow = minOf(totalStars, 5)
+                    repeat(starsToShow) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Estrela",
+                            tint = Color(0xFFFFD700), // Dourado
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
 
-                if (totalStars > 5) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "x $totalStars",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Color(0xFFFFB300)
-                    )
+                    if (totalStars > 5) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "x $totalStars",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color(0xFFFFB300)
+                        )
+                    }
                 }
             }
         }
@@ -265,7 +268,7 @@ private fun GamificationSection(totalStars: Int) {
 }
 
 /**
- * Logo e nome do aplicativo
+ * Logo do aplicativo (sem texto)
  */
 @Composable
 private fun LogoSection() {
@@ -275,19 +278,11 @@ private fun LogoSection() {
             .padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // TODO: Adicionar imagem do logo quando disponível em /images/
-        // Image(
-        //     painter = painterResource(id = R.drawable.logo_pequenos_passos),
-        //     contentDescription = "Logo Pequenos Passos",
-        //     modifier = Modifier.size(120.dp)
-        // )
-        // Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Pequenos Passos",
-            style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold
+        // Imagem do logo (aumentada em 50%: 120dp -> 180dp)
+        Image(
+            painter = painterResource(id = R.drawable.logo_pequenos_passos),
+            contentDescription = "Logo Pequenos Passos",
+            modifier = Modifier.size(180.dp)
         )
     }
 }
@@ -295,12 +290,10 @@ private fun LogoSection() {
 /**
  * Botões de navegação principal
  * Mantém todas as funcionalidades de navegação existentes:
- * - Atividades (era "Teste Rápido") -> task_list
- * - Edição de Atividades (era "Edição de Tarefas") -> task_management
+ * - Atividades -> task_list
+ * - Edição de Atividades -> task_management
  * - Cadastro -> child_registration
  * - Debug -> debug
- *
- * REMOVIDO: Botão "Teste Rápido" (duplicado)
  */
 @Composable
 private fun NavigationButtons(
@@ -326,7 +319,7 @@ private fun NavigationButtons(
             )
         ) {
             Icon(
-                imageVector = Icons.Default.Assignment,
+                imageVector = Icons.Default.List,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
             )
@@ -370,7 +363,7 @@ private fun NavigationButtons(
             )
         ) {
             Icon(
-                imageVector = Icons.Default.PersonAdd,
+                imageVector = Icons.Default.Person,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
             )
@@ -393,7 +386,7 @@ private fun NavigationButtons(
             )
         ) {
             Icon(
-                imageVector = Icons.Default.BugReport,
+                imageVector = Icons.Default.Settings,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
             )
@@ -407,17 +400,19 @@ private fun NavigationButtons(
 }
 
 /**
- * Converte DayOfWeek para nome em português
+ * Converte Calendar.DAY_OF_WEEK para nome em português
+ * @param dayOfWeek Valor de Calendar.DAY_OF_WEEK (1=Domingo, 2=Segunda, etc.)
  */
-private fun getDayOfWeekName(dayOfWeek: DayOfWeek): String {
+private fun getDayOfWeekName(dayOfWeek: Int): String {
     return when (dayOfWeek) {
-        DayOfWeek.MONDAY -> "Segunda-feira"
-        DayOfWeek.TUESDAY -> "Terça-feira"
-        DayOfWeek.WEDNESDAY -> "Quarta-feira"
-        DayOfWeek.THURSDAY -> "Quinta-feira"
-        DayOfWeek.FRIDAY -> "Sexta-feira"
-        DayOfWeek.SATURDAY -> "Sábado"
-        DayOfWeek.SUNDAY -> "Domingo"
+        Calendar.SUNDAY -> "Domingo"
+        Calendar.MONDAY -> "Segunda-feira"
+        Calendar.TUESDAY -> "Terça-feira"
+        Calendar.WEDNESDAY -> "Quarta-feira"
+        Calendar.THURSDAY -> "Quinta-feira"
+        Calendar.FRIDAY -> "Sexta-feira"
+        Calendar.SATURDAY -> "Sábado"
+        else -> "Dia desconhecido"
     }
 }
 

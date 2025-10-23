@@ -116,7 +116,7 @@ fun `should return success when valid data`() {
 - **MINOR**: Novas funcionalidades (MVPs)
 - **PATCH**: Correções de bugs
 
-### 5.2 Commits Semânticos
+### 5.2 Commits Semánticos
 ```
 feat(mvp-XX): descrição curta
 fix(component): descrição do bug corrigido
@@ -468,6 +468,97 @@ Antes de considerar um MVP completo:
 - Room
 - Coroutines/Flow
 - JUnit, Mockk, Truth (testes)
+
+### 10.3 Comandos Gradle no PowerShell ⚠️ IMPORTANTE
+
+**O PowerShell NÃO suporta o operador `&&` para encadear comandos.**
+
+#### ❌ ERRADO (NÃO FUNCIONA NO POWERSHELL):
+```bash
+# Isto NÃO funciona no PowerShell:
+.\gradlew clean && .\gradlew assembleDebug && .\gradlew installDebug
+git add . && git commit -m "mensagem" && git push
+```
+
+#### ✅ CORRETO (Use espaços simples ou ponto-e-vírgula):
+
+**Opção 1: Comandos em sequência na mesma linha (recomendado):**
+```powershell
+.\gradlew clean assembleDebug installDebug
+```
+
+**Opção 2: Usar ponto-e-vírgula (`;`) para separar comandos:**
+```powershell
+.\gradlew clean; .\gradlew assembleDebug; .\gradlew installDebug
+```
+
+**Opção 3: Usar scripts `.bat` prontos (mais prático):**
+```powershell
+# Use os scripts batch disponíveis na raiz do projeto:
+.\compilar_e_testar.bat
+.\compilar_e_instalar.bat
+.\executar_testes.bat
+```
+
+#### Comandos Gradle Comuns:
+
+**Limpar e compilar:**
+```powershell
+.\gradlew clean assembleDebug
+```
+
+**Compilar e instalar no dispositivo:**
+```powershell
+.\gradlew assembleDebug installDebug
+```
+
+**Executar testes unitários:**
+```powershell
+.\gradlew test
+```
+
+**Executar testes instrumentados:**
+```powershell
+.\gradlew connectedAndroidTest
+```
+
+**Compilar, testar e instalar (sequência completa):**
+```powershell
+.\gradlew clean test assembleDebug installDebug
+```
+
+#### Comandos Git:
+
+**Adicionar, commitar e fazer push:**
+```powershell
+# ERRADO (não funciona):
+git add . && git commit -m "mensagem" && git push
+
+# CORRETO:
+git add .
+git commit -m "mensagem"
+git push
+```
+Ou usando ponto-e-vírgula:
+```powershell
+git add .; git commit -m "mensagem"; git push
+```
+
+#### Scripts Batch Disponíveis:
+
+O projeto possui scripts `.bat` prontos para facilitar operações comuns:
+
+| Script | Descrição | Comando |
+|--------|-----------|---------|
+| `compilar_e_testar.bat` | Limpa, compila e executa testes | `.\compilar_e_testar.bat` |
+| `compilar_e_instalar.bat` | Compila e instala no dispositivo | `.\compilar_e_instalar.bat` |
+| `executar_testes.bat` | Executa apenas os testes | `.\executar_testes.bat` |
+
+**Vantagens de usar scripts `.bat`:**
+- ✅ Funciona em qualquer shell (CMD, PowerShell)
+- ✅ Comandos padronizados
+- ✅ Menos chance de erro de digitação
+- ✅ Inclui tratamento de erros
 
 ---
 
