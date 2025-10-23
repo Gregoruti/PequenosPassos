@@ -72,6 +72,23 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 - 🎨 **Mantidos botões +30s e Próximo:** Criança mantém controle sobre o tempo
 - 🎨 **Mensagem de conclusão personalizada:** Nome da criança incluído nas felicitações ao completar tarefa ("Nome, você tirou nota 10! 🏆", "Nome, parabéns! 🎉", etc.)
 
+### Nova Funcionalidade - TTS (Text-to-Speech)
+- 🔊 **TtsManager implementado:** Serviço singleton para gerenciar síntese de voz em PT-BR
+- 🔊 **Leitura automática do título da tarefa:** Ao iniciar uma tarefa, o título é lido em voz alta
+- 🔊 **Leitura personalizada dos passos:** Cada passo é lido com o nome da criança ("Maria, pegar a escova")
+- 🔊 **Leitura das mensagens de tempo esgotado:** Mensagens personalizadas são faladas quando o tempo acaba
+- 🔊 **Velocidade ajustada para crianças:** Taxa de fala configurada em 0.9x para melhor compreensão
+- 🔊 **Gerenciamento inteligente de fila:** Sistema de fila para múltiplas falas sem sobreposição
+- 🔊 **Limpeza automática de recursos:** TTS é parado e liberado adequadamente ao sair da tela
+
+### Técnico
+- 📦 Criado `TtsManager.kt` como serviço singleton com Hilt
+- 📦 Criado `PresentationModule.kt` para fornecer dependências de apresentação
+- 📦 Integrado TTS ao `TaskExecutionViewModel` com injeção de dependências
+- 📦 Configuração de idioma PT-BR, pitch (1.0) e velocidade (0.9)
+- 📦 Listeners para acompanhar estado da fala (isSpeaking)
+- 📦 Métodos `speak()` (imediato) e `speakQueued()` (em fila)
+
 ---
 
 ## [1.9.6] - MVP07 (Correção Crítica) - 2025-10-22

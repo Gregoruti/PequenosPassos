@@ -7,6 +7,7 @@ import com.pequenospassos.domain.model.Task
 import com.pequenospassos.domain.usecase.GetTaskByIdUseCase
 import com.pequenospassos.domain.usecase.GetStepsByTaskUseCase
 import com.pequenospassos.domain.usecase.GetChildProfileUseCase
+import com.pequenospassos.presentation.utils.TtsManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -32,7 +33,8 @@ import javax.inject.Inject
 class TaskExecutionViewModel @Inject constructor(
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val getStepsByTaskUseCase: GetStepsByTaskUseCase,
-    private val getChildProfileUseCase: GetChildProfileUseCase
+    private val getChildProfileUseCase: GetChildProfileUseCase,
+    private val ttsManager: TtsManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskExecutionState())
@@ -112,6 +114,14 @@ class TaskExecutionViewModel @Inject constructor(
                     childName = childName
                 )
 
+                // Ler título da tarefa
+                ttsManager.speak(task.title)
+
+                // Aguardar um pouco e ler o primeiro passo
+                delay(2000) // Esperar 2 segundos após falar o título
+                val firstStepText = "${childName}, ${steps[0].title}"
+                ttsManager.speakQueued(firstStepText)
+
                 // Iniciar timer
                 startTimer()
 
@@ -146,6 +156,9 @@ class TaskExecutionViewModel @Inject constructor(
                     showTimeUpDialog = true,
                     timeUpMessage = message
                 )
+
+                // Ler a mensagem de tempo esgotado
+                ttsManager.speak(message)
             }
         }
     }
@@ -187,6 +200,11 @@ class TaskExecutionViewModel @Inject constructor(
                 isPaused = false,
                 showTimeUpDialog = false
             )
+
+            // Ler o próximo passo com o nome da criança
+            val stepText = "${_state.value.childName}, ${nextStep.title}"
+            ttsManager.speak(stepText)
+
             startTimer()
         }
     }
@@ -221,6 +239,7 @@ class TaskExecutionViewModel @Inject constructor(
     override fun onCleared() {
         super.onCleared()
         timerJob?.cancel()
+        ttsManager.stop() // Para qualquer fala em andamento
     }
 }
 
