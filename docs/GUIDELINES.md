@@ -125,7 +125,275 @@ test(usecase): adição de testes
 refactor(repository): melhoria de código
 ```
 
-### 5.3 Estratégia de Branches ⭐ NOVO
+### 5.3 Estratégia de Commits com PowerShell ⚠️ CRÍTICO
+
+#### 5.3.1 Problemas Conhecidos do PowerShell
+
+**ATENÇÃO:** O PowerShell do Windows possui limitações críticas que afetam a execução de comandos Git e Gradle.
+
+##### ❌ PROBLEMA 1: Operador `&` (E comercial)
+
+**Erro comum:**
+```powershell
+PS> git add . & git commit -m "mensagem"
+# ERRO: O caráter de E comercial (&) não é permitido.
+# O operador & está reservado para uso futuro
+```
+
+**Causa:**
+- No PowerShell, `&` é usado para executar comandos em background/paralelo
+- Não é equivalente ao `&` do Bash (que executa em sequência se o primeiro falhar)
+
+##### ❌ PROBLEMA 2: Operador `&&` (Encadeamento condicional)
+
+**Erro comum:**
+```powershell
+PS> git add . && git commit -m "mensagem" && git push
+# ERRO: O token '&&' não é um operador de instrução válido
+```
+
+**Causa:**
+- PowerShell **NÃO suporta** o operador `&&` do Bash/CMD
+- `&&` só foi adicionado no PowerShell 7.0+, mas não funciona em versões anteriores
+- Mesmo no PowerShell 7.0+, o comportamento é diferente do Bash
+
+##### ❌ PROBLEMA 3: Executar arquivos `.bat` sem `.\`
+
+**Erro comum:**
+```powershell
+PS> compilar_e_testar.bat
+# ERRO: O termo 'compilar_e_testar.bat' não é reconhecido como nome de cmdlet
+```
+
+**Causa:**
+- PowerShell **NÃO carrega comandos do diretório atual** por padrão (segurança)
+- É necessário usar `.\` para indicar que o arquivo está no diretório atual
+
+**✅ CORREÇÃO:**
+```powershell
+PS> .\compilar_e_testar.bat
+```
+
+##### ❌ PROBLEMA 4: Executar `gradlew` sem `.\`
+
+**Erro comum:**
+```powershell
+PS> gradlew clean
+# ERRO: O termo 'gradlew' não é reconhecido como nome de cmdlet
+```
+
+**✅ CORREÇÃO:**
+```powershell
+PS> .\gradlew clean
+```
+
+#### 5.3.2 Soluções Implementadas
+
+##### ✅ SOLUÇÃO 1: Usar Arquivos `.bat` (Recomendado)
+
+**Vantagens:**
+- Funciona em qualquer shell (CMD, PowerShell, Git Bash)
+- Comandos padronizados e reutilizáveis
+- Menos chance de erro humano
+- Processo visualmente acompanhável
+- Facilita automação
+
+**Scripts `.bat` disponíveis no projeto:**
+
+```
+📁 Raiz do Projeto
+├── compilar_e_testar.bat      # Limpa, compila e testa
+├── compilar_e_instalar.bat    # Compila e instala no dispositivo
+├── executar_testes.bat        # Executa apenas testes
+├── fazer_commit.bat           # Template genérico de commit
+├── commit_docs.bat            # Commit específico de documentação
+├── commit_v1.10.1.bat         # Commit da versão 1.10.1
+└── commit_mvp06.bat           # Commit do MVP06
+```
+
+**Como usar:**
+```powershell
+# Sempre use .\ antes do nome do arquivo
+PS> .\compilar_e_testar.bat
+PS> .\commit_v1.10.1.bat
+```
+
+##### ✅ SOLUÇÃO 2: Estrutura de Arquivo `.bat` para Commits
+
+**Template recomendado:**
+
+```bat
+@echo off
+echo ============================================
+echo  COMMIT LOCAL E REMOTO - v1.X.X
+echo ============================================
+echo.
+
+echo [1/6] Verificando status do Git...
+git status
+echo.
+
+echo [2/6] Adicionando arquivos modificados...
+git add .
+echo Arquivos adicionados!
+echo.
+
+echo [3/6] Criando commit local...
+git commit -m "tipo(escopo): descrição curta
+
+Descrição detalhada linha 1
+Descrição detalhada linha 2
+
+Arquivos modificados:
+- arquivo1.kt
+- arquivo2.kt
+
+Status: MVP-XX - X%% completo"
+echo Commit criado!
+echo.
+
+echo [4/6] Verificando commit criado...
+git log -1 --oneline
+echo.
+
+echo [5/6] Criando tag vX.X.X (opcional)...
+git tag -a vX.X.X -m "Versao X.X.X - Descrição"
+echo Tag criada!
+echo.
+
+echo [6/6] Enviando para repositorio remoto...
+git push origin main
+echo.
+echo Enviando tags (se criadas)...
+git push origin vX.X.X
+echo.
+
+echo ============================================
+echo  COMMIT CONCLUIDO COM SUCESSO!
+echo ============================================
+echo.
+pause
+```
+
+**Observações importantes:**
+1. **Cada comando Git em uma linha separada** (não use `&&` ou `&`)
+2. **Use `echo.` para linhas em branco** (melhor visualização)
+3. **Use `echo` entre comandos** para feedback visual
+4. **Use `pause` no final** para ver resultado antes de fechar
+5. **Escape `%` com `%%`** em mensagens de commit (ex: `100%%`)
+
+##### ✅ SOLUÇÃO 3: Comandos PowerShell Alternativos
+
+**Se não quiser usar `.bat`, use ponto-e-vírgula (`;`):**
+
+```powershell
+# Sequência de comandos Git
+PS> git add .; git commit -m "mensagem"; git push
+
+# Sequência de comandos Gradle
+PS> .\gradlew clean; .\gradlew assembleDebug; .\gradlew installDebug
+```
+
+**Ou execute comandos separadamente:**
+```powershell
+PS> git add .
+PS> git commit -m "mensagem"
+PS> git push
+```
+
+#### 5.3.3 Estratégia de Commits por Versão
+
+**Para cada versão estável, criar um arquivo `.bat` dedicado:**
+
+**Exemplo: `commit_v1.10.1.bat`**
+- Mensagem de commit pré-formatada
+- Lista de arquivos modificados
+- Tag automática da versão
+- Push para repositório remoto
+- Feedback visual em cada etapa
+
+**Vantagens:**
+- ✅ Histórico organizado (arquivo `.bat` fica no repositório)
+- ✅ Fácil de replicar para próximas versões
+- ✅ Mensagens de commit consistentes
+- ✅ Reduz erros humanos
+- ✅ Processo auditável
+
+#### 5.3.4 Checklist de Commit
+
+Antes de executar o script de commit:
+
+- [ ] Código compilando sem erros (`.\gradlew build`)
+- [ ] Testes passando (`.\gradlew test`)
+- [ ] CHANGELOG.md atualizado
+- [ ] Documentação atualizada (se aplicável)
+- [ ] Versão incrementada em `build.gradle.kts` (se aplicável)
+- [ ] Arquivo `.bat` de commit criado/atualizado
+- [ ] Mensagem de commit descritiva e completa
+
+#### 5.3.5 Boas Práticas de Commit
+
+**✅ FAZER:**
+- Criar arquivo `.bat` específico para versões importantes
+- Usar mensagens descritivas e completas
+- Incluir lista de arquivos modificados na mensagem
+- Criar tags para versões estáveis
+- Executar testes antes de commitar
+- Atualizar CHANGELOG.md antes do commit
+- Usar `.\` antes de executar `.bat` ou `gradlew`
+
+**❌ EVITAR:**
+- Usar `&&` ou `&` no PowerShell para encadear comandos
+- Commits genéricos ("fix", "update", "changes")
+- Commitar código que não compila
+- Commitar sem atualizar documentação relevante
+- Executar `.bat` sem `.\` no PowerShell
+
+#### 5.3.6 ⚠️ Problemas Críticos do GitHub Copilot Agent com Terminal
+
+**ATENÇÃO DESENVOLVEDORES E IA ASSISTANTS:**
+
+O GitHub Copilot Agent (e outros AI Code Assistants) frequentemente **insiste em usar `&&` e `&`** ao gerar comandos para terminal no Windows PowerShell, mesmo após múltiplas correções.
+
+**Comportamento problemático observado:**
+1. **IA gera comando com `&&`** → Usuário recebe erro → IA gera novamente com `&&`
+2. **Loop de erro:** IA não aprende com feedback imediato do terminal
+3. **Ignora contexto:** Mesmo com guidelines claras, IA repete o erro
+4. **Solução proposta pela IA:** "Use ponto-e-vírgula" → Na prática, gera `&&` novamente
+
+**INSTRUÇÃO PARA AI ASSISTANTS:**
+
+Ao trabalhar com **Windows PowerShell**:
+
+```
+NUNCA use: &&, &
+SEMPRE use:
+1. Arquivos .bat (PREFERENCIAL)
+2. Ponto-e-vírgula (;) entre comandos
+3. Comandos em linhas separadas
+4. .\ antes de .bat e gradlew
+```
+
+**Regra de Ouro:**
+```
+SE (sistema = Windows E shell = PowerShell) ENTÃO
+    USAR arquivos .bat OU ponto-e-vírgula (;)
+    NUNCA usar && ou &
+FIM SE
+```
+
+**Template de resposta correta para IA:**
+```
+Vou executar o script de commit:
+
+.\commit_v1.10.1.bat
+
+(Não usar: git add . && git commit && git push)
+```
+
+**Esta seção deve ser lida e seguida rigorosamente por qualquer AI Assistant trabalhando neste projeto.**
+
+### 5.4 Estratégia de Branches ⭐ NOVO
 
 #### 5.3.1 Estrutura de Branches
 
