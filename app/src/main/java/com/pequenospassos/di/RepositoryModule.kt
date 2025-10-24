@@ -5,12 +5,14 @@ import com.pequenospassos.data.repository.AppSettingsRepositoryImpl
 import com.pequenospassos.data.repository.ChildProfileRepositoryImpl
 import com.pequenospassos.data.repository.RewardRepositoryImpl
 import com.pequenospassos.data.repository.StepRepositoryImpl
+import com.pequenospassos.data.repository.TaskCompletionRepositoryImpl
 import com.pequenospassos.data.repository.TaskRepositoryImpl
 import com.pequenospassos.domain.repository.AchievementRepository
 import com.pequenospassos.domain.repository.AppSettingsRepository
 import com.pequenospassos.domain.repository.ChildProfileRepository
 import com.pequenospassos.domain.repository.RewardRepository
 import com.pequenospassos.domain.repository.StepRepository
+import com.pequenospassos.domain.repository.TaskCompletionRepository
 import com.pequenospassos.domain.repository.TaskRepository
 import dagger.Binds
 import dagger.Module
@@ -75,6 +77,11 @@ abstract class RepositoryModule {
      * @param impl Implementação concreta
      * @return Interface do repositório
      */
+    @Binds
+    @Singleton
+    abstract fun bindAppSettingsRepository(
+        impl: AppSettingsRepositoryImpl
+    ): AppSettingsRepository
 
     /**
      * Fornece a implementação de AchievementRepository (MVP-08).
@@ -99,10 +106,17 @@ abstract class RepositoryModule {
     abstract fun bindRewardRepository(
         impl: RewardRepositoryImpl
     ): RewardRepository
+
+    /**
+     * Fornece a implementação de TaskCompletionRepository (MVP-09).
+     *
+     * @param impl Implementação concreta
+     * @return Interface do repositório
+     */
     @Binds
     @Singleton
-    abstract fun bindAppSettingsRepository(
-        impl: AppSettingsRepositoryImpl
-    ): AppSettingsRepository
+    abstract fun bindTaskCompletionRepository(
+        impl: TaskCompletionRepositoryImpl
+    ): TaskCompletionRepository
 }
 

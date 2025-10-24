@@ -7,7 +7,108 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
-## [Em Desenvolvimento] - MVP08 (v1.10.0) - 2025-10-23
+## [Lançado] - MVP09 (v1.11.3) - 2025-10-24
+
+### 🎯 Sistema de Controle Diário de Tarefas - COMPLETO
+
+#### Adicionado
+- ✨ **Sistema de controle diário de tarefas:**
+  - Cada tarefa pode ser executada apenas 1x por dia
+  - Registro de conclusões com data/hora em `task_completions`
+  - Reset automático à meia-noite
+  - Contador de estrelas diárias no topo da tela "Atividades"
+  
+- ✨ **Entidade TaskCompletion:**
+  - Campos: taskId, childId, date, completedAt, starsEarned
+  - Índice UNIQUE: garante 1 conclusão por tarefa/criança/dia
+  - TypeConverters para LocalDate e LocalDateTime
+
+- ✨ **TaskCompletionDao:** 15+ métodos incluindo:
+  - `isTaskCompletedTodayFlow()` - Verificação reativa
+  - `getStarsForDateFlow()` - Total de estrelas do dia
+  - `getCompletedTaskIdsForDateFlow()` - IDs de tarefas completadas
+  - `deleteCompletionsForDate()` - Zerar tarefas do dia (Debug)
+  - `deleteAllForChild()` - Zerar estrelas (Debug)
+
+- ✨ **Interface Visual:**
+  - ⭐ Contador de estrelas: "⭐ X estrelas hoje"
+  - ✅ Checkmark em tarefas completadas
+  - 🎨 Card com cor diferenciada (acinzentado)
+  - 🔒 Botão "✅ Completada Hoje" desabilitado
+  - Texto mais claro em tarefas completadas
+
+- ✨ **TaskRepository:** 9 novos métodos para controle diário
+- ✨ **Migrations:** 3→4 e 4→5 (correção de FOREIGN KEYs)
+
+#### Corrigido
+- 🐛 **CRÍTICO - Ordem incorreta das migrations (v1.11.0 → v1.11.1):**
+  - Problema: Migrations fora de ordem (1→2→**3→4**→2→3)
+  - Room não conseguia aplicar migration 3→4
+  - Tabela `task_completions` não era criada
+  - Solução: Reordenar para sequencial (1→2→2→3→3→4)
+
+- 🐛 **CRÍTICO - FOREIGN KEY constraint failed (v1.11.1 → v1.11.3):**
+  - Problema: Constraints exigiam perfil de criança cadastrado
+  - Erro: `SQLiteConstraintException: FOREIGN KEY constraint failed`
+  - Aplicação falhava silenciosamente ao marcar tarefa como completada
+  - Solução: Removidas FOREIGN KEYs de `task_completions`
+  - Migration 4→5 criada para recriar tabela sem constraints
+
+- 🐛 **Logs silenciosos (v1.11.2):**
+  - Adicionados logs detalhados em pontos críticos
+  - Facilitou identificação de FOREIGN KEY constraint
+  - Logs mantidos para troubleshooting futuro
+
+#### Técnico
+- 🔧 `TaskCompletion.kt`: Entity sem FOREIGN KEYs
+- 🔧 `TaskCompletionDao.kt`: 340 linhas de queries especializadas
+- 🔧 `TaskRepository.kt` + `TaskRepositoryImpl.kt`: 9 novos métodos
+- 🔧 `AppDatabase.kt`: Migrations 3→4 e 4→5
+- 🔧 `DatabaseModule.kt`: Ordem correta das migrations
+- 🔧 `Converters.kt`: TypeConverters para LocalDate/LocalDateTime
+- 🔧 `TaskListViewModel.kt`: Integração com sistema de controle diário
+- 🔧 `TaskListScreen.kt`: UI com marcação visual de tarefas completadas
+- 🔧 `TaskExecutionViewModel.kt`: Marcação automática ao completar tarefa
+- 🔧 Versão do banco: 3 → 5
+- 📝 Documentação: `MVP09_IMPLEMENTACAO_COMPLETA_V1.11.3.md`
+
+#### Validado
+- ✅ 7/7 testes passaram em dispositivo físico
+- ✅ Contador de estrelas funciona
+- ✅ Tarefas marcadas visualmente
+- ✅ Bloqueio de reexecução funciona
+- ✅ Dados persistem após fechar app
+- ✅ Reset automático à meia-noite
+
+---
+
+## [Em Desenvolvimento] - MVP09 (v1.11.0) - 2025-10-24
+
+### 🔧 Sistema de Controle Diário - Preparação
+
+#### Corrigido
+- 🐛 **TypeConverters para LocalDate:**
+  - Adicionados conversores `fromLocalDate` e `toLocalDate` em `Converters.kt`
+  - Room agora consegue mapear `java.time.LocalDate` para Long (epochDay)
+  - Habilitado **core library desugaring** para suporte em API < 26 (Android 7.0+)
+  - Dependência adicionada: `desugar_jdk_libs:2.0.4`
+  - Removido arquivo duplicado `DateTimeConverters.kt` (causava conflito)
+  - **Build Status:** ✅ SUCCESS
+
+#### Técnico
+- 🔧 `Converters.kt`: Adicionados TypeConverters para `LocalDate ↔ Long`
+- 🔧 `build.gradle.kts`: Habilitado `isCoreLibraryDesugaringEnabled = true`
+- 📝 Documentação: `MVP09_CORRECAO_TYPECONVERTERS.md` (troubleshooting completo)
+
+#### Próximos Passos MVP-09
+- ⏳ Implementar Migration 3→4 (tabela `task_completions`)
+- ⏳ Criar `TaskCompletionRepository`
+- ⏳ Integrar controle de tarefas concluídas na UI
+- ⏳ Sistema de estrelas diárias na HomeScreen
+
+---
+
+## [Lançado] - MVP08 (v1.10.1) - 2025-01-23
 
 ### 🎮 Sistema de Gamificação - Fase 1 (Arquitetura Base)
 

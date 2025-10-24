@@ -56,11 +56,22 @@ fun TaskListScreen(
 ) {
     val tasks by viewModel.tasks.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val starsToday by viewModel.starsToday.collectAsState() // MVP-09
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Atividades") },
+                title = {
+                    Column {
+                        Text("Atividades")
+                        // MVP-09: Contador de estrelas do dia
+                        Text(
+                            text = "⭐ $starsToday estrelas hoje",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                        )
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
@@ -161,6 +172,8 @@ private fun EmptyState(
  * Card de tarefa na lista com indicadores visuais MVP-07.
  * Versão simplificada para área de execução (sem edição/exclusão).
  * Inclui miniatura da imagem da tarefa à esquerda.
+ *
+ * MVP-09: Mostra visualmente se tarefa foi completada hoje e desabilita execução.
  */
 @Composable
 private fun TaskCard(
@@ -169,10 +182,19 @@ private fun TaskCard(
 ) {
     val task = taskWithMetadata.task
     val category = TaskCategory.fromString(task.category) ?: TaskCategory.default()
+    val isCompleted = taskWithMetadata.isCompletedToday // MVP-09
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = if (isCompleted) {
+            // MVP-09: Card com cor diferente se completada
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            )
+        } else {
+            CardDefaults.cardColors()
+        }
     ) {
         Row(
             modifier = Modifier
@@ -232,13 +254,18 @@ private fun TaskCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // MVP-09: Título com checkmark se completada
                     Text(
-                        text = task.title,
+                        text = if (isCompleted) "✅ ${task.title}" else task.title,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        color = if (isCompleted)
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        else
+                            MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -318,12 +345,15 @@ private fun TaskCard(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Botão de execução (full width)
+                // MVP-09: Botão de execução (desabilitado se já completada hoje)
                 Button(
                     onClick = onExecute,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isCompleted
                 ) {
-                    Text("▶️ Executar Tarefa")
+                    Text(
+                        if (isCompleted) "✅ Completada Hoje" else "▶️ Executar Tarefa"
+                    )
                 }
             }
         }

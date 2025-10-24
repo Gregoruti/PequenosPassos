@@ -18,12 +18,15 @@ import javax.inject.Inject
  * incluindo metadados dos steps (contagem de imagens e duração total).
  * Também gerencia a exclusão de tarefas.
  *
+ * MVP-09: Adicionado controle diário de tarefas - marca tarefas já completadas hoje.
+ *
  * @property taskRepository Repositório de tarefas
  * @property stepRepository Repositório de steps
  * @property deleteTaskUseCase Use case para deletar tarefas
  *
  * @since MVP-07 (18/10/2025) - Fase 3
  * @updated MVP-07 (20/10/2025) - Adicionada exclusão de tarefas
+ * @updated MVP-09 (24/10/2025) - Controle diário de tarefas
  * @author PequenosPassos Development Team
  */
 @HiltViewModel
@@ -45,8 +48,21 @@ class TaskListViewModel @Inject constructor(
     private val _deleteError = MutableStateFlow<String?>(null)
     val deleteError: StateFlow<String?> = _deleteError.asStateFlow()
 
+    // MVP-09: IDs de tarefas completadas hoje
+    private val _completedTaskIdsToday = MutableStateFlow<Set<String>>(emptySet())
+    val completedTaskIdsToday: StateFlow<Set<String>> = _completedTaskIdsToday.asStateFlow()
+
+    // MVP-09: Estrelas ganhas hoje
+    private val _starsToday = MutableStateFlow(0)
+    val starsToday: StateFlow<Int> = _starsToday.asStateFlow()
+
+    // ID da criança (hardcoded por enquanto - será do perfil selecionado)
+    private val childId = 1L
+
     init {
         loadTasks()
+        loadCompletedTasksToday()
+        loadStarsToday()
     }
 
     /**
@@ -56,26 +72,61 @@ class TaskListViewModel @Inject constructor(
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                taskRepository.getAllTasksOrderedByTime()
-                    .collect { taskList ->
-                        // Para cada tarefa, buscar metadados dos steps
-                        val tasksWithMetadata = taskList.map { task ->
-                            val steps = stepRepository.getStepsByTask(task.id).first()
-                            TaskWithMetadata(
-                                task = task,
-                                stepCount = steps.size,
-                                imageCount = steps.count { !it.imageUrl.isNullOrEmpty() },
-                                totalDurationSeconds = steps.sumOf { it.durationSeconds }
-                            )
-                        }
-                        _tasks.value = tasksWithMetadata
-                        _isLoading.value = false
+                combine(
+                    taskRepository.getAllTasksOrderedByTime(),
+                    taskRepository.getCompletedTaskIdsToday(childId)
+                ) { taskList, completedIds ->
+                    // Para cada tarefa, buscar metadados dos steps
+                    taskList.map { task ->
+                        val steps = stepRepository.getStepsByTask(task.id).first()
+                        TaskWithMetadata(
+                            task = task,
+                            stepCount = steps.size,
+                            imageCount = steps.count { !it.imageUrl.isNullOrEmpty() },
+                            totalDurationSeconds = steps.sumOf { it.durationSeconds },
+                            isCompletedToday = task.id.toString() in completedIds
+                        )
                     }
+                }.collect { tasksWithMetadata ->
+                    _tasks.value = tasksWithMetadata
+                    _isLoading.value = false
+                }
             } catch (e: Exception) {
                 _isLoading.value = false
                 _tasks.value = emptyList()
             }
         }
+    }
+
+    /**
+     * MVP-09: Carrega IDs das tarefas completadas hoje.
+     */
+    private fun loadCompletedTasksToday() {
+        viewModelScope.launch {
+            taskRepository.getCompletedTaskIdsToday(childId)
+                .collect { completedIds ->
+                    _completedTaskIdsToday.value = completedIds.toSet()
+                }
+        }
+    }
+
+    /**
+     * MVP-09: Carrega total de estrelas ganhas hoje.
+     */
+    private fun loadStarsToday() {
+        viewModelScope.launch {
+            taskRepository.getStarsForToday(childId)
+                .collect { stars ->
+                    _starsToday.value = stars
+                }
+        }
+    }
+
+    /**
+     * MVP-09: Verifica se uma tarefa foi completada hoje.
+     */
+    fun isTaskCompletedToday(taskId: Long): Boolean {
+        return taskId.toString() in _completedTaskIdsToday.value
     }
 
     /**
@@ -119,12 +170,14 @@ class TaskListViewModel @Inject constructor(
  * @property stepCount Quantidade de steps
  * @property imageCount Quantidade de steps com imagem
  * @property totalDurationSeconds Duração total de todos os steps em segundos
+ * @property isCompletedToday Se a tarefa foi completada hoje (MVP-09)
  */
 data class TaskWithMetadata(
     val task: Task,
     val stepCount: Int,
     val imageCount: Int,
-    val totalDurationSeconds: Int
+    val totalDurationSeconds: Int,
+    val isCompletedToday: Boolean = false
 ) {
     /**
      * Formata a duração total em formato legível.

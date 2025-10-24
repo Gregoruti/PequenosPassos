@@ -695,6 +695,97 @@ Antes de considerar um MVP completo:
 - Índices em campos de busca frequente
 - Converters para tipos complexos
 
+#### 8.3.1 TypeConverters - Boas Práticas ⭐ CRÍTICO
+
+**REGRA 1: Um Único Arquivo de Converters**
+- ✅ Manter todos os TypeConverters em `Converters.kt`
+- ❌ NÃO criar múltiplos arquivos de TypeConverters
+- ❌ EVITAR duplicação de conversores (causa erro de compilação)
+
+**Erro Comum:**
+```kotlin
+// ❌ ERRADO - Arquivo separado causa conflito
+// DateTimeConverters.kt
+@TypeConverter
+fun toLocalDateTime(timestamp: Long?): LocalDateTime? { ... }
+
+// Converters.kt (já existe!)
+@TypeConverter
+fun toLocalDateTime(timestamp: Long?): LocalDateTime? { ... }
+
+// ERRO: Multiple functions define the same conversion
+```
+
+**REGRA 2: Verificar Converters Existentes ANTES de Adicionar Novos**
+```kotlin
+// ✅ CORRETO - Verificar Converters.kt primeiro
+// Já existe: LocalDateTime ↔ Long
+// Adicionar apenas: LocalDate ↔ Long (se não existir)
+
+class Converters {
+    // Existentes (MVP-08)
+    @TypeConverter fun fromLocalDateTime(dateTime: LocalDateTime?): Long?
+    @TypeConverter fun toLocalDateTime(timestamp: Long?): LocalDateTime?
+    
+    // Novos (MVP-09) - Apenas adicionar ao mesmo arquivo
+    @TypeConverter fun fromLocalDate(date: LocalDate?): Long?
+    @TypeConverter fun toLocalDate(epochDay: Long?): LocalDate?
+}
+```
+
+**REGRA 3: Desugaring para java.time em API < 26**
+
+Se usar `java.time.*` (LocalDate, LocalDateTime, etc) e `minSdk < 26`:
+
+**build.gradle.kts (módulo app):**
+```kotlin
+android {
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true  // ← OBRIGATÓRIO
+    }
+}
+
+dependencies {
+    // Obrigatório para java.time em API < 26
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+}
+```
+
+**REGRA 4: Estratégias de Conversão por Tipo**
+
+| Tipo Java | Tipo SQL | Estratégia | Exemplo |
+|-----------|----------|------------|---------|
+| `LocalDate` | `LONG` | `toEpochDay()` | Dias desde 1970-01-01 |
+| `LocalDateTime` | `LONG` | `toEpochSecond()` ou `toEpochMilli()` | Segundos/millis desde epoch |
+| `Enum` | `TEXT` | `name` / `valueOf()` | "ACTIVE" ↔ TaskStatus.ACTIVE |
+| `List<String>` | `TEXT` | `joinToString()` / `split()` | "a,b,c" ↔ listOf("a","b","c") |
+| `UUID` | `TEXT` | `toString()` / `fromString()` | String ↔ UUID |
+
+**REGRA 5: Documentar Converters Claramente**
+
+```kotlin
+/**
+ * Converte LocalDate para Long (epochDay) (armazenamento)
+ * MVP09 - Sistema de Controle Diário
+ *
+ * Armazena número de dias desde 1970-01-01
+ */
+@TypeConverter
+fun fromLocalDate(date: LocalDate?): Long? = date?.toEpochDay()
+```
+
+**Checklist TypeConverters:**
+- [ ] Verificar se converter JÁ existe em `Converters.kt`
+- [ ] Adicionar ao arquivo existente (não criar novo)
+- [ ] Habilitar desugaring se usar java.time e minSdk < 26
+- [ ] Registrar apenas uma vez em `@TypeConverters(Converters::class)`
+- [ ] Documentar estratégia de conversão
+- [ ] Testar compilação: `.\gradlew clean build`
+
+**Referência:** `docs/MVP09_CORRECAO_TYPECONVERTERS.md`
+
 ### 8.4 Coroutines e Flow
 - Usar Dispatchers.IO para operações de I/O
 - Flow para streams de dados reativos

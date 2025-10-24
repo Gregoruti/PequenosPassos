@@ -1,8 +1,10 @@
 package com.pequenospassos.domain.repository
 
 import com.pequenospassos.domain.model.Task
+import com.pequenospassos.domain.model.TaskCompletion
 import com.pequenospassos.domain.model.TaskStatus
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 /**
  * Interface de repositório para operações de Task.
@@ -11,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
  * incluindo CRUD completo e queries especializadas.
  *
  * @since MVP-04 (14/10/2025) - DIA 1 - Fundação
+ * @updated MVP-09 (24/10/2025) - Adicionado controle diário de tarefas
  * @author PequenosPassos Development Team
  * @validationStatus ✅ Implementado - MVP-04
  */
@@ -87,5 +90,81 @@ interface TaskRepository {
      * @return Result indicando sucesso ou erro
      */
     suspend fun deleteAllTasks(): Result<Unit>
+
+    // ========================================
+    // MVP-09: Controle Diário de Tarefas
+    // ========================================
+
+    /**
+     * Marca uma tarefa como concluída no dia atual.
+     *
+     * @param taskId ID da tarefa
+     * @param childId ID da criança
+     * @param starsEarned Quantidade de estrelas ganhas
+     * @return Result com ID da conclusão ou erro
+     */
+    suspend fun markTaskAsCompleted(
+        taskId: String,
+        childId: Long,
+        starsEarned: Int
+    ): Result<Long>
+
+    /**
+     * Verifica se uma tarefa foi completada hoje.
+     *
+     * @param taskId ID da tarefa
+     * @param childId ID da criança
+     * @return Flow com true se completada, false caso contrário
+     */
+    fun isTaskCompletedToday(taskId: String, childId: Long): Flow<Boolean>
+
+    /**
+     * Obtém total de estrelas ganhas hoje.
+     *
+     * @param childId ID da criança
+     * @return Flow com total de estrelas
+     */
+    fun getStarsForToday(childId: Long): Flow<Int>
+
+    /**
+     * Obtém IDs das tarefas completadas hoje.
+     *
+     * @param childId ID da criança
+     * @return Flow com lista de IDs de tarefas completadas
+     */
+    fun getCompletedTaskIdsToday(childId: Long): Flow<List<String>>
+
+    /**
+     * Obtém histórico de conclusões de tarefas.
+     *
+     * @param childId ID da criança
+     * @param limit Limite de registros
+     * @return Flow com lista de conclusões
+     */
+    fun getCompletionsHistory(childId: Long, limit: Int = 100): Flow<List<TaskCompletion>>
+
+    /**
+     * Deleta todas as conclusões de hoje (para Debug/Reset).
+     *
+     * @param childId ID da criança
+     * @return Result indicando sucesso ou erro
+     */
+    suspend fun deleteCompletionsForToday(childId: Long): Result<Unit>
+
+    /**
+     * Deleta todas as conclusões (zera estrelas - Debug).
+     *
+     * @param childId ID da criança
+     * @return Result indicando sucesso ou erro
+     */
+    suspend fun deleteAllCompletions(childId: Long): Result<Unit>
+
+    /**
+     * Obtém quantidade de tarefas disponíveis hoje (não completadas).
+     *
+     * @param childId ID da criança
+     * @return Flow com quantidade de tarefas disponíveis
+     */
+    fun getAvailableTasksCountToday(childId: Long): Flow<Int>
 }
 

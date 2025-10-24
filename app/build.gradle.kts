@@ -19,8 +19,8 @@ android {
         applicationId = "com.example.pequenospassos"
         minSdk = 24
         targetSdk = 36
-        versionCode = 18
-        versionName = "1.10.1"
+        versionCode = 22
+        versionName = "1.11.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,6 +37,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "11"
@@ -76,6 +77,9 @@ dependencies {
 
     // ExifInterface for image orientation correction - MVP-07
     implementation("androidx.exifinterface:exifinterface:1.3.7")
+
+    // Desugaring for java.time support on API < 26 - MVP-09
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     // ViewModel Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)

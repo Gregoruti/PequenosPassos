@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pequenospassos.domain.model.Step
 import com.pequenospassos.domain.model.Task
+import com.pequenospassos.domain.repository.TaskRepository
 import com.pequenospassos.domain.usecase.GetTaskByIdUseCase
 import com.pequenospassos.domain.usecase.GetStepsByTaskUseCase
 import com.pequenospassos.domain.usecase.GetChildProfileUseCase
@@ -26,14 +27,17 @@ import javax.inject.Inject
  * - Timer countdown com pause/resume
  * - Navegação entre steps
  * - Conclusão da tarefa
+ * - MVP-09: Marcação de tarefa completada no dia
  *
  * @since MVP-07 (17/10/2025)
+ * @updated MVP-09 (24/10/2025) - Controle diário de tarefas
  */
 @HiltViewModel
 class TaskExecutionViewModel @Inject constructor(
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val getStepsByTaskUseCase: GetStepsByTaskUseCase,
     private val getChildProfileUseCase: GetChildProfileUseCase,
+    private val taskRepository: TaskRepository,
     private val ttsManager: TtsManager
 ) : ViewModel() {
 
@@ -229,11 +233,37 @@ class TaskExecutionViewModel @Inject constructor(
 
     /**
      * Marca a tarefa como concluída.
+     * MVP-09: Agora persiste a conclusão no banco de dados.
      */
     private fun completeTask() {
-        // Por enquanto apenas marca como completa no estado
-        // No futuro, podemos adicionar persistência da conclusão
-        _state.value = _state.value.copy(isCompleted = true)
+        viewModelScope.launch {
+            try {
+                val task = currentTask ?: return@launch
+                // Por enquanto, usar childId hardcoded (será do perfil selecionado no futuro)
+                val childId = 1L
+
+                // MVP-09: Marcar tarefa como completada no banco
+                val result = taskRepository.markTaskAsCompleted(
+                    taskId = task.id.toString(),
+                    childId = childId,
+                    starsEarned = task.stars
+                )
+
+                if (result.isSuccess) {
+                    println("TaskExecutionVM: Tarefa ${task.id} marcada como completada! ${task.stars} estrelas ganhas.")
+                } else {
+                    println("TaskExecutionVM: Erro ao marcar tarefa como completada: ${result.exceptionOrNull()?.message}")
+                }
+
+                // Marca como completa no estado (navega para tela de conclusão)
+                _state.value = _state.value.copy(isCompleted = true)
+
+            } catch (e: Exception) {
+                println("TaskExecutionVM: Exceção ao marcar tarefa como completada: ${e.message}")
+                // Mesmo com erro, marca como completa para não travar a navegação
+                _state.value = _state.value.copy(isCompleted = true)
+            }
+        }
     }
 
     override fun onCleared() {

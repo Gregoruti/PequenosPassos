@@ -80,5 +80,25 @@ class Converters {
             LocalDateTime.ofEpochSecond(it, 0, java.time.ZoneOffset.UTC)
         }
     }
+
+    /**
+     * Converte LocalDate para Long (epochDay) (armazenamento)
+     * MVP09 - Sistema de Controle Diário
+     *
+     * Armazena número de dias desde 1970-01-01
+     */
+    @TypeConverter
+    fun fromLocalDate(date: java.time.LocalDate?): Long? {
+        return date?.toEpochDay()
+    }
+
+    /**
+     * Converte Long (epochDay) para LocalDate (leitura)
+     * MVP09 - Sistema de Controle Diário
+     */
+    @TypeConverter
+    fun toLocalDate(epochDay: Long?): java.time.LocalDate? {
+        return epochDay?.let { java.time.LocalDate.ofEpochDay(it) }
+    }
 }
 
