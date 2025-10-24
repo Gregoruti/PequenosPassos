@@ -2,6 +2,8 @@ package com.pequenospassos.presentation.screens.childregistration
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -9,38 +11,85 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.pequenospassos.domain.model.Gender
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
- * Tela de Cadastro da Criança.
+ * Tela de Cadastro da Criança (CORRIGIDA).
  *
  * Permite registrar informações básicas da criança:
  * - Nome (obrigatório)
- * - Data de nascimento (obrigatório)
+ * - Sexo (obrigatório) - Masculino/Feminino
+ * - Data de nascimento (opcional)
  * - Observações (opcional)
  *
+ * CORREÇÕES v1.10.1:
+ * - ✅ Dados agora são salvos no banco Room
+ * - ✅ Carrega dados existentes para edição
+ * - ✅ Campo Sexo adicionado com seleção visual
+ * - ✅ Campos tornados opcionais (exceto nome e sexo)
+ * - ✅ Integração com ViewModel e Repository
+ *
  * @param navController Controlador de navegação
+ * @param viewModel ViewModel injetado via Hilt
  *
  * @since MVP-07 (18/10/2025)
+ * @updated MVP-08 (23/10/2025) - Correções de salvamento
  * @author PequenosPassos Development Team
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChildRegistrationScreen(
-    navController: NavController
+    navController: NavController,
+    viewModel: ChildRegistrationViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val existingProfile by viewModel.existingProfile.collectAsStateWithLifecycle()
+
     var childName by remember { mutableStateOf("") }
+    var selectedGender by remember { mutableStateOf<Gender?>(null) }
     var birthDate by remember { mutableStateOf("") }
     var observations by remember { mutableStateOf("") }
-    var showError by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
+
+    // Carregar dados existentes quando disponível
+    LaunchedEffect(existingProfile) {
+        existingProfile?.let { profile ->
+            childName = profile.name
+            selectedGender = profile.gender
+            // birthDate e observations não estão no modelo atual, então ficam vazios
+        }
+    }
+
+    // Responder ao estado do ViewModel
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is RegistrationUiState.Success -> {
+                snackbarHostState.showSnackbar(
+                    message = "Cadastro salvo com sucesso! ✅",
+                    duration = SnackbarDuration.Short
+                )
+                delay(500)
+                viewModel.resetState()
+                navController.navigateUp()
+            }
+            is RegistrationUiState.Error -> {
+                snackbarHostState.showSnackbar(
+                    message = (uiState as RegistrationUiState.Error).message,
+                    duration = SnackbarDuration.Long
+                )
+                viewModel.resetState()
+            }
+            else -> { /* Idle ou Loading */ }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -66,7 +115,7 @@ fun ChildRegistrationScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Ícone grande
             Text(
@@ -75,7 +124,7 @@ fun ChildRegistrationScreen(
             )
 
             Text(
-                text = "Vamos começar!",
+                text = if (existingProfile != null) "Editar Cadastro" else "Vamos começar!",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -83,21 +132,101 @@ fun ChildRegistrationScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Campo Nome
+            // Campo Nome (OBRIGATÓRIO)
             OutlinedTextField(
                 value = childName,
-                onValueChange = {
-                    childName = it
-                    showError = false
-                },
+                onValueChange = { childName = it },
                 label = { Text("Nome da criança *") },
                 placeholder = { Text("Ex: João Silva") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                isError = showError && childName.length < 2
+                enabled = uiState !is RegistrationUiState.Loading
             )
 
-            // Campo Data de Nascimento
+            // Campo Sexo (OBRIGATÓRIO) - NOVO!
+            Text(
+                text = "Sexo *",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.align(Alignment.Start)
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .selectableGroup(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Opção Masculino
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .selectable(
+                            selected = selectedGender == Gender.MALE,
+                            onClick = { selectedGender = Gender.MALE },
+                            role = Role.RadioButton,
+                            enabled = uiState !is RegistrationUiState.Loading
+                        ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (selectedGender == Gender.MALE)
+                            MaterialTheme.colorScheme.primaryContainer
+                        else
+                            MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "👦", fontSize = 48.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Masculino",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = if (selectedGender == Gender.MALE) FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
+                }
+
+                // Opção Feminino
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .selectable(
+                            selected = selectedGender == Gender.FEMALE,
+                            onClick = { selectedGender = Gender.FEMALE },
+                            role = Role.RadioButton,
+                            enabled = uiState !is RegistrationUiState.Loading
+                        ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (selectedGender == Gender.FEMALE)
+                            MaterialTheme.colorScheme.primaryContainer
+                        else
+                            MaterialTheme.colorScheme.surfaceVariant
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = "👧", fontSize = 48.sp)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Feminino",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = if (selectedGender == Gender.FEMALE) FontWeight.Bold else FontWeight.Normal
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Campo Data de Nascimento (OPCIONAL)
             OutlinedTextField(
                 value = birthDate,
                 onValueChange = {
@@ -109,17 +238,16 @@ fun ChildRegistrationScreen(
                         digits.length <= 8 -> "${digits.substring(0, 2)}/${digits.substring(2, 4)}/${digits.substring(4)}"
                         else -> "${digits.substring(0, 2)}/${digits.substring(2, 4)}/${digits.substring(4, 8)}"
                     }
-                    showError = false
                 },
-                label = { Text("Data de nascimento *") },
+                label = { Text("Data de nascimento (opcional)") },
                 placeholder = { Text("DD/MM/AAAA") },
                 supportingText = { Text("Formato: DD/MM/AAAA") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                isError = showError && !isValidDate(birthDate)
+                enabled = uiState !is RegistrationUiState.Loading
             )
 
-            // Campo Observações
+            // Campo Observações (OPCIONAL)
             OutlinedTextField(
                 value = observations,
                 onValueChange = { observations = it },
@@ -127,60 +255,51 @@ fun ChildRegistrationScreen(
                 placeholder = { Text("Ex: preferências, alergias, informações importantes") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
-                maxLines = 5
+                maxLines = 5,
+                enabled = uiState !is RegistrationUiState.Loading
             )
-
-            // Mensagem de erro
-            if (showError) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
-                ) {
-                    Text(
-                        text = errorMessage,
-                        modifier = Modifier.padding(16.dp),
-                        color = MaterialTheme.colorScheme.onErrorContainer
-                    )
-                }
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Botão Salvar
             Button(
                 onClick = {
-                    val validation = validateForm(childName, birthDate)
-                    if (validation.isValid) {
-                        // Salvar dados (implementar posteriormente com banco)
-                        // Por enquanto, apenas mostrar sucesso e voltar
-                        showError = false
-
-                        // Mostrar mensagem de sucesso
-                        coroutineScope.launch {
-                            snackbarHostState.showSnackbar(
-                                message = "Cadastro realizado com sucesso!",
-                                duration = SnackbarDuration.Short
-                            )
-                            // Aguardar um pouco e voltar
-                            delay(500)
-                            navController.navigateUp()
-                        }
+                    if (childName.trim().length < 2) {
+                        // Mostrar erro inline
+                    } else if (selectedGender == null) {
+                        // Mostrar erro inline
                     } else {
-                        showError = true
-                        errorMessage = validation.errorMessage
+                        // Salvar no banco via ViewModel
+                        viewModel.saveProfile(
+                            name = childName.trim(),
+                            gender = selectedGender!!,
+                            birthDate = birthDate.takeIf { it.isNotBlank() },
+                            observations = observations.takeIf { it.isNotBlank() }
+                        )
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState !is RegistrationUiState.Loading &&
+                         childName.trim().length >= 2 &&
+                         selectedGender != null
             ) {
-                Text("💾 SALVAR")
+                if (uiState is RegistrationUiState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Salvando...")
+                } else {
+                    Text("💾 SALVAR")
+                }
             }
 
             // Botão Cancelar
             TextButton(
                 onClick = { navController.navigateUp() },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                enabled = uiState !is RegistrationUiState.Loading
             ) {
                 Text("Cancelar")
             }
@@ -188,43 +307,4 @@ fun ChildRegistrationScreen(
     }
 }
 
-/**
- * Valida se a data está no formato correto DD/MM/AAAA.
- */
-private fun isValidDate(date: String): Boolean {
-    if (date.length != 10) return false
 
-    val parts = date.split("/")
-    if (parts.size != 3) return false
-
-    val day = parts[0].toIntOrNull() ?: return false
-    val month = parts[1].toIntOrNull() ?: return false
-    val year = parts[2].toIntOrNull() ?: return false
-
-    return day in 1..31 && month in 1..12 && year in 1900..2025
-}
-
-/**
- * Resultado da validação do formulário.
- */
-private data class ValidationResult(
-    val isValid: Boolean,
-    val errorMessage: String
-)
-
-/**
- * Valida o formulário de cadastro.
- */
-private fun validateForm(name: String, birthDate: String): ValidationResult {
-    return when {
-        name.trim().length < 2 -> ValidationResult(
-            false,
-            "Nome deve ter pelo menos 2 caracteres"
-        )
-        !isValidDate(birthDate) -> ValidationResult(
-            false,
-            "Data de nascimento inválida. Use o formato DD/MM/AAAA"
-        )
-        else -> ValidationResult(true, "")
-    }
-}

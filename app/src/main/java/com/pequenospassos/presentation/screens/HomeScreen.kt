@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,13 +69,17 @@ import java.util.Locale
  * @since v1.9.7
  */
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: HomeViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+) {
     // Estado para hora atual (atualiza a cada minuto)
     var currentCalendar by remember { mutableStateOf(Calendar.getInstance()) }
 
-    // TODO: Carregar do banco de dados quando ChildProfile estiver implementado
-    val childName: String? = null // Placeholder
-    val totalStars = 0 // Placeholder até MVP08
+    // ✅ CORRIGIDO: Carregar perfil do banco de dados
+    val childProfile by viewModel.childProfile.collectAsState()
+    val childName = childProfile?.name // Nome carregado do banco
+    val totalStars = 0 // Placeholder até MVP08 integração completa
 
     // Atualizar hora a cada minuto
     LaunchedEffect(Unit) {

@@ -10,10 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.pequenospassos.presentation.utils.TtsManager
 
 /**
  * Tela de conclusão de tarefa com feedback positivo.
@@ -37,7 +40,8 @@ fun TaskCompletionScreen(
     navController: NavController,
     taskTitle: String,
     stars: Int,
-    childName: String = "Amiguinho"
+    childName: String = "Amiguinho",
+    ttsManager: TtsManager = TtsManager(LocalContext.current)
 ) {
     // Decodificar o título se necessário
     val decodedTitle = try {
@@ -77,8 +81,22 @@ fun TaskCompletionScreen(
 
     // Animação de entrada
     var visible by remember { mutableStateOf(false) }
+
+    // TTS: Ler mensagem de sucesso ao carregar a tela
     LaunchedEffect(Unit) {
         visible = true
+        // Aguardar um pouco para a tela aparecer
+        kotlinx.coroutines.delay(500)
+        // Remover emojis da mensagem para TTS (apenas texto)
+        val ttsMessage = randomCongrats.replace(Regex("[^\\p{L}\\p{N}\\s,!?.]"), "").trim()
+        ttsManager.speak(ttsMessage)
+    }
+
+    // Limpar TTS ao sair da tela
+    DisposableEffect(Unit) {
+        onDispose {
+            ttsManager.stop()
+        }
     }
 
     val scale by animateFloatAsState(
