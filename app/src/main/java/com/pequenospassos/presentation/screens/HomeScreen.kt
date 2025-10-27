@@ -79,7 +79,10 @@ fun HomeScreen(
     // ✅ CORRIGIDO: Carregar perfil do banco de dados
     val childProfile by viewModel.childProfile.collectAsState()
     val childName = childProfile?.name // Nome carregado do banco
-    val totalStars = 0 // Placeholder até MVP08 integração completa
+
+    // MVP-09 v1.11.4: Estatísticas diárias
+    val starsToday by viewModel.starsToday.collectAsState()
+    val availableTasksCount by viewModel.availableTasksCountToday.collectAsState()
 
     // Atualizar hora a cada minuto
     LaunchedEffect(Unit) {
@@ -106,9 +109,14 @@ fun HomeScreen(
                 )
             }
 
-            // Seção de Gamificação (placeholder)
+            // MVP-09 v1.11.4: Tarefas Disponíveis Hoje
             item {
-                GamificationSection(totalStars = totalStars)
+                AvailableTasksSection(availableTasksCount = availableTasksCount)
+            }
+
+            // Seção de Gamificação com estrelas do dia
+            item {
+                GamificationSection(starsToday = starsToday)
             }
 
             // Logo Pequenos Passos
@@ -122,7 +130,7 @@ fun HomeScreen(
                     onAtividadesClick = { navController.navigate("task_list") },
                     onEdicaoClick = { navController.navigate("task_management") },
                     onCadastroClick = { navController.navigate("child_registration") },
-                    onDebugClick = { navController.navigate("debug") }
+                    onHistoryClick = { navController.navigate("history") }
                 )
             }
 
@@ -209,11 +217,46 @@ private fun HeaderSection(
 }
 
 /**
- * Seção de gamificação com contagem de estrelas
- * Placeholder até implementação do MVP08
+ * MVP-09 v1.11.4: Seção que mostra quantas tarefas estão disponíveis para fazer hoje.
+ * Atualiza automaticamente conforme tarefas são completadas.
  */
 @Composable
-private fun GamificationSection(totalStars: Int) {
+private fun AvailableTasksSection(availableTasksCount: Int) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = when {
+                    availableTasksCount == 0 -> "🎉 Todas as tarefas de hoje foram completadas!"
+                    availableTasksCount == 1 -> "📝 Você tem 1 atividade para fazer hoje!"
+                    else -> "📝 Você tem $availableTasksCount atividades para fazer hoje!"
+                },
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+/**
+ * Seção de gamificação com contagem de estrelas do dia.
+ * MVP-09 v1.11.4: Atualizada para mostrar estrelas ganhas hoje (não total).
+ */
+@Composable
+private fun GamificationSection(starsToday: Int) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -228,46 +271,19 @@ private fun GamificationSection(totalStars: Int) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Mensagem muda conforme número de estrelas
+            // MVP-09 v1.11.4: Mostra estrelas ganhas HOJE (não total)
             Text(
-                text = if (totalStars == 0) {
+                text = if (starsToday == 0) {
                     "⭐ Vamos ganhar estrelas? ⭐"
+                } else if (starsToday == 1) {
+                    "⭐ Você já tem 1 Estrela hoje! ⭐"
                 } else {
-                    "⭐ Você já tem $totalStars Estrelas! ⭐"
+                    "⭐ Você já tem $starsToday Estrelas hoje! ⭐"
                 },
                 style = MaterialTheme.typography.titleLarge,
                 color = Color(0xFFFFB300), // Amarelo escuro
                 textAlign = TextAlign.Center
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Exibir até 5 estrelas visualmente (apenas se tiver estrelas)
-            if (totalStars > 0) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val starsToShow = minOf(totalStars, 5)
-                    repeat(starsToShow) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "Estrela",
-                            tint = Color(0xFFFFD700), // Dourado
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-
-                    if (totalStars > 5) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "x $totalStars",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color(0xFFFFB300)
-                        )
-                    }
-                }
-            }
         }
     }
 }
@@ -298,14 +314,14 @@ private fun LogoSection() {
  * - Atividades -> task_list
  * - Edição de Atividades -> task_management
  * - Cadastro -> child_registration
- * - Debug -> debug
+ * - Histórico -> history (renomeado de Debug)
  */
 @Composable
 private fun NavigationButtons(
     onAtividadesClick: () -> Unit,
     onEdicaoClick: () -> Unit,
     onCadastroClick: () -> Unit,
-    onDebugClick: () -> Unit
+    onHistoryClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -379,9 +395,9 @@ private fun NavigationButtons(
             )
         }
 
-        // Botão 4: Debug (navega para debug)
+        // Botão 4: Histórico (renomeado de Debug - navega para history)
         OutlinedButton(
-            onClick = onDebugClick,
+            onClick = onHistoryClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -397,7 +413,7 @@ private fun NavigationButtons(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Debug",
+                text = "Histórico",
                 style = MaterialTheme.typography.titleMedium
             )
         }

@@ -13,11 +13,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.pequenospassos.presentation.screens.AsrTestScreen
-import com.pequenospassos.presentation.screens.DebugScreen
 import com.pequenospassos.presentation.screens.HomeScreen
 import com.pequenospassos.presentation.screens.SplashScreen
 import com.pequenospassos.presentation.screens.TtsTestScreen
 import com.pequenospassos.presentation.screens.childregistration.ChildRegistrationScreen
+import com.pequenospassos.presentation.screens.history.HistoryScreen
 import com.pequenospassos.presentation.screens.taskform.TaskFormScreen
 import com.pequenospassos.presentation.screens.tasklist.TaskListScreen
 import com.pequenospassos.presentation.screens.taskmanagement.TaskManagementScreen
@@ -60,7 +60,7 @@ fun PequenosPassosApp() {
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
         composable("home") { HomeScreen(navController) }
-        composable("debug") { DebugScreen(navController) }
+        composable("history") { HistoryScreen(navController) }
         composable("tts_test") { TtsTestScreen(navController) }
         composable("asr_test") { AsrTestScreen(navController) }
         

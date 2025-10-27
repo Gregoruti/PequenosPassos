@@ -983,4 +983,33 @@ HomeScreen
 
 **Última atualização**: 2025-10-15  
 **Versão do documento**: 1.0  
-**Status**: Ativo
+**Status**: Ativo# Pequenos Passos - Guidelines de Desenvolvimento
+
+## Estratégia de Commits e Compilação
+- Sempre utilize scripts .bat para compilar, testar e instalar o app (ex: .\compilar_e_instalar.bat).
+- No PowerShell, comandos devem ser precedidos de .\ para execução local (ex: .\gradlew).
+- Nunca utilize && ou & para encadear comandos no PowerShell, pois isso causa erros de sintaxe.
+- Se o adb não for reconhecido, adicione o caminho do Android SDK (platform-tools) ao PATH do Windows.
+
+## Fases e Branches
+- A partir da versão 2.0.0, utilize uma branch separada para cada grande fase.
+- Documente sempre a mudança de assistente de código ou modelo de IA utilizado.
+- Atualize o CHANGELOG.md e este arquivo a cada grande alteração de fluxo ou ferramenta.
+
+## Migração de Assistente de Código
+- Em 24/10/2025, migrado do Claude Sonnet 4.5 para GPT-4.1 (GitHub Copilot) devido ao término do acesso premium.
+- Todas as automações, sugestões e correções passam a ser baseadas no novo modelo.
+
+## Boas Práticas Gerais
+- Mantenha a documentação centralizada em /docs.
+- Sempre revise conflitos de nomes e duplicidades após grandes refatorações.
+- Use convenções de nomes claras para telas, rotas e funções.
+
+### Atualização: Tela Histórico - Botão de Reset Diário
+
+- O botão "Zerar Tarefas do Dia" foi renomeado para "Zerar dia".
+- O botão "Zerar Estrelas do Dia" foi removido.
+- Agora, a ação de reset diário está centralizada em um único botão, conforme feedback de usabilidade.
+- Recomenda-se uso apenas para testes ou situações pedagógicas.
+
+Referências: MVP09_FASE3_4_IMPLEMENTACAO.md, CHANGELOG.md

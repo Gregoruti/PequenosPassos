@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pequenospassos.domain.model.ChildProfile
 import com.pequenospassos.domain.repository.ChildProfileRepository
+import com.pequenospassos.domain.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -14,25 +15,54 @@ import javax.inject.Inject
  * ViewModel para a HomeScreen.
  *
  * Gerencia o carregamento do perfil da criança para exibição na tela inicial.
+ * MVP-09 v1.11.4: Adicionadas estatísticas diárias (estrelas e tarefas disponíveis).
  *
- * @property repository Repositório de ChildProfile injetado via Hilt
+ * @property childProfileRepository Repositório de ChildProfile injetado via Hilt
+ * @property taskRepository Repositório de Task injetado via Hilt
  * @since MVP-08 (23/10/2025) - Correção de cadastro
+ * @updated MVP-09 v1.11.4 (24/10/2025) - Estatísticas diárias
  * @author PequenosPassos Development Team
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: ChildProfileRepository
+    private val childProfileRepository: ChildProfileRepository,
+    private val taskRepository: TaskRepository
 ) : ViewModel() {
+
+    // ID da criança (hardcoded temporariamente - será do perfil selecionado)
+    private val childId = 1L
 
     /**
      * Perfil da criança observável.
      * Atualiza automaticamente quando houver mudanças no banco.
      */
-    val childProfile: StateFlow<ChildProfile?> = repository.getProfile()
+    val childProfile: StateFlow<ChildProfile?> = childProfileRepository.getProfile()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = null
+        )
+
+    /**
+     * MVP-09 v1.11.4: Total de estrelas ganhas hoje.
+     * Atualiza automaticamente quando uma tarefa é completada.
+     */
+    val starsToday: StateFlow<Int> = taskRepository.getStarsForToday(childId)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
+
+    /**
+     * MVP-09 v1.11.4: Número de tarefas disponíveis hoje.
+     * Quantidade de tarefas que ainda NÃO foram completadas hoje.
+     */
+    val availableTasksCountToday: StateFlow<Int> = taskRepository.getAvailableTasksCountToday(childId)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
         )
 }
 

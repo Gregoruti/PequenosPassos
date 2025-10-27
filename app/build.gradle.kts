@@ -19,8 +19,8 @@ android {
         applicationId = "com.example.pequenospassos"
         minSdk = 24
         targetSdk = 36
-        versionCode = 22
-        versionName = "1.11.3"
+        versionCode = 24
+        versionName = "1.11.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

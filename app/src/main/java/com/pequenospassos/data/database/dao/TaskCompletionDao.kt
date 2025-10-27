@@ -204,7 +204,7 @@ interface TaskCompletionDao {
 
     /**
      * Deleta todas as conclusões de uma data específica.
-     * Útil para testes/debug.
+     * Útil para testes/debug e para zerar atividades/estrelas do dia.
      */
     @Query("""
         DELETE FROM task_completions 
@@ -215,6 +215,13 @@ interface TaskCompletionDao {
         childId: Long,
         date: LocalDate
     )
+
+    /**
+     * Deleta todas as conclusões de um dia específico para todas as crianças.
+     * Usado para zerar estrelas/atividades do dia globalmente (debug/admin).
+     */
+    @Query("DELETE FROM task_completions WHERE date = :date")
+    suspend fun deleteCompletionsForDateAllChildren(date: LocalDate)
 
     /**
      * Deleta todas as conclusões de uma criança.

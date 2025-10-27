@@ -482,3 +482,62 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 **Mantido por:** Equipe PequenosPassos  
 **Última atualização:** 23/10/2025
+
+---
+
+# Pequenos Passos - Histórico de Versões e Mudanças
+
+## [2.0.0] - 2025-10-24
+### Mudanças Gerais
+- Início da Fase 2.x: Nova branch criada para separar a evolução do projeto.
+- Migração do assistente de código: Passamos a utilizar o modelo GPT-4.1 (GitHub Copilot) para suporte e automação, devido ao término do acesso premium ao Claude Sonnet 4.5.
+- Refatoração da tela de Debug para Histórico:
+  - Tela e rota renomeadas para "Histórico" (HistoryScreen).
+  - Removidos elementos antigos de debug, mantendo apenas testes de TTS e ASR.
+  - Navegação e imports atualizados.
+- Compilação e build revisados, com correção de conflitos de nomes e duplicidades.
+- Documentação e guidelines revisados para refletir a nova fase e práticas de commit/compilação.
+
+### Observações
+- O projeto agora segue com incrementos de versão major (2.x) para marcar a nova fase de desenvolvimento e uso de IA.
+- Recomenda-se sempre atualizar o PATH do Windows para garantir o funcionamento do adb e scripts .bat.
+
+---
+
+## [Não lançado] - MVP09 (v1.11.4) - 2025-10-26
+
+### 🛠️ Ferramentas de Histórico
+
+#### Adicionado
+- Botão "Zerar Tarefas do Dia" na tela Histórico: removes todas as conclusões do dia atual para a criança selecionada, atualizando estatísticas imediatamente.
+- Botão "Zerar Estrelas do Dia" na tela Histórico: remove todos os registros de estrelas do dia atual para a criança selecionada.
+- Mensagem de feedback visual após cada ação (sucesso/erro).
+- Integração dos botões com o ViewModel (HistoryViewModel) e TaskRepository.
+
+#### Corrigido
+- Garantido que as estatísticas e feedback visual sejam atualizados automaticamente após o reset.
+
+## Histórico: Implementação dos Botões de Zerar
+
+Em 27/10/2025, foram implementados dois botões na tela de Histórico:
+- **Zerar Tarefas do Dia**: Remove todas as tarefas marcadas como concluídas no dia atual, permitindo que sejam refeitas.
+- **Zerar Estrelas do Dia**: Remove o registro de estrelas acumuladas no dia, reiniciando o contador diário.
+
+Essas funções facilitam testes, correções e o uso pedagógico do aplicativo, conforme solicitado nas fases MVP 7 e 8. O código segue as Guidelines e boas práticas documentadas.
+
+Referências:
+- MVP07_FASE1_CHECKLIST.md
+- MVP08_IMPLEMENTATION_STATUS.md
+- GUIDELINES.md
+
+---
+
+## [2.0.1] - 2025-10-27
+### Mudanças na tela Histórico
+- O botão "Zerar Tarefas do Dia" foi renomeado para "Zerar dia" para simplificação e clareza.
+- O botão "Zerar Estrelas do Dia" foi removido, centralizando a ação de reset diário em um único botão.
+- Ajuste realizado conforme feedback de usabilidade e alinhamento com as Guidelines do projeto.
+
+Referências:
+- MVP09_FASE3_4_IMPLEMENTACAO.md
+- GUIDELINES.md
