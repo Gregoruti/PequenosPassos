@@ -1,3 +1,15 @@
+<!--
+Arquivo: docs/MVP09_FASE3_4_IMPLEMENTACAO.md
+Tipo: Guia de implementação de fase
+Objetivo: Documentar a implementação das Fases 3 e 4 do sistema de controle diário de tarefas.
+Correlações: CHANGELOG.md, TaskRepository.kt, TaskRepositoryImpl.kt, TaskCompletionDao.kt
+Histórico de alterações:
+- 2025-10-27 (user): Header padronizado adicionado, atualização para v2.0.1.
+- 2025-10-24 (user): Implementação e testes completos das fases 3 e 4.
+Manutenção: Atualizar sempre que houver mudança relevante nas fases 3 e 4.
+Documentação relacionada: docs/CHANGELOG.md, docs/GUIDELINES.md
+Observação: Code Assistant, leia este header antes de sugerir mudanças.
+-->
 # MVP09 - Fases 3-4: Sistema de Controle Diário de Tarefas
 
 **Versão:** 1.11.0  
@@ -333,4 +345,3 @@ O app agora tem gamificação básica implementada e está pronto para:
 ---
 
 **Próximo Passo:** Testar no dispositivo e implementar MVP-10 (Histórico e Estatísticas).
-

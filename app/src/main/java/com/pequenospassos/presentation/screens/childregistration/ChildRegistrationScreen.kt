@@ -64,7 +64,8 @@ fun ChildRegistrationScreen(
         existingProfile?.let { profile ->
             childName = profile.name
             selectedGender = profile.gender
-            // birthDate e observations não estão no modelo atual, então ficam vazios
+            birthDate = profile.birthDate ?: ""
+            observations = profile.observations ?: ""
         }
     }
 
@@ -136,8 +137,8 @@ fun ChildRegistrationScreen(
             OutlinedTextField(
                 value = childName,
                 onValueChange = { childName = it },
-                label = { Text("Nome da criança *") },
-                placeholder = { Text("Ex: João Silva") },
+                label = { Text("Nome ou Apelido (será o nome que o App irá chamar a criança) *") },
+                placeholder = { Text("Ex: João, Bia, Zé, Princesa...") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 enabled = uiState !is RegistrationUiState.Loading
@@ -227,6 +228,7 @@ fun ChildRegistrationScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             // Campo Data de Nascimento (OPCIONAL)
+            // TODO: Substituir por Wheel Picker/DatePicker
             OutlinedTextField(
                 value = birthDate,
                 onValueChange = {
@@ -247,12 +249,12 @@ fun ChildRegistrationScreen(
                 enabled = uiState !is RegistrationUiState.Loading
             )
 
-            // Campo Observações (OPCIONAL)
+            // Campo Outras Informações (OPCIONAL)
             OutlinedTextField(
                 value = observations,
                 onValueChange = { observations = it },
-                label = { Text("Observações (opcional)") },
-                placeholder = { Text("Ex: preferências, alergias, informações importantes") },
+                label = { Text("Outras Informações (opcional)") },
+                placeholder = { Text("Ex: Nome completo, principais atividades para focar, etc.") },
                 modifier = Modifier.fillMaxWidth(),
                 minLines = 3,
                 maxLines = 5,
@@ -306,5 +308,3 @@ fun ChildRegistrationScreen(
         }
     }
 }
-
-

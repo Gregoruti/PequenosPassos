@@ -30,7 +30,11 @@ data class ChildProfile(
 
     val photoUri: String? = null,
 
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+
+    val birthDate: String? = null, // Data de nascimento (opcional, formato DD/MM/AAAA)
+
+    val observations: String? = null // Outras informações/observações (opcional)
 ) {
     /**
      * Valida se o perfil tem dados mínimos necessários
@@ -59,4 +63,3 @@ enum class Gender {
         FEMALE -> "Menina"
     }
 }
-

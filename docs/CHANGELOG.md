@@ -1,6 +1,21 @@
-# CHANGELOG - Pequenos Passos
+<!--
+Arquivo: docs/CHANGELOG.md
+Objetivo: Histórico de mudanças do projeto Pequenos Passos.
+Correlações: GUIDELINES.md, arquivos de implementação, migrations, releases
+Histórico de alterações:
+- 2025-10-27 (user): Adicionada entrada para v1.11.6 (campos de cadastro, migration, versionamento).
+- 2025-10-24 (user): Atualização para MVP-10, início de rastreabilidade 50 linhas.
+Observação: Sempre atualizar as primeiras 50 linhas com resumo das últimas mudanças e rastreabilidade.
+-->
+# CHANGELOG
 
-Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+## [1.11.6] - 2025-10-27
+### Adicionado
+- Campos "Data de Nascimento" e "Outras Informações" ao cadastro da criança (entidade, banco, tela, ViewModel).
+- Migration Room 5→6 para adicionar os campos na tabela child_profile.
+- Labels e placeholders atualizados conforme guidelines.
+- Versionamento incrementado para 1.11.6 (SplashScreen e build.gradle.kts).
+- Checklist de rastreabilidade reforçado nas primeiras 50 linhas dos arquivos afetados.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).

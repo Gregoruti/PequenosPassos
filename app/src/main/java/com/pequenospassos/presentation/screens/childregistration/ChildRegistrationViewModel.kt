@@ -71,7 +71,9 @@ class ChildRegistrationViewModel @Inject constructor(
                 name = name.trim(),
                 gender = gender,
                 photoUri = _existingProfile.value?.photoUri, // Manter foto existente se houver
-                createdAt = _existingProfile.value?.createdAt ?: System.currentTimeMillis()
+                createdAt = _existingProfile.value?.createdAt ?: System.currentTimeMillis(),
+                birthDate = birthDate,
+                observations = observations
             )
 
             // Salvar no banco
@@ -102,4 +104,3 @@ sealed class RegistrationUiState {
     object Success : RegistrationUiState()
     data class Error(val message: String) : RegistrationUiState()
 }
-

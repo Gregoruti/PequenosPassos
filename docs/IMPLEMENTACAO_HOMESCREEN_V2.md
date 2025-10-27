@@ -1,3 +1,15 @@
+<!--
+Arquivo: docs/IMPLEMENTACAO_HOMESCREEN_V2.md
+Tipo: Guia de implementação de tela
+Objetivo: Documentar o redesenho e as funcionalidades da HomeScreen v2.0 do Pequenos Passos.
+Correlações: MVP07_WIREFRAMES.md, CHANGELOG.md, arquivos de UI, resumos de MVPs
+Histórico de alterações:
+- 2025-10-27 (user): Header padronizado adicionado, atualização para v2.0.1.
+- 2025-10-23 (user): Redesenho completo da HomeScreen.
+Manutenção: Atualizar sempre que houver mudança relevante na HomeScreen.
+Documentação relacionada: docs/MVP07_WIREFRAMES.md, docs/CHANGELOG.md
+Observação: Code Assistant, leia este header antes de sugerir mudanças.
+-->
 # IMPLEMENTAÇÃO DA NOVA HOMESCREEN v2.0
 
 **Data:** 23/10/2025  
@@ -441,4 +453,3 @@ navegação existentes.
 **Data:** 23/10/2025  
 **Versão do App:** 1.9.7 (em desenvolvimento)  
 **Status:** ✅ COMPLETO E FUNCIONAL
-

@@ -52,10 +52,20 @@ import com.pequenospassos.domain.model.TaskCompletion
  * - Adicionada tabela 'task_completions' para controle diário de tarefas
  * - Índice único para garantir 1 conclusão por tarefa/criança/dia
  *
+ * Versão 5 - MVP-09:
+ * - Removidas FOREIGN KEYs da tabela task_completions
+ * - Permite funcionamento sem perfil de criança cadastrado
+ * - Recriada tabela task_completions sem FOREIGN KEYs
+ *
+ * Versão 6 - MVP-10:
+ * - Adicionados campos birthDate e observations em child_profile
+ *
  * @since MVP-03 (14/10/2025) - DIA 1 - Fundação
  * @updated MVP-07 (16/10/2025) - Migration 1→2
  * @updated MVP-08 (23/10/2025) - Migration 2→3
  * @updated MVP-09 (24/10/2025) - Migration 3→4
+ * @updated MVP-09 (24/10/2025) - Migration 4→5
+ * @updated MVP-10 (27/10/2025) - Migration 5→6
  * @author PequenosPassos Development Team
  * @validationStatus ✅ Implementado - MVP-03, MVP-07, MVP-08, ⏳ Em desenvolvimento - MVP-09
  */
@@ -69,7 +79,7 @@ import com.pequenospassos.domain.model.TaskCompletion
         Reward::class,
         TaskCompletion::class
     ],
-    version = 5, // MVP-09: Incrementado de 4 para 5 - Removidas FOREIGN KEYs
+    version = 6, // MVP-10: Incrementado de 5 para 6 - birthDate e observations em child_profile
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -320,5 +330,27 @@ abstract class AppDatabase : RoomDatabase() {
                 )
             }
         }
+
+        /**
+         * Migration da versão 5 para 6 (MVP-10).
+         *
+         * Adiciona os campos birthDate (TEXT) e observations (TEXT) à tabela child_profile.
+         *
+         * @since MVP-10 (27/10/2025)
+         */
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE child_profile ADD COLUMN birthDate TEXT")
+                database.execSQL("ALTER TABLE child_profile ADD COLUMN observations TEXT")
+            }
+        }
+
+        val MIGRATIONS = arrayOf(
+            MIGRATION_1_2,
+            MIGRATION_2_3,
+            MIGRATION_3_4,
+            MIGRATION_4_5,
+            MIGRATION_5_6
+        )
     }
 }
