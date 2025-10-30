@@ -14,11 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -29,11 +28,13 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,11 +45,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.pequenospassos.R
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import kotlinx.coroutines.delay
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import java.time.LocalDate
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import androidx.navigation.NavController
+import kotlinx.coroutines.delay
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 /**
  * Tela Home principal do PequenosPassos v2.0
@@ -63,7 +68,7 @@ import java.util.Locale
  * - Atividades -> task_list
  * - Edição de Atividades -> task_management
  * - Cadastro -> child_registration
- * - Debug -> debug
+ * - Debug -> history
  *
  * @param navController Controla navegação entre telas
  * @since v1.9.7
@@ -75,6 +80,39 @@ fun HomeScreen(
 ) {
     // Estado para hora atual (atualiza a cada minuto)
     var currentCalendar by remember { mutableStateOf(Calendar.getInstance()) }
+    // Estado para data atual (para pooling)
+    var currentDate by remember { mutableStateOf(LocalDate.now()) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val onDayChanged = rememberUpdatedState(newValue = {
+        // Força atualização dos dados no ViewModel
+        viewModel.refreshDaySensitiveData()
+    })
+    // Pooling: verifica a cada minuto se mudou o dia
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(60000L) // 1 minuto
+            currentCalendar = Calendar.getInstance()
+            val newDate = LocalDate.now()
+            if (newDate != currentDate) {
+                currentDate = newDate
+                onDayChanged.value()
+            }
+        }
+    }
+    // Atualiza ao retomar a tela (ciclo de vida)
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val newDate = LocalDate.now()
+                if (newDate != currentDate) {
+                    currentDate = newDate
+                    onDayChanged.value()
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     // ✅ CORRIGIDO: Carregar perfil do banco de dados
     val childProfile by viewModel.childProfile.collectAsState()
@@ -340,7 +378,7 @@ private fun NavigationButtons(
             )
         ) {
             Icon(
-                imageVector = Icons.Default.List,
+                imageVector = Icons.Filled.List,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp)
             )
@@ -436,4 +474,3 @@ private fun getDayOfWeekName(dayOfWeek: Int): String {
         else -> "Dia desconhecido"
     }
 }
-

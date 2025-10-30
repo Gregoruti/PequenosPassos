@@ -81,7 +81,7 @@ fun SplashScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Versão: ${BuildConfig.VERSION_NAME}",
+                text = "Versão 2.1.0",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.Gray,
@@ -90,4 +90,3 @@ fun SplashScreen(navController: NavController) {
         }
     }
 }
-

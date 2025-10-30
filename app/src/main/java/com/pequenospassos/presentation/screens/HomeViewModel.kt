@@ -6,9 +6,8 @@ import com.pequenospassos.domain.model.ChildProfile
 import com.pequenospassos.domain.repository.ChildProfileRepository
 import com.pequenospassos.domain.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
+
 import javax.inject.Inject
 
 /**
@@ -32,6 +31,8 @@ class HomeViewModel @Inject constructor(
     // ID da criança (hardcoded temporariamente - será do perfil selecionado)
     private val childId = 1L
 
+    private val triggerDayUpdate = MutableStateFlow(0)
+
     /**
      * Perfil da criança observável.
      * Atualiza automaticamente quando houver mudanças no banco.
@@ -47,22 +48,30 @@ class HomeViewModel @Inject constructor(
      * MVP-09 v1.11.4: Total de estrelas ganhas hoje.
      * Atualiza automaticamente quando uma tarefa é completada.
      */
-    val starsToday: StateFlow<Int> = taskRepository.getStarsForToday(childId)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = 0
-        )
+    val starsToday: StateFlow<Int> = triggerDayUpdate.flatMapLatest {
+        taskRepository.getStarsForToday(childId)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
 
     /**
      * MVP-09 v1.11.4: Número de tarefas disponíveis hoje.
      * Quantidade de tarefas que ainda NÃO foram completadas hoje.
      */
-    val availableTasksCountToday: StateFlow<Int> = taskRepository.getAvailableTasksCountToday(childId)
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = 0
-        )
-}
+    val availableTasksCountToday: StateFlow<Int> = triggerDayUpdate.flatMapLatest {
+        taskRepository.getAvailableTasksCountToday(childId)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
 
+    /**
+     * Força atualização dos dados sensíveis ao dia (chamado ao detectar mudança de dia).
+     */
+    fun refreshDaySensitiveData() {
+        triggerDayUpdate.value++
+    }
+}

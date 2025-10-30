@@ -565,3 +565,13 @@ Referências:
 Referências:
 - MVP09_FASE3_4_IMPLEMENTACAO.md
 - GUIDELINES.md
+
+---
+
+# Versão 2.1.0 (30/10/2025)
+
+- Implementado trigger de atualização automática na HomeScreen para detectar a virada do dia (pooling a cada minuto e atualização ao retomar a tela).
+- Corrigido bug de contagem de tarefas e estrelas do dia (agora sempre reflete o dia atual, mesmo com o app aberto).
+- Refatoração do ViewModel para garantir atualização dos StateFlows com trigger explícito.
+- Testes e validação de fluxo de tarefas e estrelas após mudança de dia.
+- Polimento visual e textual em telas principais.
