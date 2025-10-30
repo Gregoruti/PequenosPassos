@@ -9,13 +9,22 @@ Observação: Sempre atualizar as primeiras 50 linhas com resumo das últimas mu
 -->
 # CHANGELOG
 
-## [1.11.6] - 2025-10-27
+## [1.12.0] - 2025-10-30
 ### Adicionado
-- Campos "Data de Nascimento" e "Outras Informações" ao cadastro da criança (entidade, banco, tela, ViewModel).
-- Migration Room 5→6 para adicionar os campos na tabela child_profile.
-- Labels e placeholders atualizados conforme guidelines.
-- Versionamento incrementado para 1.11.6 (SplashScreen e build.gradle.kts).
-- Checklist de rastreabilidade reforçado nas primeiras 50 linhas dos arquivos afetados.
+- Exibição da média diária de estrelas e tarefas feitas na semana na tela de Histórico & Ferramentas.
+- Novos métodos no repositório para obter totais diários de estrelas e tarefas.
+
+### Corrigido
+- Query de tarefas menos executadas agora inclui tarefas nunca realizadas (total = 0).
+- Ajustes visuais e textuais na tela de Histórico (títulos, espaçamento, legendas).
+
+### Melhorado
+- Refino do cálculo de médias semanais para refletir corretamente os últimos 7 dias.
+- Padronização de exibição conforme guidelines.
+
+### Referências
+- Detalhes completos das correções e práticas em: docs/GUIDELINES.md
+- Histórico de erros e soluções: relatórios de build, logs de testes, e comentários nos arquivos de teste.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).

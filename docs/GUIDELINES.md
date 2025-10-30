@@ -992,6 +992,31 @@ HomeScreen
 
 ---
 
+## Histórico de Erros e Soluções Recentes (v1.11.7)
+
+### Erros Apresentados
+- Falhas de compilação em testes unitários devido a mudanças em assinaturas de construtores e parâmetros obrigatórios não fornecidos.
+- Erros de tipo e ordem de argumentos em SaveTaskUseCaseTest.kt.
+- Parâmetros obrigatórios ausentes em TaskExecutionViewModelTest.kt.
+
+### Soluções Aplicadas
+- Atualização de todos os testes para refletir as novas assinaturas dos construtores e métodos.
+- Inclusão de todos os mocks obrigatórios nos testes de ViewModel.
+- Ajuste da ordem e tipos dos argumentos em todos os testes afetados.
+- Execução e validação de build e testes unitários após as correções.
+
+### Últimas Implementações
+- Incremento da versão para 1.11.7 (SplashScreen e build.gradle.kts).
+- Atualização de documentação para rastreabilidade e registro de status de build/testes.
+- Prática obrigatória: registrar sempre nas primeiras 50 linhas dos arquivos principais as mudanças, status de build e testes.
+
+---
+
+## Versão 1.11.7 (27/10/2025)
+- Compilação e testes unitários obrigatórios corrigidos.
+- Build validado sem erros.
+- Sempre registrar no CHANGELOG e nas primeiras 50 linhas dos arquivos principais o status de compilação e testes da versão.
+
 **Última atualização**: 2025-10-15  
 **Versão do documento**: 1.0  
 **Status**: Ativo

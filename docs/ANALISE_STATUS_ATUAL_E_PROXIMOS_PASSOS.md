@@ -598,3 +598,8 @@ Antes de cada release:
 **Baseado em:** Análise completa do código-fonte v1.9.6  
 **Próxima revisão:** Após Sprint 1 (Consolidação da Documentação)
 
+## [2025-10-30] - Entrega de Funcionalidades
+- Médias semanais de estrelas e tarefas feitas implementadas e validadas.
+- Histórico de tarefas agora reflete corretamente as mais e menos executadas.
+- Documentação e rastreabilidade reforçadas conforme guidelines.
+- Pronto para próximos incrementos e testes finais.

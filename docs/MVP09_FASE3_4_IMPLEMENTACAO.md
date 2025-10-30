@@ -344,4 +344,15 @@ O app agora tem gamificação básica implementada e está pronto para:
 
 ---
 
+### Implementação: Médias Semanais de Estrelas e Tarefas (v1.12.0)
+
+- Foram criados métodos no repositório para obter o total de estrelas e tarefas completadas em cada dia.
+- O ViewModel da tela de Histórico calcula a média dos últimos 7 dias para estrelas e tarefas feitas.
+- A tela de Histórico exibe:
+  - Média diária de estrelas: X ⭐
+  - Média diária de tarefas feitas: Y
+- O cálculo considera sempre os últimos 7 dias corridos, incluindo o dia atual.
+- Ajustes visuais e textuais foram realizados para padronizar a apresentação conforme guidelines.
+- Toda alteração foi documentada em CHANGELOG.md e nas primeiras 50 linhas dos arquivos afetados.
+
 **Próximo Passo:** Testar no dispositivo e implementar MVP-10 (Histórico e Estatísticas).
