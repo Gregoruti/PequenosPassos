@@ -1,5 +1,6 @@
 package com.pequenospassos.data.repository
 
+import com.pequenospassos.data.database.dao.TaskCompletionDao
 import com.pequenospassos.data.database.dao.TaskDao
 import com.pequenospassos.domain.model.Task
 import com.pequenospassos.domain.model.TaskStatus
@@ -25,12 +26,14 @@ import org.junit.Test
 class TaskRepositoryImplTest {
 
     private lateinit var dao: TaskDao
+    private lateinit var completionDao: TaskCompletionDao
     private lateinit var repository: TaskRepositoryImpl
 
     @Before
     fun setup() {
         dao = mockk()
-        repository = TaskRepositoryImpl(dao)
+        completionDao = mockk()
+        repository = TaskRepositoryImpl(dao, completionDao)
     }
 
     @Test

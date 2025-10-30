@@ -4,6 +4,9 @@ import com.pequenospassos.domain.model.Step
 import com.pequenospassos.domain.model.Task
 import com.pequenospassos.domain.usecase.GetStepsByTaskUseCase
 import com.pequenospassos.domain.usecase.GetTaskByIdUseCase
+import com.pequenospassos.domain.usecase.GetChildProfileUseCase
+import com.pequenospassos.domain.repository.TaskRepository
+import com.pequenospassos.presentation.utils.TtsManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -31,6 +34,9 @@ class TaskExecutionViewModelTest {
 
     private lateinit var getTaskByIdUseCase: GetTaskByIdUseCase
     private lateinit var getStepsByTaskUseCase: GetStepsByTaskUseCase
+    private lateinit var getChildProfileUseCase: GetChildProfileUseCase
+    private lateinit var taskRepository: TaskRepository
+    private lateinit var ttsManager: TtsManager
     private lateinit var viewModel: TaskExecutionViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -41,10 +47,16 @@ class TaskExecutionViewModelTest {
 
         getTaskByIdUseCase = Mockito.mock(GetTaskByIdUseCase::class.java)
         getStepsByTaskUseCase = Mockito.mock(GetStepsByTaskUseCase::class.java)
+        getChildProfileUseCase = Mockito.mock(GetChildProfileUseCase::class.java)
+        taskRepository = Mockito.mock(TaskRepository::class.java)
+        ttsManager = Mockito.mock(TtsManager::class.java)
 
         viewModel = TaskExecutionViewModel(
             getTaskByIdUseCase,
-            getStepsByTaskUseCase
+            getStepsByTaskUseCase,
+            getChildProfileUseCase,
+            taskRepository,
+            ttsManager
         )
     }
 
@@ -271,4 +283,3 @@ class TaskExecutionViewModelTest {
         assertFalse(viewModel.state.value.isPaused)
     }
 }
-

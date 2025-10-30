@@ -202,5 +202,12 @@ class TaskRepositoryImpl @Inject constructor(
             allTasks.count { task -> task.id.toString() !in completedIds }
         }
     }
-}
 
+    override suspend fun getStarsForDate(childId: Long, date: LocalDate): Int {
+        return completionDao.getStarsForDate(childId, date)
+    }
+
+    override suspend fun getTasksCompletedCountForDate(childId: Long, date: LocalDate): Int {
+        return completionDao.getTasksCompletedCountForDate(childId, date)
+    }
+}

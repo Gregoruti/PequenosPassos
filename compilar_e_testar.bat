@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo   COMPILAR E TESTAR - MVP-07 FASE 3
+echo   COMPILAR E TESTAR
 echo ========================================
 echo.
 
@@ -44,11 +44,7 @@ echo O aplicativo foi compilado e instalado.
 echo.
 echo PROXIMOS PASSOS:
 echo 1. Abra o app "Pequenos Passos" no dispositivo
-echo 2. Teste o fluxo completo:
-echo    - Criar tarefa com categoria e imagem
-echo    - Adicionar steps com imagens e timers
-echo    - Visualizar na lista
-echo    - Executar tarefa
+echo 2. Teste o fluxo completo
 echo.
 echo 3. Anote qualquer bug ou comportamento estranho
 echo.

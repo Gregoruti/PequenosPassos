@@ -45,7 +45,17 @@ class SaveTaskUseCaseTest {
         coEvery { taskRepository.insertTask(any()) } returns Result.success(taskId)
 
         // Act
-        val result = useCase(title, "", 1, time, stars, category, null, emptyList())
+        val result = useCase(
+            taskId = null,
+            title = title,
+            description = "",
+            iconRes = 1,
+            time = time,
+            stars = stars,
+            category = category,
+            imageUrl = null,
+            steps = emptyList()
+        )
 
         // Assert
         assertTrue(result is AppResult.Success)
@@ -62,7 +72,17 @@ class SaveTaskUseCaseTest {
         val category = "BANHO"
 
         // Act
-        val result = useCase(title, "", 1, time, stars, category)
+        val result = useCase(
+            taskId = null,
+            title = title,
+            description = "",
+            iconRes = 1,
+            time = time,
+            stars = stars,
+            category = category,
+            imageUrl = null,
+            steps = emptyList()
+        )
 
         // Assert
         assertTrue(result is AppResult.Error)
@@ -79,7 +99,17 @@ class SaveTaskUseCaseTest {
         val category = "VESTIR"
 
         // Act
-        val result = useCase(title, "", 1, time, stars, category)
+        val result = useCase(
+            taskId = null,
+            title = title,
+            description = "",
+            iconRes = 1,
+            time = time,
+            stars = stars,
+            category = category,
+            imageUrl = null,
+            steps = emptyList()
+        )
 
         // Assert
         assertTrue(result is AppResult.Error)
@@ -96,7 +126,17 @@ class SaveTaskUseCaseTest {
         val category = "ALIMENTACAO"
 
         // Act
-        val result = useCase(title, "", 1, time, stars, category)
+        val result = useCase(
+            taskId = null,
+            title = title,
+            description = "",
+            iconRes = 1,
+            time = time,
+            stars = stars,
+            category = category,
+            imageUrl = null,
+            steps = emptyList()
+        )
 
         // Assert
         assertTrue(result is AppResult.Error)
@@ -113,7 +153,17 @@ class SaveTaskUseCaseTest {
         val category = "SONO"
 
         // Act
-        val result = useCase(title, "", 1, time, stars, category)
+        val result = useCase(
+            taskId = null,
+            title = title,
+            description = "",
+            iconRes = 1,
+            time = time,
+            stars = stars,
+            category = category,
+            imageUrl = null,
+            steps = emptyList()
+        )
 
         // Assert
         assertTrue(result is AppResult.Error)
@@ -139,7 +189,17 @@ class SaveTaskUseCaseTest {
         coEvery { stepRepository.insertStep(any()) } returns Result.success(1L)
 
         // Act
-        val result = useCase(title, "", 1, time, stars, category, null, steps)
+        val result = useCase(
+            taskId = null,
+            title = title,
+            description = "",
+            iconRes = 1,
+            time = time,
+            stars = stars,
+            category = category,
+            imageUrl = null,
+            steps = steps
+        )
 
         // Assert
         assertTrue(result is AppResult.Success)
@@ -159,7 +219,17 @@ class SaveTaskUseCaseTest {
         coEvery { taskRepository.insertTask(any()) } returns Result.failure(exception)
 
         // Act
-        val result = useCase(title, "", 1, time, stars, category)
+        val result = useCase(
+            taskId = null,
+            title = title,
+            description = "",
+            iconRes = 1,
+            time = time,
+            stars = stars,
+            category = category,
+            imageUrl = null,
+            steps = emptyList()
+        )
 
         // Assert
         assertTrue(result is AppResult.Error)
@@ -183,7 +253,17 @@ class SaveTaskUseCaseTest {
         coEvery { stepRepository.insertStep(any()) } returns Result.failure(exception)
 
         // Act
-        val result = useCase(title, "", 1, time, stars, category, null, steps)
+        val result = useCase(
+            taskId = null,
+            title = title,
+            description = "",
+            iconRes = 1,
+            time = time,
+            stars = stars,
+            category = category,
+            imageUrl = null,
+            steps = steps
+        )
 
         // Assert
         assertTrue(result is AppResult.Error)

@@ -90,5 +90,22 @@ class TaskCompletionRepositoryImpl @Inject constructor(
     ): TaskCompletion? {
         return taskCompletionDao.getLastCompletionForTask(taskId, childId)
     }
-}
 
+    override suspend fun getMostExecutedTasksInRange(
+        childId: Long,
+        startDate: java.time.LocalDate,
+        endDate: java.time.LocalDate,
+        limit: Int
+    ): List<com.pequenospassos.domain.model.TaskExecutionCount> {
+        return taskCompletionDao.getMostExecutedTasksInRange(childId, startDate, endDate, limit)
+    }
+
+    override suspend fun getLeastExecutedTasksInRange(
+        childId: Long,
+        startDate: java.time.LocalDate,
+        endDate: java.time.LocalDate,
+        limit: Int
+    ): List<com.pequenospassos.domain.model.TaskExecutionCount> {
+        return taskCompletionDao.getLeastExecutedTasksInRange(childId, startDate, endDate, limit)
+    }
+}

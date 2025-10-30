@@ -2,10 +2,15 @@ package com.pequenospassos.presentation.screens.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.pequenospassos.domain.model.Task
+import com.pequenospassos.domain.model.TaskExecutionCount
+import com.pequenospassos.domain.repository.TaskCompletionRepository
 import com.pequenospassos.domain.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
+import java.time.LocalDate
 import javax.inject.Inject
 
 /**
@@ -21,7 +26,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    private val taskRepository: TaskRepository
+    private val taskRepository: TaskRepository,
+    private val taskCompletionRepository: TaskCompletionRepository
 ) : ViewModel() {
 
     // ID da criança (hardcoded temporariamente)
@@ -120,6 +126,86 @@ class HistoryViewModel @Inject constructor(
         initialValue = 0
     )
 
+    /**
+     * Média diária de estrelas nos últimos 7 dias.
+     */
+    val averageStarsPerDayWeek: StateFlow<Int> = flow {
+        val today = LocalDate.now()
+        val startDate = today.minusDays(6)
+        val starsList = mutableListOf<Int>()
+        for (i in 0..6) {
+            val date = startDate.plusDays(i.toLong())
+            val stars = taskRepository.getStarsForDate(childId, date)
+            starsList.add(stars)
+        }
+        val avg = if (starsList.isNotEmpty()) starsList.sum() / 7 else 0
+        emit(avg)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
+
+    /**
+     * Média diária de tarefas feitas nos últimos 7 dias.
+     */
+    val averageTasksCompletedPerDayWeek: StateFlow<Int> = flow {
+        val today = LocalDate.now()
+        val startDate = today.minusDays(6)
+        val completedList = mutableListOf<Int>()
+        for (i in 0..6) {
+            val date = startDate.plusDays(i.toLong())
+            val completed = taskRepository.getTasksCompletedCountForDate(childId, date)
+            completedList.add(completed)
+        }
+        val avg = if (completedList.isNotEmpty()) completedList.sum() / 7 else 0
+        emit(avg)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = 0
+    )
+
+    // ========================================
+    // RANKING SEMANAL
+    // ========================================
+
+    // Top 3 mais e menos executadas na semana
+    private val _mostExecutedTasksWeek = MutableStateFlow<List<TaskExecutionCount>>(emptyList())
+    val mostExecutedTasksWeek: StateFlow<List<TaskExecutionCount>> = _mostExecutedTasksWeek
+
+    private val _leastExecutedTasksWeek = MutableStateFlow<List<TaskExecutionCount>>(emptyList())
+    val leastExecutedTasksWeek: StateFlow<List<TaskExecutionCount>> = _leastExecutedTasksWeek
+
+    init {
+        // Carrega todas as tarefas e popula o mapa
+        viewModelScope.launch {
+            taskRepository.getAllTasksOrderedByTime().collect { tasks ->
+                _tasksMap.value = tasks.associateBy { it.id.toString() }
+            }
+        }
+        // Carrega o ranking semanal ao iniciar o ViewModel
+        loadWeeklyTaskRankings()
+    }
+
+    /**
+     * Carrega o ranking das tarefas mais e menos executadas na semana atual.
+     */
+    fun loadWeeklyTaskRankings() {
+        viewModelScope.launch {
+            val today = LocalDate.now()
+            val startDate = today.minusDays(6)
+            val endDate = today
+            println("[HistoryViewModel] Carregando ranking semanal: $startDate até $endDate")
+            val most = taskCompletionRepository.getMostExecutedTasksInRange(childId, startDate, endDate, 3)
+            val least = taskCompletionRepository.getLeastExecutedTasksInRange(childId, startDate, endDate, 3)
+            println("[HistoryViewModel] Top 3 mais executadas: $most")
+            println("[HistoryViewModel] Top 3 menos executadas: $least")
+            _mostExecutedTasksWeek.value = most
+            _leastExecutedTasksWeek.value = least
+        }
+    }
+
     // ========================================
     // AÇÕES/COMANDOS
     // ========================================
@@ -163,5 +249,17 @@ class HistoryViewModel @Inject constructor(
     fun clearResetMessage() {
         _resetMessage.value = null
     }
-}
 
+    // Mapa de ID (String) para Task para lookup rápido
+    private val _tasksMap = MutableStateFlow<Map<String, Task>>(emptyMap())
+    val tasksMap: StateFlow<Map<String, Task>> = _tasksMap
+
+    init {
+        // Carrega todas as tarefas e popula o mapa
+        viewModelScope.launch {
+            taskRepository.getAllTasksOrderedByTime().collect { tasks ->
+                _tasksMap.value = tasks.associateBy { it.id.toString() }
+            }
+        }
+    }
+}

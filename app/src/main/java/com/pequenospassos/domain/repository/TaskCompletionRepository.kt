@@ -135,5 +135,24 @@ interface TaskCompletionRepository {
         taskId: String,
         childId: Long
     ): TaskCompletion?
-}
 
+    /**
+     * Top N tarefas mais executadas em um intervalo de datas.
+     */
+    suspend fun getMostExecutedTasksInRange(
+        childId: Long,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        limit: Int = 3
+    ): List<com.pequenospassos.domain.model.TaskExecutionCount>
+
+    /**
+     * Top N tarefas menos executadas em um intervalo de datas.
+     */
+    suspend fun getLeastExecutedTasksInRange(
+        childId: Long,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        limit: Int = 3
+    ): List<com.pequenospassos.domain.model.TaskExecutionCount>
+}

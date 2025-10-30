@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.pequenospassos.domain.model.TaskCompletion
+import com.pequenospassos.domain.model.TaskExecutionCount
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -285,4 +286,51 @@ interface TaskCompletionDao {
         taskId: String,
         childId: Long
     ): TaskCompletion?
+
+    /**
+     * Retorna o ranking de execuções por tarefa na semana (domingo a sábado).
+     * @param childId ID da criança
+     * @param startDate Data inicial (domingo)
+     * @param endDate Data final (sábado)
+     * @return Lista de pares (taskId, total de execuções), ordenada do maior para o menor
+     */
+    @Query("""
+        SELECT taskId, COUNT(*) as total
+        FROM task_completions
+        WHERE childId = :childId
+        AND date BETWEEN :startDate AND :endDate
+        GROUP BY taskId
+        ORDER BY total DESC
+        LIMIT :limit
+    """)
+    suspend fun getMostExecutedTasksInRange(
+        childId: Long,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        limit: Int = 3
+    ): List<TaskExecutionCount>
+
+    /**
+     * Retorna o ranking de execuções por tarefa na semana (menos executadas).
+     * Inclui tarefas nunca executadas (total = 0).
+     * @param childId ID da criança
+     * @param startDate Data inicial
+     * @param endDate Data final
+     * @return Lista de pares (taskId, total de execuções), ordenada do menor para o maior
+     */
+    @Query("""
+        SELECT t.id as taskId, COUNT(tc.id) as total
+        FROM tasks t
+        LEFT JOIN task_completions tc
+            ON t.id = tc.taskId AND tc.childId = :childId AND tc.date BETWEEN :startDate AND :endDate
+        GROUP BY t.id
+        ORDER BY total ASC
+        LIMIT :limit
+    """)
+    suspend fun getLeastExecutedTasksInRange(
+        childId: Long,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        limit: Int = 3
+    ): List<TaskExecutionCount>
 }

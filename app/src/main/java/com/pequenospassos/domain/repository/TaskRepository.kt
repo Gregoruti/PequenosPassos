@@ -166,5 +166,20 @@ interface TaskRepository {
      * @return Flow com quantidade de tarefas disponíveis
      */
     fun getAvailableTasksCountToday(childId: Long): Flow<Int>
-}
 
+    /**
+     * Obtém total de estrelas ganhas em uma data específica.
+     * @param childId ID da criança
+     * @param date Data desejada
+     * @return Total de estrelas
+     */
+    suspend fun getStarsForDate(childId: Long, date: LocalDate): Int
+
+    /**
+     * Obtém total de tarefas completadas em uma data específica.
+     * @param childId ID da criança
+     * @param date Data desejada
+     * @return Total de tarefas completadas
+     */
+    suspend fun getTasksCompletedCountForDate(childId: Long, date: LocalDate): Int
+}
