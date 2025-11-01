@@ -67,5 +67,11 @@ interface AppSettingsRepository {
      * @return AppSettings com valores padrão
      */
     suspend fun getDefaultSettings(): AppSettings
-}
 
+    /**
+     * Atualiza a preferência de perguntar tempo extra ao final do step.
+     * @param askExtraTimeAtStep Novo valor da preferência
+     * @return Result indicando sucesso ou erro
+     */
+    suspend fun updateAskExtraTimeAtStep(askExtraTimeAtStep: Boolean): Result<Unit>
+}

@@ -54,10 +54,16 @@ object DatabaseModule {
             AppDatabase::class.java,
             AppDatabase.DATABASE_NAME
         )
-            .addMigrations(AppDatabase.MIGRATION_1_2) // MVP-07: Migration 1→2
-            .addMigrations(AppDatabase.MIGRATION_2_3) // MVP-08: Migration 2→3
-            .addMigrations(AppDatabase.MIGRATION_3_4) // MVP-09: Migration 3→4
-            .addMigrations(AppDatabase.MIGRATION_4_5) // MVP-09: Migration 4→5 (Fix FOREIGN KEY)
+            .addMigrations(
+                AppDatabase.MIGRATION_1_2, // MVP-07: Migration 1→2
+                AppDatabase.MIGRATION_2_3, // MVP-08: Migration 2→3
+                AppDatabase.MIGRATION_3_4, // MVP-09: Migration 3→4
+                AppDatabase.MIGRATION_4_5, // MVP-09: Migration 4→5 (Fix FOREIGN KEY)
+                AppDatabase.MIGRATION_5_6, // MVP-09: Migration 5→6
+                AppDatabase.MIGRATION_6_7  // MVP-09: Migration 6→7
+            )
+            // Para debugging local e quando aceitar perda de dados, descomente:
+            // .fallbackToDestructiveMigration()
             .build()
     }
 

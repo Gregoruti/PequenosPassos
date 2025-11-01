@@ -187,6 +187,21 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
+            // Checkbox para personalização do fluxo de passos (tempo extra)
+            val askExtraTimeChecked = viewModel.askExtraTimeAtStep.collectAsState().value
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Checkbox(
+                    checked = askExtraTimeChecked,
+                    onCheckedChange = { checked -> viewModel.setAskExtraTimeAtStep(checked) }
+                )
+                Spacer(Modifier.width(8.dp))
+                Text("Perguntar se deseja mais tempo ao final de cada passo (personalização do fluxo)")
+            }
         }
     }
 }

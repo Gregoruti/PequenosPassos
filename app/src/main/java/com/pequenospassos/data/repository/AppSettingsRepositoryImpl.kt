@@ -81,6 +81,24 @@ class AppSettingsRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateAskExtraTimeAtStep(askExtraTimeAtStep: Boolean): Result<Unit> {
+        return try {
+            val current = dao.getSettings(SETTINGS_ID).first()
+            if (current != null) {
+                val updated = current.copy(askExtraTimeAtStep = askExtraTimeAtStep)
+                dao.updateSettings(updated)
+                Result.success(Unit)
+            } else {
+                // Se não existir, cria com valor padrão
+                val newSettings = AppSettings(id = SETTINGS_ID, askExtraTimeAtStep = askExtraTimeAtStep)
+                dao.updateSettings(newSettings)
+                Result.success(Unit)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun getDefaultSettings(): AppSettings {
         val currentDate = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
             .format(Date())
@@ -95,4 +113,3 @@ class AppSettingsRepositoryImpl @Inject constructor(
         )
     }
 }
-

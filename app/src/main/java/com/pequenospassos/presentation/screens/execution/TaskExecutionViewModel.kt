@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.pequenospassos.domain.model.Step
 import com.pequenospassos.domain.model.Task
 import com.pequenospassos.domain.repository.TaskRepository
+import com.pequenospassos.domain.repository.AppSettingsRepository
 import com.pequenospassos.domain.usecase.GetTaskByIdUseCase
 import com.pequenospassos.domain.usecase.GetStepsByTaskUseCase
 import com.pequenospassos.domain.usecase.GetChildProfileUseCase
@@ -38,7 +39,8 @@ class TaskExecutionViewModel @Inject constructor(
     private val getStepsByTaskUseCase: GetStepsByTaskUseCase,
     private val getChildProfileUseCase: GetChildProfileUseCase,
     private val taskRepository: TaskRepository,
-    private val ttsManager: TtsManager
+    private val ttsManager: TtsManager,
+    private val appSettingsRepository: AppSettingsRepository // INJETADO
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskExecutionState())
@@ -152,17 +154,21 @@ class TaskExecutionViewModel @Inject constructor(
                     )
                 }
             }
-
             // Timer chegou a zero
             if (_state.value.remainingSeconds == 0) {
-                val message = getRandomTimeUpMessage(_state.value.childName)
-                _state.value = _state.value.copy(
-                    showTimeUpDialog = true,
-                    timeUpMessage = message
-                )
-
-                // Ler a mensagem de tempo esgotado
-                ttsManager.speak(message)
+                // Consultar configuração askExtraTimeAtStep
+                val askExtra = appSettingsRepository.getSettings().firstOrNull()?.askExtraTimeAtStep ?: true
+                if (askExtra) {
+                    val message = getRandomTimeUpMessage(_state.value.childName)
+                    _state.value = _state.value.copy(
+                        showTimeUpDialog = true,
+                        timeUpMessage = message
+                    )
+                    ttsManager.speak(message)
+                } else {
+                    // Avançar automaticamente para o próximo passo
+                    nextStep()
+                }
             }
         }
     }
@@ -291,4 +297,3 @@ data class TaskExecutionState(
     val childName: String = "",
     val timeUpMessage: String = ""
 )
-

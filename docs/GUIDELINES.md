@@ -1,9 +1,10 @@
 <!--
 Arquivo: docs/GUIDELINES.md
 Tipo: Diretrizes e boas práticas do projeto
-Objetivo: Centralizar padrões de desenvolvimento, versionamento, documentação e rastreabilidade do Pequenos Passos.
+Objetivo: Centralizar padrões de desenvolvimento, versionamento, documentaç��o e rastreabilidade do Pequenos Passos.
 Correlações: CHANGELOG.md, arquivos de implementação, scripts .bat, resumos de MVPs
 Histórico de alterações:
+- 2025-10-31 (user): Correção de Falha Crítica em Room/Migration
 - 2025-10-27 (user): Reforço: Sempre mencionar mudanças e rastreabilidade nas primeiras 50 linhas dos arquivos afetados.
 - 2025-10-24 (user): Atualização de práticas de commit e documentação.
 Observação: Atualizar as primeiras 50 linhas dos arquivos críticos após cada alteração relevante.
@@ -1009,6 +1010,40 @@ HomeScreen
 - Incremento da versão para 1.11.7 (SplashScreen e build.gradle.kts).
 - Atualização de documentação para rastreabilidade e registro de status de build/testes.
 - Prática obrigatória: registrar sempre nas primeiras 50 linhas dos arquivos principais as mudanças, status de build e testes.
+
+# Atualização 2025-10-31
+
+## Controle de Exibição do Pop-up de Tempo Extra
+- O pop-up de tempo extra ao final do step deve respeitar a configuração `askExtraTimeAtStep`.
+- Se desativada, o fluxo avança automaticamente para o próximo passo.
+- Correção aplicada no ViewModel de execução: consulta reativa ao valor de configuração.
+- Testes práticos validados.
+
+## Histórico de Falhas e Soluções
+- [2.1.2] Corrigido bug de exibição indevida do pop-up de tempo extra.
+- [2.1.1] Correção de persistência da configuração no banco de dados.
+
+## Checklist de Validação
+- [x] Checkbox alterna corretamente e persiste valor
+- [x] Pop-up só aparece se opção estiver ativada
+- [x] Fluxo avança automaticamente se desativada
+- [x] Documentação e changelog atualizados
+
+## Correção de Falha Crítica em Room/Migration
+- Sempre que adicionar um novo campo via migration, adicione o mesmo campo na data class da entidade correspondente.
+- Exemplo: Campo `askExtraTimeAtStep` foi adicionado via migration e DAO, mas estava ausente em `AppSettings.kt`, causando erro de compilação e falha de Room/SQLite.
+- Solução: Adicionar o campo na entidade com valor padrão compatível com a migration.
+- Após correção, build e testes passaram normalmente.
+
+## Checklist para futuras alterações em banco de dados
+- [ ] Migration criada e registrada em ordem em `AppDatabase`
+- [ ] Campo novo adicionado na entidade correspondente
+- [ ] Valor padrão compatível com a migration
+- [ ] Testes de build e execução realizados
+- [ ] Documentação atualizada (CHANGELOG, GUIDELINES)
+
+## Observação
+- Falha de instalação por ausência de dispositivo não é erro de código.
 
 ---
 

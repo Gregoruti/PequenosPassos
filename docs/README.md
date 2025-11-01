@@ -2,30 +2,32 @@
 
 **Aplicativo Android de Auxílio para Rotinas Infantis**
 
-[![Versão](https://img.shields.io/badge/versão-1.10.1-blue.svg)](https://github.com)
-[![MVP](https://img.shields.io/badge/MVP-08%20Concluído-green.svg)](https://github.com)
+[![Versão](https://img.shields.io/badge/versão-2.1.0-blue.svg)](https://github.com)
+[![MVP](https://img.shields.io/badge/MVP-11%20Concluído-green.svg)](https://github.com)
 [![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com)
-[![Testes](https://img.shields.io/badge/testes-142%20passando-success.svg)](https://github.com)
+[![Status](https://img.shields.io/badge/status-100%25%20funcional-success.svg)](https://github.com)
 
 ---
 
 ## 📢 Status do Projeto
 
-**O aplicativo está funcional e estável na versão 1.10.1 (23/10/2025).**
+**O aplicativo está 100% funcional e estável na versão 2.1.0 (01/11/2025).**
 
-### Novidades da versão 1.10.1
-- [x] Recurso A
-- [x] Recurso B
-- [ ] Recurso C (em andamento)
-
-### Notas de versão
-- Atualizações de desempenho
-- Correções de bugs
-- Melhorias na interface do usuário
+### ✨ Novidades da versão 2.1.0 (MVP-11)
+- ✅ Configuração de pop-up de tempo extra (pode ser desabilitado)
+- ✅ Documentação completa consolidada (MVP11_ESTADO_ATUAL_CONSOLIDADO.md)
+- ✅ Guia completo para Code Assistants (AI)
+- ✅ Transição de AI Assistant (Claude Sonnet 4.5 → GPT-4.1)
+- ✅ Headers de rastreabilidade nas primeiras 50 linhas
+- ✅ Roadmap detalhado para próximos MVPs (12-15)
 
 ---
 
-> Toda a documentação do projeto está centralizada neste diretório `/docs`. Consulte os arquivos para detalhes completos sobre funcionalidades, arquitetura, testes, planejamento e histórico de versões.
+> 📚 **Documentação completa** em `/docs`:
+> - **MVP11_ESTADO_ATUAL_CONSOLIDADO.md** - Estado atual detalhado
+> - **GUIDELINES.md** - Diretrizes e boas práticas
+> - **CHANGELOG.md** - Histórico de mudanças
+> - **SPECIFICATION_FOR_APP.md** - Especificação técnica
 
 ## 📋 Sobre o Projeto
 

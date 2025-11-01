@@ -68,9 +68,20 @@ interface AppSettingsDao {
     suspend fun markFirstRunComplete(id: String = "settings")
 
     /**
+     * Atualiza a preferência de perguntar tempo extra ao final do step.
+     * @param askExtraTimeAtStep Novo valor da preferência
+     * @param id ID das configurações (padrão: "settings")
+     */
+    @Query("UPDATE app_settings SET askExtraTimeAtStep = :askExtraTimeAtStep WHERE id = :id")
+    suspend fun updateAskExtraTimeAtStep(askExtraTimeAtStep: Boolean, id: String = "settings")
+
+    /**
      * Deleta todas as configurações (útil para reset/testes).
      */
     @Query("DELETE FROM app_settings")
     suspend fun deleteAll()
-}
 
+    // ATENÇÃO: É necessário adicionar a coluna 'askExtraTimeAtStep' na tabela app_settings via migration.
+    // Exemplo de migration:
+    // db.execSQL("ALTER TABLE app_settings ADD COLUMN askExtraTimeAtStep INTEGER NOT NULL DEFAULT 1")
+}

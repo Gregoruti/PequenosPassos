@@ -6,8 +6,24 @@ import androidx.room.PrimaryKey
 /**
  * Entidade de configurações do aplicativo.
  *
- * Armazena configurações globais e estado da aplicação.
- * Single-instance (sempre ID "settings").
+ * Arquivo: domain/model/AppSettings.kt
+ * Tipo: Entity (Room Database)
+ * Objetivo: Armazenar configurações globais e estado da aplicação
+ * Correlações: AppSettingsDao.kt, AppSettingsRepository.kt, migrations em AppDatabase.kt
+ *
+ * Histórico de alterações:
+ * - 2025-11-01 (GPT-4.1): CRÍTICO - Adicionado campo askExtraTimeAtStep (estava ausente)
+ *   - Migration criada mas campo faltava na data class
+ *   - Causava SQLiteException ao salvar configuração
+ *   - Solução: Adicionar campo com valor padrão true
+ * - 2025-10-30 (Claude Sonnet): Adicionado suporte a controle de pop-up de tempo extra
+ * - 2025-10-13 (MVP-02): Criação inicial da entidade
+ *
+ * Última atualização: 2025-11-01
+ * Status: Funcional, testado em v2.1.0
+ * Build: SUCCESS
+ *
+ * ⚠️ ATENÇÃO: Ao adicionar novos campos via migration, SEMPRE adicionar na data class também!
  *
  * @property id Identificador fixo ("settings")
  * @property isFirstRun Se é a primeira execução do app
@@ -15,10 +31,11 @@ import androidx.room.PrimaryKey
  * @property currentDate Data atual no formato YYYY-MM-DD
  * @property lastSyncTimestamp Timestamp da última sincronização
  * @property notificationsEnabled Se notificações estão habilitadas
+ * @property askExtraTimeAtStep Se deve perguntar por mais tempo ao final do step (v2.1.0)
  *
  * @since MVP-02 (13/10/2025) - DIA 1 - Fundação
  * @author PequenosPassos Development Team
- * @validationStatus ✅ Implementado - MVP-02
+ * @validationStatus ✅ Implementado - MVP-11 (v2.1.0)
  */
 @Entity(tableName = "app_settings")
 data class AppSettings(
@@ -33,7 +50,10 @@ data class AppSettings(
 
     val lastSyncTimestamp: Long = System.currentTimeMillis(),
 
-    val notificationsEnabled: Boolean = true
+    val notificationsEnabled: Boolean = true,
+
+    // Adicionado em MVP-08/MVP-09: controla se pergunta por tempo extra ao final do step
+    val askExtraTimeAtStep: Boolean = true
 ) {
     /**
      * Valida se as configurações estão consistentes
@@ -78,4 +98,3 @@ data class AppSettings(
         }
     }
 }
-

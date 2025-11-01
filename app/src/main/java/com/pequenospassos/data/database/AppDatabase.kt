@@ -66,6 +66,7 @@ import com.pequenospassos.domain.model.TaskCompletion
  * @updated MVP-09 (24/10/2025) - Migration 3→4
  * @updated MVP-09 (24/10/2025) - Migration 4→5
  * @updated MVP-10 (27/10/2025) - Migration 5→6
+ * @updated MVP-08 (31/10/2025) - Migration 6→7
  * @author PequenosPassos Development Team
  * @validationStatus ✅ Implementado - MVP-03, MVP-07, MVP-08, ⏳ Em desenvolvimento - MVP-09
  */
@@ -79,7 +80,7 @@ import com.pequenospassos.domain.model.TaskCompletion
         Reward::class,
         TaskCompletion::class
     ],
-    version = 6, // MVP-10: Incrementado de 5 para 6 - birthDate e observations em child_profile
+    version = 7, // MVP-08: Incrementado de 6 para 7 - askExtraTimeAtStep em app_settings
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -121,7 +122,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun taskCompletionDao(): TaskCompletionDao
 
     companion object {
-        const val DATABASE_NAME = "pequenospassos_database"
+        const val DATABASE_NAME = "pequenospassos_database_v8"
 
         /**
          * Migration da versão 1 para 2 (MVP-07).
@@ -345,12 +346,26 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Migration da versão 6 para 7 (MVP-08).
+         *
+         * Adiciona o campo 'askExtraTimeAtStep' (INTEGER NOT NULL DEFAULT 1) à tabela app_settings.
+         *
+         * @since MVP-08 (31/10/2025)
+         */
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE app_settings ADD COLUMN askExtraTimeAtStep INTEGER NOT NULL DEFAULT 1")
+            }
+        }
+
         val MIGRATIONS = arrayOf(
             MIGRATION_1_2,
             MIGRATION_2_3,
             MIGRATION_3_4,
             MIGRATION_4_5,
-            MIGRATION_5_6
+            MIGRATION_5_6,
+            MIGRATION_6_7
         )
     }
 }

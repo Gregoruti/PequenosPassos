@@ -456,3 +456,32 @@ O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crian�
 **Última atualização**: 2025-10-15  
 **Versão do documento**: 1.0  
 **Status**: Documento Vivo (atualizado continuamente)
+
+# Especificação de Funcionalidades Avançadas (Novembro/2025)
+
+## 1. Personalização do Fluxo de Passos
+- Adicionar checkbox em "Histórico e Ferramentas" para habilitar/desabilitar a pergunta de tempo extra ao final de cada step.
+- Persistir o estado da checkbox (armazenamento local).
+- Integrar ASR (Vosk) para reconhecimento de voz ao final do step, permitindo decisão automática.
+- Fallback para resposta manual caso o reconhecimento falhe.
+
+## 2. Exportação e Importação de Atividades
+- Botão para exportar atividades (JSON/CSV) em "Histórico e Ferramentas".
+- Botão para importar atividades, com validação e prevenção de duplicidades.
+
+## 3. Filtro de Categorias em Atividades
+- Componente de filtro (dropdown/chips) na tela de atividades para seleção de categoria.
+- Persistência do filtro durante a sessão.
+
+## Roadmap Modular
+- Fase 1: Personalização do fluxo de passos (checkbox + ASR)
+- Fase 2: Exportação/importação de atividades
+- Fase 3: Filtro de categorias
+
+## Critérios de Aceitação
+- Funcionalidades testáveis e documentadas nas primeiras 50 linhas dos arquivos afetados.
+- Atualização do CHANGELOG.md e docs a cada entrega.
+
+## Observações
+- Recomenda-se branches específicas para cada fase.
+- Issues/tarefas detalhadas para cada subitem.

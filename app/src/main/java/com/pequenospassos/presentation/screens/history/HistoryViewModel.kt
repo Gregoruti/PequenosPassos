@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pequenospassos.domain.model.Task
 import com.pequenospassos.domain.model.TaskExecutionCount
+import com.pequenospassos.domain.repository.AppSettingsRepository
 import com.pequenospassos.domain.repository.TaskCompletionRepository
 import com.pequenospassos.domain.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
-    private val taskCompletionRepository: TaskCompletionRepository
+    private val taskCompletionRepository: TaskCompletionRepository,
+    private val appSettingsRepository: AppSettingsRepository // novo
 ) : ViewModel() {
 
     // ID da criança (hardcoded temporariamente)
@@ -260,6 +262,20 @@ class HistoryViewModel @Inject constructor(
             taskRepository.getAllTasksOrderedByTime().collect { tasks ->
                 _tasksMap.value = tasks.associateBy { it.id.toString() }
             }
+        }
+    }
+
+    // MVP-08 (31/10/2025):
+    // Adiciona suporte à configuração askExtraTimeAtStep (checkbox de tempo extra ao final do step)
+    // Expondo valor reativo e função para atualizar preferência
+    val askExtraTimeAtStep = appSettingsRepository.getSettings().map { it?.askExtraTimeAtStep ?: true }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = true
+    )
+    fun setAskExtraTimeAtStep(enabled: Boolean) {
+        viewModelScope.launch {
+            appSettingsRepository.updateAskExtraTimeAtStep(enabled)
         }
     }
 }
