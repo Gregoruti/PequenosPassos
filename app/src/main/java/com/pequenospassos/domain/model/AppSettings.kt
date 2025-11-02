@@ -12,6 +12,10 @@ import androidx.room.PrimaryKey
  * Correlações: AppSettingsDao.kt, AppSettingsRepository.kt, migrations em AppDatabase.kt
  *
  * Histórico de alterações:
+ * - 2025-11-01 (Claude Sonnet 4.5): MVP-14 - Adicionado campo enableVoiceResponse
+ *   - Habilita reconhecimento de voz no pop-up de tempo extra
+ *   - Migration 5→6 criada
+ *   - Valor padrão: false (desabilitado)
  * - 2025-11-01 (GPT-4.1): CRÍTICO - Adicionado campo askExtraTimeAtStep (estava ausente)
  *   - Migration criada mas campo faltava na data class
  *   - Causava SQLiteException ao salvar configuração
@@ -19,9 +23,9 @@ import androidx.room.PrimaryKey
  * - 2025-10-30 (Claude Sonnet): Adicionado suporte a controle de pop-up de tempo extra
  * - 2025-10-13 (MVP-02): Criação inicial da entidade
  *
- * Última atualização: 2025-11-01
- * Status: Funcional, testado em v2.1.0
- * Build: SUCCESS
+ * Última atualização: 2025-11-01 (MVP-14 Fase 1)
+ * Status: Em desenvolvimento - MVP-14
+ * Build: PENDING
  *
  * ⚠️ ATENÇÃO: Ao adicionar novos campos via migration, SEMPRE adicionar na data class também!
  *
@@ -32,10 +36,11 @@ import androidx.room.PrimaryKey
  * @property lastSyncTimestamp Timestamp da última sincronização
  * @property notificationsEnabled Se notificações estão habilitadas
  * @property askExtraTimeAtStep Se deve perguntar por mais tempo ao final do step (v2.1.0)
+ * @property enableVoiceResponse Se habilita reconhecimento de voz no pop-up de tempo extra (v2.2.0 - MVP-14)
  *
- * @since MVP-02 (13/10/2025) - DIA 1 - Fundação
+ * @since MVP-02 (13/10/2025)
  * @author PequenosPassos Development Team
- * @validationStatus ✅ Implementado - MVP-11 (v2.1.0)
+ * @validationStatus 🔄 Em desenvolvimento - MVP-14 Fase 1
  */
 @Entity(tableName = "app_settings")
 data class AppSettings(
@@ -52,8 +57,11 @@ data class AppSettings(
 
     val notificationsEnabled: Boolean = true,
 
-    // Adicionado em MVP-08/MVP-09: controla se pergunta por tempo extra ao final do step
-    val askExtraTimeAtStep: Boolean = true
+    // Adicionado em MVP-11 (v2.1.0): controla se pergunta por tempo extra ao final do step
+    val askExtraTimeAtStep: Boolean = true,
+
+    // Adicionado em MVP-14 (v2.2.0): habilita reconhecimento de voz no pop-up de tempo extra
+    val enableVoiceResponse: Boolean = false
 ) {
     /**
      * Valida se as configurações estão consistentes

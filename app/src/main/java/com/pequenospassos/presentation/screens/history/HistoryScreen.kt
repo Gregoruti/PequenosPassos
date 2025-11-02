@@ -21,11 +21,25 @@ import androidx.navigation.NavController
 /**
  * Tela de Histórico do PequenosPassos.
  *
- * Exibe estatísticas, ferramentas de teste (ASR/TTS) e permite zerar tarefas/estrelas do dia.
+ * Arquivo: presentation/screens/history/HistoryScreen.kt
+ * Tipo: Screen (Jetpack Compose)
+ * Objetivo: Exibir estatísticas, ferramentas de teste e configurações
+ * Correlações: HistoryViewModel.kt, TaskRepository.kt, AppSettingsRepository.kt
+ *
+ * Histórico de alterações:
+ * - 2025-11-01 (Claude Sonnet 4.5): MVP-14 Fase 2 - Adicionado checkbox "Resposta em Áudio"
+ *   - Checkbox habilitado apenas se askExtraTimeAtStep = true
+ *   - Texto explicativo: "O app vai escutar sua resposta por 3 segundos"
+ * - 2025-10-31 (MVP-08): Adicionado checkbox de tempo extra
+ * - 2025-10-24 (MVP-07/08): Implementação inicial
+ *
+ * Última atualização: 2025-11-01 (MVP-14 Fase 2)
+ * Status: Em desenvolvimento - MVP-14
  *
  * @param navController Controlador de navegação
  * @since MVP-07/08 (24/10/2025)
  * @author MVP Development Team
+ * @validationStatus 🔄 Em desenvolvimento - MVP-14 Fase 2
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -200,7 +214,37 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                     onCheckedChange = { checked -> viewModel.setAskExtraTimeAtStep(checked) }
                 )
                 Spacer(Modifier.width(8.dp))
-                Text("Perguntar se deseja mais tempo ao final de cada passo (personalização do fluxo)")
+                Text("Perguntar se deseja mais tempo")
+            }
+
+            // MVP-14 Fase 2: Checkbox para habilitar resposta por voz
+            val enableVoiceResponse = viewModel.enableVoiceResponse.collectAsState().value
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+            ) {
+                Checkbox(
+                    checked = enableVoiceResponse,
+                    onCheckedChange = { checked -> viewModel.setEnableVoiceResponse(checked) },
+                    enabled = askExtraTimeChecked // Só habilita se pop-up de tempo extra estiver ativo
+                )
+                Spacer(Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = "Resposta em Áudio",
+                        fontWeight = if (enableVoiceResponse && askExtraTimeChecked) FontWeight.Bold else FontWeight.Normal,
+                        color = if (!askExtraTimeChecked) Color.Gray else MaterialTheme.colorScheme.onSurface
+                    )
+                    if (askExtraTimeChecked && enableVoiceResponse) {
+                        Text(
+                            text = "🎤 O app vai escutar sua resposta por 3 segundos",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                    }
+                }
             }
         }
     }

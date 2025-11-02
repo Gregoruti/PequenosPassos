@@ -76,6 +76,25 @@ interface AppSettingsDao {
     suspend fun updateAskExtraTimeAtStep(askExtraTimeAtStep: Boolean, id: String = "settings")
 
     /**
+     * Atualiza a preferência de habilitar reconhecimento de voz no pop-up de tempo extra.
+     * MVP-14 Fase 1.
+     *
+     * @param enableVoiceResponse Novo valor da preferência (true = habilitado, false = desabilitado)
+     * @param id ID das configurações (padrão: "settings")
+     */
+    @Query("UPDATE app_settings SET enableVoiceResponse = :enableVoiceResponse WHERE id = :id")
+    suspend fun updateEnableVoiceResponse(enableVoiceResponse: Boolean, id: String = "settings")
+
+    /**
+     * Retorna Flow observável da preferência enableVoiceResponse.
+     * MVP-14 Fase 1.
+     *
+     * @return Flow com o valor atual de enableVoiceResponse (pode ser null se não houver registro)
+     */
+    @Query("SELECT enableVoiceResponse FROM app_settings WHERE id = 'settings' LIMIT 1")
+    fun getEnableVoiceResponseFlow(): Flow<Boolean?>
+
+    /**
      * Deleta todas as configurações (útil para reset/testes).
      */
     @Query("DELETE FROM app_settings")

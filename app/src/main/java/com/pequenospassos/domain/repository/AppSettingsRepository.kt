@@ -6,12 +6,24 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Interface de repositório para operações de AppSettings.
  *
- * Define o contrato para acesso a dados de configurações do app,
- * usando single-instance pattern (sempre ID "settings").
+ * Arquivo: domain/repository/AppSettingsRepository.kt
+ * Tipo: Repository Interface
+ * Objetivo: Definir contrato para acesso a dados de configurações do app
+ * Correlações: AppSettings.kt, AppSettingsRepositoryImpl.kt, AppSettingsDao.kt
  *
- * @since MVP-04 (14/10/2025) - DIA 1 - Fundação
+ * Histórico de alterações:
+ * - 2025-11-01 (Claude Sonnet 4.5): MVP-14 Fase 1 - Adicionados métodos para enableVoiceResponse
+ *   - updateEnableVoiceResponse() para atualizar preferência
+ *   - getEnableVoiceResponse() para observar mudanças
+ * - 2025-10-31 (MVP-08): Adicionado método updateAskExtraTimeAtStep()
+ * - 2025-10-14 (MVP-04): Criação inicial da interface
+ *
+ * Última atualização: 2025-11-01 (MVP-14 Fase 1)
+ * Status: Em desenvolvimento - MVP-14
+ *
+ * @since MVP-04 (14/10/2025)
  * @author PequenosPassos Development Team
- * @validationStatus ✅ Implementado - MVP-04
+ * @validationStatus 🔄 Em desenvolvimento - MVP-14 Fase 1
  */
 interface AppSettingsRepository {
 
@@ -74,4 +86,21 @@ interface AppSettingsRepository {
      * @return Result indicando sucesso ou erro
      */
     suspend fun updateAskExtraTimeAtStep(askExtraTimeAtStep: Boolean): Result<Unit>
+
+    /**
+     * Atualiza a preferência de habilitar reconhecimento de voz no pop-up de tempo extra.
+     * MVP-14 Fase 1.
+     *
+     * @param enableVoiceResponse Novo valor da preferência (true = habilitado, false = desabilitado)
+     * @return Result indicando sucesso ou erro
+     */
+    suspend fun updateEnableVoiceResponse(enableVoiceResponse: Boolean): Result<Unit>
+
+    /**
+     * Retorna Flow observável da preferência enableVoiceResponse.
+     * MVP-14 Fase 1.
+     *
+     * @return Flow com o valor atual de enableVoiceResponse
+     */
+    fun getEnableVoiceResponse(): Flow<Boolean>
 }

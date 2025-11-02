@@ -17,13 +17,27 @@ import javax.inject.Inject
 /**
  * ViewModel para a tela de Histórico.
  *
- * Gerencia estatísticas diárias, histórico e ferramentas de debug.
+ * Arquivo: presentation/screens/history/HistoryViewModel.kt
+ * Tipo: ViewModel
+ * Objetivo: Gerenciar estatísticas diárias, histórico e ferramentas de configuração
+ * Correlações: HistoryScreen.kt, TaskRepository.kt, AppSettingsRepository.kt
  *
- * MVP-09 v1.11.5: Implementação completa de Histórico
+ * Histórico de alterações:
+ * - 2025-11-01 (Claude Sonnet 4.5): MVP-14 Fase 2 - Adicionado suporte a enableVoiceResponse
+ *   - StateFlow enableVoiceResponse para observar preferência
+ *   - Método setEnableVoiceResponse() para atualizar checkbox
+ * - 2025-10-31 (MVP-08): Adicionado suporte a askExtraTimeAtStep
+ * - 2025-10-24 (MVP-09): Implementação completa de Histórico
+ *
+ * Última atualização: 2025-11-01 (MVP-14 Fase 2)
+ * Status: Em desenvolvimento - MVP-14
  *
  * @property taskRepository Repositório de tarefas
+ * @property taskCompletionRepository Repositório de conclusões
+ * @property appSettingsRepository Repositório de configurações
  * @since MVP-09 v1.11.5 (24/10/2025)
  * @author PequenosPassos Development Team
+ * @validationStatus 🔄 Em desenvolvimento - MVP-14 Fase 2
  */
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
@@ -273,9 +287,37 @@ class HistoryViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = true
     )
+
     fun setAskExtraTimeAtStep(enabled: Boolean) {
         viewModelScope.launch {
             appSettingsRepository.updateAskExtraTimeAtStep(enabled)
+        }
+    }
+
+    // MVP-14 Fase 2 (01/11/2025):
+    // Adiciona suporte à configuração enableVoiceResponse (checkbox de resposta por voz no pop-up)
+    // Expondo valor reativo e função para atualizar preferência
+
+    /**
+     * Estado do checkbox "Resposta em Áudio".
+     * Controla se o ASR deve ser ativado no pop-up de tempo extra.
+     */
+    val enableVoiceResponse: StateFlow<Boolean> = appSettingsRepository.getEnableVoiceResponse()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
+    /**
+     * Atualiza a preferência de resposta por voz.
+     * MVP-14 Fase 2.
+     *
+     * @param enabled true para habilitar reconhecimento de voz, false para desabilitar
+     */
+    fun setEnableVoiceResponse(enabled: Boolean) {
+        viewModelScope.launch {
+            appSettingsRepository.updateEnableVoiceResponse(enabled)
         }
     }
 }

@@ -3,17 +3,113 @@ Arquivo: docs/CHANGELOG.md
 Objetivo: Histórico de mudanças do projeto Pequenos Passos.
 Correlações: GUIDELINES.md, arquivos de implementação, migrations, releases, MVP11_ESTADO_ATUAL_CONSOLIDADO.md
 Histórico de alterações:
+- 2025-11-01 (Claude Sonnet 4.5): MVP-14 Fases 1 e 2 - ASR em Pop-ups (Banco de Dados + Checkbox)
 - 2025-11-01 (Claude Sonnet 4.5): RETORNO - Volta como Code Assistant principal até o final do projeto
 - 2025-11-01 (GPT-4.1): Transição temporária - Adicionado MVP-11 (v2.1.0) - Consolidação
 - 2025-10-27 (Claude Sonnet 4.5): Adicionada entrada para v1.11.6 (campos de cadastro, migration, versionamento).
 - 2025-10-24 (Claude Sonnet 4.5): Atualização para MVP-10, início de rastreabilidade 50 linhas.
 Observação: Sempre atualizar as primeiras 50 linhas com resumo das últimas mudanças e rastreabilidade.
-Status Atual: v2.1.0 - 100% Funcional - Code Assistant: Claude Sonnet 4.5 (GitHub Copilot)
+Status Atual: MVP-14 Fases 1-2 Completas - Code Assistant: Claude Sonnet 4.5 (GitHub Copilot)
 -->
 # CHANGELOG
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+---
+
+## [Em Desenvolvimento] - MVP-14 - 2025-11-01
+
+### 🎤 ASR (RECONHECIMENTO DE VOZ) EM POP-UPS - FASES 1-2 COMPLETAS
+
+#### ✅ FASE 1: Banco de Dados (COMPLETA)
+
+**Adicionado:**
+- ✨ Campo `enableVoiceResponse` em `AppSettings.kt`
+  - Tipo: Boolean (padrão: false)
+  - Habilita reconhecimento de voz no pop-up de tempo extra
+- ✨ Migration 7→8 criada
+  - SQL: `ALTER TABLE app_settings ADD COLUMN enableVoiceResponse INTEGER NOT NULL DEFAULT 0`
+- ✨ Métodos no DAO e Repository
+  - `updateEnableVoiceResponse()` para atualizar preferência
+  - `getEnableVoiceResponse()` para observar mudanças (Flow)
+
+**Arquivos modificados:**
+- `domain/model/AppSettings.kt`
+- `data/database/AppDatabase.kt`
+- `data/database/dao/AppSettingsDao.kt`
+- `domain/repository/AppSettingsRepository.kt`
+- `data/repository/AppSettingsRepositoryImpl.kt`
+
+**Build:** SUCCESS  
+**Database Version:** 7 → 8
+
+---
+
+#### ✅ FASE 2: Checkbox em Histórico & Ferramentas (COMPLETA)
+
+**Adicionado:**
+- ✨ Checkbox "Resposta em Áudio" na tela Histórico & Ferramentas
+  - Habilitado apenas se "Perguntar se deseja mais tempo" estiver ativo
+  - Texto explicativo: "🎤 O app vai escutar sua resposta por 3 segundos"
+  - Feedback visual dinâmico (negrito quando ativo, cinza quando desabilitado)
+  - Persistência no banco de dados funcionando
+
+**Arquivos modificados:**
+- `presentation/screens/history/HistoryViewModel.kt`
+  - StateFlow `enableVoiceResponse`
+  - Método `setEnableVoiceResponse()`
+- `presentation/screens/history/HistoryScreen.kt`
+  - UI do checkbox com lógica condicional
+
+**Corrigido:**
+- 🐛 **CRÍTICO - Crash ao abrir tela Histórico**
+  - Problema: Query `getEnableVoiceResponseFlow()` retornava `Flow<Boolean>` mas banco podia não ter registro
+  - Erro: NullPointerException ao tentar converter null → Boolean
+  - Solução: Mudado para `Flow<Boolean?>` no DAO + `.map { it ?: false }` no Repository
+  - Arquivos corrigidos:
+    - `data/database/dao/AppSettingsDao.kt` (Flow<Boolean?> + LIMIT 1)
+    - `data/repository/AppSettingsRepositoryImpl.kt` (import map + tratamento null)
+
+**Validação:**
+- ✅ 8/8 testes passando em dispositivo físico
+- ✅ Persistência funcionando (fechar/reabrir app mantém estado)
+- ✅ Lógica de habilitação funcionando
+- ✅ Sem crashes
+
+**Build:** SUCCESS  
+**Tempo de implementação:** ~1 hora (incluindo correção de bug)
+
+---
+
+#### 📝 Documentação Criada
+
+- `docs/MVP14_ASR_POPUPS_PLANEJAMENTO_DETALHADO.md` - Planejamento completo das 6 fases
+- `docs/MVP14_FASE1_CONCLUSAO.md` - Conclusão da Fase 1
+- `docs/MVP14_FASE2_GUIA_VALIDACAO.md` - Guia de testes práticos
+- `docs/MVP14_FASE2_CORRECAO_CRASH.md` - Análise e correção do crash
+- `docs/MVP14_FASE2_CONCLUSAO.md` - Conclusão da Fase 2
+
+---
+
+#### 🔄 Lições Aprendidas
+
+**MVP-14 Fase 2:**
+- Sempre usar `Flow<Tipo?>` quando query pode retornar null
+- Tratar null no Repository com `.map { it ?: valorPadrao }`
+- Validar em dispositivo real revela problemas não vistos em emulador
+- Documentar bugs durante desenvolvimento facilita troubleshooting futuro
+
+---
+
+#### 🚀 Próximas Fases
+
+- **Fase 3:** VoiceCommandParser (parser de comandos infantis)
+- **Fase 4:** ASR com timeout (integração com Vosk)
+- **Fase 5:** Integração no pop-up de tempo extra
+- **Fase 6:** Polimentos e versão final
+
+**Progresso:** 2/6 fases completas (33.3%)
 
 ---
 

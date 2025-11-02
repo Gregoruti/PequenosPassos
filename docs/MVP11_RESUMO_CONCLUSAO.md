@@ -172,8 +172,27 @@ Consolidar completamente o estado atual do projeto Pequenos Passos, criar docume
 
 ## 🚀 PRÓXIMOS PASSOS
 
+### ⚡ PRIORIZADO: MVP-14: ASR em Pop-ups
+**Prioridade:** 🔴 ALTA (reavaliada de BAIXA para ALTA)  
+**Estimativa:** 5-7 dias  
+**Status:** 📋 PLANEJAMENTO DETALHADO CONCLUÍDO
+
+#### Funcionalidades Planejadas
+- ✅ Checkbox "Resposta em Áudio" em Histórico & Ferramentas
+- ✅ Reconhecimento de voz no pop-up de tempo extra (3 segundos)
+- ✅ Listas de comandos infantis positivos/negativos
+- ✅ Comandos positivos: "sim", "pode", "vamos", "tá", etc → Avançar
+- ✅ Comandos negativos: "não", "espera", "mais tempo", etc → +30s
+- ✅ Feedback visual durante reconhecimento (microfone animado)
+- ✅ Fallback para botões se não reconhecer
+- ✅ Integração com Vosk (já existente no projeto)
+
+**📄 Documento:** `docs/MVP14_ASR_POPUPS_PLANEJAMENTO_DETALHADO.md`
+
+---
+
 ### MVP-12: Exportação/Importação de Atividades
-**Prioridade:** ALTA  
+**Prioridade:** 🟡 MÉDIA (reduzida de ALTA)  
 **Estimativa:** 3-5 dias
 
 #### Funcionalidades Planejadas
@@ -184,7 +203,7 @@ Consolidar completamente o estado atual do projeto Pequenos Passos, criar docume
 - Compartilhamento de atividades entre dispositivos
 
 ### MVP-13: Filtro de Categorias
-**Prioridade:** MÉDIA  
+**Prioridade:** 🟢 BAIXA  
 **Estimativa:** 2-3 dias
 
 #### Funcionalidades Planejadas
@@ -193,14 +212,6 @@ Consolidar completamente o estado atual do projeto Pequenos Passos, criar docume
 - Opção "Todas as Categorias"
 - Persistir última categoria selecionada
 
-### MVP-14: ASR em Pop-ups
-**Prioridade:** BAIXA  
-**Estimativa:** 5-7 dias
-
-#### Funcionalidades Planejadas
-- Reconhecimento de voz no pop-up de tempo extra
-- Comandos: "sim", "não", "mais tempo", "próximo"
-- Feedback visual durante reconhecimento
 
 ---
 

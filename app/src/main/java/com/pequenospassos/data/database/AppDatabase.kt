@@ -80,7 +80,7 @@ import com.pequenospassos.domain.model.TaskCompletion
         Reward::class,
         TaskCompletion::class
     ],
-    version = 7, // MVP-08: Incrementado de 6 para 7 - askExtraTimeAtStep em app_settings
+    version = 8, // MVP-14: Incrementado de 7 para 8 - enableVoiceResponse em app_settings
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -359,13 +359,28 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Migration da versão 7 para 8 (MVP-14).
+         *
+         * Adiciona o campo 'enableVoiceResponse' (INTEGER NOT NULL DEFAULT 0) à tabela app_settings.
+         * Habilita reconhecimento de voz no pop-up de tempo extra.
+         *
+         * @since MVP-14 Fase 1 (01/11/2025)
+         */
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE app_settings ADD COLUMN enableVoiceResponse INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         val MIGRATIONS = arrayOf(
             MIGRATION_1_2,
             MIGRATION_2_3,
             MIGRATION_3_4,
             MIGRATION_4_5,
             MIGRATION_5_6,
-            MIGRATION_6_7
+            MIGRATION_6_7,
+            MIGRATION_7_8  // NOVO: Migration para enableVoiceResponse
         )
     }
 }

@@ -5,6 +5,7 @@ import com.pequenospassos.domain.model.AppSettings
 import com.pequenospassos.domain.repository.AppSettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -97,6 +98,37 @@ class AppSettingsRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    /**
+     * Atualiza a preferência de habilitar reconhecimento de voz no pop-up de tempo extra.
+     * MVP-14 Fase 1.
+     */
+    override suspend fun updateEnableVoiceResponse(enableVoiceResponse: Boolean): Result<Unit> {
+        return try {
+            val current = dao.getSettings(SETTINGS_ID).first()
+            if (current != null) {
+                val updated = current.copy(enableVoiceResponse = enableVoiceResponse)
+                dao.updateSettings(updated)
+                Result.success(Unit)
+            } else {
+                // Se não existir, cria com valor padrão
+                val newSettings = AppSettings(id = SETTINGS_ID, enableVoiceResponse = enableVoiceResponse)
+                dao.updateSettings(newSettings)
+                Result.success(Unit)
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Retorna Flow observável da preferência enableVoiceResponse.
+     * MVP-14 Fase 1.
+     */
+    override fun getEnableVoiceResponse(): Flow<Boolean> {
+        return dao.getEnableVoiceResponseFlow()
+            .map { it ?: false } // Retorna false se null (sem registro ainda)
     }
 
     override suspend fun getDefaultSettings(): AppSettings {
