@@ -201,6 +201,16 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
+
+            // Refinamento Fase 6: Subtítulo Configurações
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Configurações",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+
             // Checkbox para personalização do fluxo de passos (tempo extra)
             val askExtraTimeChecked = viewModel.askExtraTimeAtStep.collectAsState().value
             Row(

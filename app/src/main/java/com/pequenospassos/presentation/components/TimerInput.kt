@@ -77,7 +77,7 @@ fun TimerInput(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "⏱️ Tempo selecionado:",
+                    text = "⏱️ Tempo:", // Refinamento Fase 6: removido "selecionado"
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

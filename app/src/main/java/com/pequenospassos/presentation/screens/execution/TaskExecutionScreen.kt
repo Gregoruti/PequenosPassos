@@ -1,5 +1,6 @@
 package com.pequenospassos.presentation.screens.execution
 
+import android.Manifest
 import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -9,11 +10,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.pequenospassos.presentation.components.CircularTimer
 
 /**
@@ -33,7 +38,7 @@ import com.pequenospassos.presentation.components.CircularTimer
  *
  * @since MVP-07 (17/10/2025)
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun TaskExecutionScreen(
     navController: NavController,
@@ -45,6 +50,22 @@ fun TaskExecutionScreen(
     // MVP-14 Fase 5: Estados de reconhecimento de voz
     val isListeningVoice by viewModel.isListeningVoice.collectAsStateWithLifecycle()
     val voiceRecognitionError by viewModel.voiceRecognitionError.collectAsStateWithLifecycle()
+
+    // MVP-14 Fase 6: Permissão de microfone
+    val micPermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
+
+    // Atualizar ViewModel quando permissão mudar
+    LaunchedEffect(micPermissionState.status.isGranted) {
+        viewModel.updateMicrophonePermission(micPermissionState.status.isGranted)
+    }
+
+    // Solicitar permissão quando pop-up abrir E enableVoiceResponse = true
+    // (enableVoiceResponse será verificado no ViewModel)
+    LaunchedEffect(state.showTimeUpDialog) {
+        if (state.showTimeUpDialog && !micPermissionState.status.isGranted) {
+            micPermissionState.launchPermissionRequest()
+        }
+    }
 
     // Carregar tarefa ao iniciar
     LaunchedEffect(taskId) {
@@ -263,6 +284,35 @@ fun TaskExecutionScreen(
                         Column(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
+                            // MVP-14 Fase 6: Card de permissão se negada
+                            if (!micPermissionState.status.isGranted && !isListeningVoice) {
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.errorContainer
+                                    )
+                                ) {
+                                    Column(Modifier.padding(16.dp)) {
+                                        Text(
+                                            text = "🎤 Permissão Necessária",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Spacer(Modifier.height(8.dp))
+                                        Text(
+                                            text = "Para usar reconhecimento de voz, precisamos da permissão do microfone.",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                        Spacer(Modifier.height(8.dp))
+                                        TextButton(
+                                            onClick = { micPermissionState.launchPermissionRequest() }
+                                        ) {
+                                            Text("Solicitar Permissão")
+                                        }
+                                    }
+                                }
+                            }
+
                             // Mensagem de escuta com ícone de microfone
                             if (isListeningVoice) {
                                 Text(

@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -197,7 +198,7 @@ fun TaskFormScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "Steps *",
+                            text = "Pequenos Passos", // Refinamento Fase 6: removido asterisco
                             style = MaterialTheme.typography.titleMedium
                         )
                         Button(
@@ -208,7 +209,7 @@ fun TaskFormScreen(
                         ) {
                             Icon(Icons.Default.Add, contentDescription = null)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text("Adicionar Step")
+                            Text("Adicionar Passo") // Refinamento Fase 6: Step → Passo
                         }
                     }
                 }
@@ -345,7 +346,7 @@ private fun StepCard(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Step ${index + 1}",
+                        text = "Passo ${index + 1}", // Refinamento Fase 6: Step → Passo
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -360,14 +361,14 @@ private fun StepCard(
                 ) {
                     IconButton(onClick = onEdit) {
                         Icon(
-                            imageVector = Icons.Default.Add, // Use Edit icon if available
-                            contentDescription = "Editar step"
+                            imageVector = Icons.Default.Edit, // Refinamento Fase 6: Add → Edit (lápis)
+                            contentDescription = "Editar passo"
                         )
                     }
                     IconButton(onClick = onDelete) {
                         Icon(
                             imageVector = Icons.Default.Delete,
-                            contentDescription = "Remover step",
+                            contentDescription = "Remover passo",
                             tint = MaterialTheme.colorScheme.error
                         )
                     }
@@ -417,7 +418,7 @@ private fun StepDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(if (step == null) "Adicionar Step $stepNumber" else "Editar Step $stepNumber") },
+        title = { Text(if (step == null) "Adicionar Passo $stepNumber" else "Editar Passo $stepNumber") }, // Refinamento Fase 6: Step → Passo
         text = {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -478,7 +479,7 @@ private fun StepDialog(
                 TimerInput(
                     durationSeconds = duration,
                     onDurationChange = { duration = it },
-                    label = "Duração do Step",
+                    label = "Duração do Passo", // Refinamento Fase 6: Step → Passo
                     showQuickValues = true,
                     isError = false
                 )

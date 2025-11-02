@@ -395,33 +395,51 @@ Progresso Total: ████████████████░░ 83.3% (5
 
 **Objetivo:** Ajustes finais e lançamento da versão 2.2.0
 
-**Tarefas:**
+**📄 Planejamento Completo:** Ver [MVP14_FASE6_PLANEJAMENTO_DETALHADO.md](MVP14_FASE6_PLANEJAMENTO_DETALHADO.md)
 
-#### 6.1 - Permissões de Microfone
-- [ ] Request runtime permission RECORD_AUDIO
-- [ ] Tela de explicação se usuário negar
-- [ ] Fallback para botões se sem permissão
+**Resumo das Tarefas:**
 
-#### 6.2 - Feedback Sonoro
-- [ ] Som ao reconhecer comando (beep de confirmação)
-- [ ] Som de erro se comando desconhecido
+#### 6.1 - Permissões de Microfone (4-6h)
+- Request runtime permission RECORD_AUDIO
+- StateFlow hasMicrophonePermission
+- Tela de explicação se usuário negar
+- Fallback para botões se sem permissão
+- Testes completos
 
-#### 6.3 - Versão 2.2.0
-- [ ] Atualizar versionName e versionCode
-- [ ] Atualizar SplashScreen com nova versão
-- [ ] Gerar APK release assinado
+#### 6.2 - Feedback Sonoro (3-4h)
+- Buscar/criar sons (success, negative, error)
+- Criar SoundManager.kt
+- Integrar no processVoiceCommand()
+- Beeps de confirmação e erro
 
-#### 6.4 - Documentação Final
-- [ ] Atualizar README.md
-- [ ] Criar guia de usuário
-- [ ] Documentar todas as funcionalidades
+#### 6.3 - Versão 2.2.0 (2-3h)
+- Atualizar versionCode e versionName
+- Atualizar SplashScreen com v2.2.0
+- Gerar APK debug e testar
+- Gerar APK release assinado
 
-#### 6.5 - Release
-- [ ] Tag git v2.2.0
-- [ ] Release notes
-- [ ] APK para distribuição
+#### 6.4 - Documentação Final (2-3h)
+- Atualizar README.md
+- Criar GUIA_USUARIO_V2.2.0.md
+- Atualizar CHANGELOG.md completo
+- Criar RELEASE_NOTES_V2.2.0.md
 
-**Estimativa:** 1 dia
+#### 6.5 - Release (1-2h)
+- Tag git v2.2.0
+- Release notes no GitHub
+- APK para distribuição
+- SHA256 do APK
+
+**Estimativa Total:** 12-18 horas (1.5-2 dias)
+
+**Checklist Completo:** 35+ itens detalhados no planejamento
+
+**Critérios de Sucesso:**
+- ✅ Permissões funcionando
+- ✅ Feedback sonoro validado
+- ✅ APK release assinado
+- ✅ Documentação completa
+- ✅ 12/12 testes ainda passando
 
 ---
 

@@ -88,8 +88,17 @@ fun TaskCompletionScreen(
         // Aguardar um pouco para a tela aparecer
         kotlinx.coroutines.delay(500)
         // Remover emojis da mensagem para TTS (apenas texto)
-        val ttsMessage = randomCongrats.replace(Regex("[^\\p{L}\\p{N}\\s,!?.]"), "").trim()
-        ttsManager.speak(ttsMessage)
+        val ttsMessageCongrats = randomCongrats.replace(Regex("[^\\p{L}\\p{N}\\s,!?.]"), "").trim()
+        val ttsMessageSuccess = randomSuccess.replace(Regex("[^\\p{L}\\p{N}\\s,!?.]"), "").trim()
+
+        // Refinamento Fase 6: Mensagem de estrelas ganhas
+        val starsText = if (stars == 1) "estrela" else "estrelas"
+        val ttsMessageStars = "Você ganhou $stars $starsText!"
+
+        // Refinamento Fase 6: Falar TRÊS mensagens (parabéns + sucesso + estrelas)
+        ttsManager.speak(ttsMessageCongrats) // Primeira: Nome + parabéns
+        ttsManager.speakQueued(ttsMessageSuccess) // Segunda: Mensagem de sucesso
+        ttsManager.speakQueued(ttsMessageStars) // Terceira: Estrelas ganhas
     }
 
     // Limpar TTS ao sair da tela

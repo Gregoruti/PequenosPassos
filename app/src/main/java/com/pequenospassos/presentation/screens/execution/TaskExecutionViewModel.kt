@@ -70,6 +70,10 @@ class TaskExecutionViewModel @Inject constructor(
     private val _voiceRecognitionError = MutableStateFlow<String?>(null)
     val voiceRecognitionError: StateFlow<String?> = _voiceRecognitionError.asStateFlow()
 
+    // MVP-14 Fase 6: Permissão de microfone
+    private val _hasMicrophonePermission = MutableStateFlow(false)
+    val hasMicrophonePermission: StateFlow<Boolean> = _hasMicrophonePermission.asStateFlow()
+
     // MVP-14 Fase 5: Observa configuração de "Perguntar se deseja mais tempo"
     private var askExtraTimeAtStep: Boolean = true
 
@@ -342,10 +346,26 @@ class TaskExecutionViewModel @Inject constructor(
     // ========================================
 
     /**
+     * Atualiza status de permissão de microfone.
+     * MVP-14 Fase 6.
+     */
+    fun updateMicrophonePermission(granted: Boolean) {
+        _hasMicrophonePermission.value = granted
+        println("[TaskExecutionVM] Permissão de microfone: $granted")
+    }
+
+    /**
      * Inicia reconhecimento de voz para capturar comando.
      * MVP-14 Fase 5.
      */
     private fun startVoiceListening() {
+        // MVP-14 Fase 6: Verificar permissão de microfone
+        if (!_hasMicrophonePermission.value) {
+            println("[TaskExecutionVM] ❌ Permissão de microfone negada")
+            _voiceRecognitionError.value = "Permissão de microfone necessária"
+            return
+        }
+
         _isListeningVoice.value = true
         _voiceRecognitionError.value = null
 

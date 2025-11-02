@@ -81,7 +81,7 @@ fun SplashScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Versão 2.1.0",
+                text = "Versão 2.2.0", // MVP-14 Completo: ASR em Pop-ups
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.Gray,

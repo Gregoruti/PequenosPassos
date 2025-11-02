@@ -230,11 +230,88 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
-#### 🚀 Próxima Fase
+#### ✅ FASE 6: Polimentos e Versão 2.2.0 (COMPLETA E VALIDADA)
 
-- **Fase 6:** Polimentos e Versão Final (permissões, feedback sonoro, v2.2.0, release)
+**Versão:** 2.2.0  
+**versionCode:** 220  
 
-**Progresso:** 5/6 fases completas (83.3%)
+**Adicionado:**
+- ✨ **Versão 2.2.0** oficialmente lançada
+  - versionCode: 220 (incrementado de 210)
+  - versionName: "2.2.0"
+  - SplashScreen atualizada com v2.2.0
+- ✨ **Permissões de microfone** com request runtime
+  - StateFlow hasMicrophonePermission no ViewModel
+  - Request permission com Accompanist Permissions
+  - Card de explicação se permissão negada
+  - Fallback para botões manuais (sempre ativos)
+- ✨ **6 Refinamentos de UX/UI:**
+  1. Subtítulo "Configurações" em Histórico & Ferramentas
+  2. TTS triplo ao concluir tarefa (parabéns + sucesso + estrelas)
+  3. Nomenclaturas: "Steps" → "Pequenos Passos"
+  4. Títulos de dialogs: "Editar Step" → "Editar Passo"
+  5. Removido asterisco de "Pequenos Passos *"
+  6. "Tempo selecionado" → "Tempo" (mais limpo)
+
+**Melhorado:**
+- 🎤 **TTS ao concluir tarefa** agora fala 3 mensagens:
+  - Nome + parabéns ("Maria, incrível!")
+  - Mensagem de sucesso ("Você fez um ótimo trabalho!")
+  - **Estrelas ganhas** ("Você ganhou 3 estrelas!")
+  - Tratamento de singular/plural correto
+- 🎨 **Nomenclaturas padronizadas** em todo o app:
+  - "Steps" → "Passos"
+  - "Adicionar Step" → "Adicionar Passo"
+  - "Step 1" → "Passo 1"
+  - "Duração do Step" → "Duração do Passo"
+  - Ícone "+" → Ícone "✏️" (Edit/Lápis) para editar passos
+- 🔒 **Permissões de microfone** tratadas adequadamente:
+  - Request apenas quando necessário
+  - Explicação clara para o usuário
+  - Botões sempre funcionais (fallback)
+
+**Arquivos modificados:**
+- `app/build.gradle.kts` (versão 2.2.0)
+- `presentation/screens/SplashScreen.kt` (v2.2.0)
+- `presentation/screens/execution/TaskExecutionViewModel.kt` (permissões)
+- `presentation/screens/execution/TaskExecutionScreen.kt` (request permission + card)
+- `presentation/screens/history/HistoryScreen.kt` (subtítulo Configurações)
+- `presentation/screens/completion/TaskCompletionScreen.kt` (TTS triplo)
+- `presentation/screens/taskform/TaskFormScreen.kt` (nomenclaturas)
+- `presentation/components/TimerInput.kt` ("Tempo:")
+
+**Validação:**
+- ✅ 10/10 testes passando em dispositivo real (Samsung Galaxy S10e - Android 12)
+- ✅ Permissões funcionando corretamente
+- ✅ TTS 3 mensagens funcionando
+- ✅ Nomenclaturas consistentes
+- ✅ UX polida e refinada
+
+**Build:** SUCCESS  
+**Progresso:** 6/6 fases completas (100%)  
+**Status:** MVP-14 100% completo e funcional
+
+---
+
+## 🎉 MVP-14 COMPLETO - 100%
+
+**Total de Fases:** 6/6 (100%)  
+**Versão Final:** 2.2.0  
+**Status:** ✅ Funcional e validado em dispositivo real
+
+**Funcionalidades Entregues:**
+- ✅ Reconhecimento de voz em pop-ups (ASR)
+- ✅ 62 comandos de voz em português brasileiro
+- ✅ Timeout de 30 segundos
+- ✅ Botões sempre ativos (falar OU clicar)
+- ✅ Feedback visual (🎤 escutando)
+- ✅ Feedback auditivo (TTS triplo)
+- ✅ Permissões de microfone tratadas
+- ✅ UX polida e consistente
+
+**Próximo MVP:** MVP-15 (Exportar/Importar atividades, Filtros)
+
+---
 
 ---
 

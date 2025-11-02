@@ -19,8 +19,8 @@ android {
         applicationId = "com.example.pequenospassos"
         minSdk = 24
         targetSdk = 36
-        versionCode = 210
-        versionName = "2.1.0"
+        versionCode = 220 // MVP-14 Fase 6: v2.2.0
+        versionName = "2.2.0" // MVP-14 Completo: ASR em Pop-ups
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
