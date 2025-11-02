@@ -42,6 +42,10 @@ fun TaskExecutionScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    // MVP-14 Fase 5: Estados de reconhecimento de voz
+    val isListeningVoice by viewModel.isListeningVoice.collectAsStateWithLifecycle()
+    val voiceRecognitionError by viewModel.voiceRecognitionError.collectAsStateWithLifecycle()
+
     // Carregar tarefa ao iniciar
     LaunchedEffect(taskId) {
         viewModel.loadTask(taskId)
@@ -247,19 +251,60 @@ fun TaskExecutionScreen(
                 }
             }
 
-            // Dialog de tempo extra
+            // MVP-14 Fase 5: Dialog de tempo extra com suporte a ASR
             if (state.showTimeUpDialog) {
                 AlertDialog(
-                    onDismissRequest = { viewModel.dismissTimeUpDialog() },
-                    title = { Text("😊 ${state.timeUpMessage}") },
+                    onDismissRequest = { /* Não permite fechar sem resposta */ },
+                    title = {
+                        // MVP-14 Fase 5: Removido ícone de microfone que aparecia recortado
+                        Text("😊 ${state.timeUpMessage}")
+                    },
+                    text = {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            // Mensagem de escuta com ícone de microfone
+                            if (isListeningVoice) {
+                                Text(
+                                    text = "🎤 Estou te escutando...",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+
+                            // Mensagem de erro de reconhecimento
+                            voiceRecognitionError?.let { error ->
+                                Text(
+                                    text = "❌ $error",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            }
+
+                            // Texto explicativo se não está escutando e não há erro
+                            if (!isListeningVoice && voiceRecognitionError == null) {
+                                Text(
+                                    text = "Use os botões abaixo para responder:",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    },
                     confirmButton = {
-                        Button(onClick = { viewModel.nextStep() }) {
-                            Text("Próximo")
+                        // Botão "Próximo" - SEMPRE VISÍVEL E ATIVO
+                        Button(
+                            onClick = { viewModel.onManualButtonClick("NEXT") }
+                        ) {
+                            Text("➡️ Próximo")
                         }
                     },
                     dismissButton = {
-                        TextButton(onClick = { viewModel.addExtraTime(30) }) {
-                            Text("+30s")
+                        // Botão "Mais 30s" - SEMPRE VISÍVEL E ATIVO
+                        OutlinedButton(
+                            onClick = { viewModel.onManualButtonClick("MORE_TIME") }
+                        ) {
+                            Text("⏱️ +30s")
                         }
                     }
                 )

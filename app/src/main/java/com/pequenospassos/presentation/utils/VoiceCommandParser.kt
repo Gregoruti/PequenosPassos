@@ -41,22 +41,39 @@ class VoiceCommandParser {
 
     companion object {
         /**
+         * Lista de palavras que fazem parte da PERGUNTA e devem ser IGNORADAS.
+         * MVP-14 Fase 5: Evita que criança apenas repita a pergunta SEM intenção.
+         *
+         * NOTA: Removidas palavras que podem ser respostas afirmativas:
+         * - "podemos", "vamos", "quero", "continuar", "avançar", "próximo" → POSITIVE_COMMANDS
+         */
+        private val QUESTION_WORDS = setOf(
+            "deseja", // parte da pergunta sem intenção clara
+            "quer", // parte da pergunta sem intenção clara
+            "seguir", // pode ser ambíguo
+            "passo" // apenas palavra da pergunta
+        )
+
+        /**
          * Lista de comandos POSITIVOS (avançar).
          * Respostas infantis que indicam "sim, pode avançar".
          *
-         * Total: 25 variações
+         * Total: 32 variações (atualizado MVP-14 Fase 5)
          */
         private val POSITIVE_COMMANDS = setOf(
-            // Respostas afirmativas diretas (7)
+            // Respostas afirmativas diretas (10) - EXPANDIDO
             "sim",
             "pode",
-            "vamos",
+            "podemos", // CORRIGIDO: resposta afirmativa à pergunta
+            "vamos", // CORRIGIDO: resposta afirmativa à pergunta
             "vai",
-            "continua",
-            "próximo",
-            "avança",
+            "continua", // variação de "continuar"
+            "continuar", // ADICIONADO: resposta afirmativa à pergunta
+            "próximo", // CORRIGIDO: resposta afirmativa à pergunta
+            "avança", // variação de "avançar"
+            "avançar", // ADICIONADO: resposta afirmativa à pergunta
 
-            // Variações infantis (7)
+            // Variações infantis (12)
             "tá",
             "ok",
             "beleza",
@@ -64,8 +81,13 @@ class VoiceCommandParser {
             "é",
             "uhum",
             "aham",
+            "bora", // "vamos bora"
+            "vou", // "vou [continuar]"
+            "dale", // gíria infantil
+            "quero", // CORRIGIDO: "quero" = quero continuar (POSITIVO)
+            "claro", // "claro que sim"
 
-            // Frases completas comuns (8)
+            // Frases completas comuns (10) - EXPANDIDO
             "pode ir",
             "vamos lá",
             "tá bom",
@@ -75,33 +97,33 @@ class VoiceCommandParser {
             "terminei",
             "pronto",
             "feito",
-
-            // Com artigos/preposições (3)
-            "pode sim",
-            "vamos sim",
-            "tá certo"
+            "tô pronto"
         )
 
         /**
          * Lista de comandos NEGATIVOS (mais tempo).
          * Respostas infantis que indicam "não, quero mais tempo".
          *
-         * Total: 25 variações
+         * Total: 30 variações (atualizado MVP-14 Fase 5)
          */
         private val NEGATIVE_COMMANDS = setOf(
-            // Respostas negativas diretas (5)
+            // Respostas negativas diretas (7) - EXPANDIDO
             "não",
             "espera",
             "calma",
             "para",
             "aguarda",
+            "não quero", // ADICIONADO: "não quero [continuar]"
+            "nem", // "nem quero"
 
-            // Pedidos de mais tempo (5)
+            // Pedidos de mais tempo (7)
             "mais tempo",
             "mais",
             "tempo",
             "demora",
             "devagar",
+            "preciso", // "preciso [de mais tempo]"
+            "espere", // variação de "espera"
 
             // Variações infantis (6)
             "nãããão",
@@ -111,7 +133,7 @@ class VoiceCommandParser {
             "perai",
             "pera",
 
-            // Frases completas comuns (9)
+            // Frases completas comuns (10) - EXPANDIDO
             "mais um pouco",
             "só mais um pouco",
             "quero mais tempo",
@@ -120,7 +142,8 @@ class VoiceCommandParser {
             "não terminei",
             "deixa eu terminar",
             "quase lá",
-            "quase"
+            "quase",
+            "um pouco mais" // variação
         )
     }
 
@@ -129,9 +152,10 @@ class VoiceCommandParser {
      *
      * Processo:
      * 1. Normaliza o texto (lowercase, trim)
-     * 2. Verifica comandos positivos
-     * 3. Verifica comandos negativos
-     * 4. Retorna UNKNOWN se não encontrou
+     * 2. Verifica se é apenas palavra da pergunta (IGNORA)
+     * 3. Verifica comandos positivos
+     * 4. Verifica comandos negativos
+     * 5. Retorna UNKNOWN se não encontrou
      *
      * @param recognizedText Texto reconhecido pelo ASR (Vosk)
      * @return CommandResult indicando a intenção (POSITIVE, NEGATIVE ou UNKNOWN)
@@ -142,6 +166,12 @@ class VoiceCommandParser {
 
         println("[VoiceCommandParser] Texto original: '$recognizedText'")
         println("[VoiceCommandParser] Texto normalizado: '$normalized'")
+
+        // MVP-14 Fase 5: Ignora se for apenas palavra da pergunta
+        if (QUESTION_WORDS.contains(normalized)) {
+            println("[VoiceCommandParser] ⚠️ Palavra da PERGUNTA ignorada: '$normalized'")
+            return CommandResult.UNKNOWN
+        }
 
         // Verifica comandos positivos
         if (containsAnyCommand(normalized, POSITIVE_COMMANDS)) {
@@ -168,21 +198,29 @@ class VoiceCommandParser {
      * 3. Palavra no início ("command ")
      * 4. Palavra no final (" command")
      *
+     * MVP-14 Fase 5: Validação de palavra completa para evitar matches parciais.
+     * Exemplo: "pode" NÃO deve match com "podemos"
+     *
      * @param text Texto normalizado
      * @param commands Lista de comandos válidos
      * @return true se encontrou algum comando, false caso contrário
      */
     private fun containsAnyCommand(text: String, commands: Set<String>): Boolean {
+        // Split em palavras para matching exato
+        val words = text.split(" ").filter { it.isNotBlank() }
+
         return commands.any { command ->
-            // Verifica se o texto contém o comando como:
-            // 1. Texto exato
-            text == command ||
-            // 2. Palavra isolada no meio (com espaços antes e depois)
-            text.contains(" $command ") ||
-            // 3. Palavra no início (com espaço depois)
-            text.startsWith("$command ") ||
-            // 4. Palavra no final (com espaço antes)
-            text.endsWith(" $command")
+            // Para comandos de múltiplas palavras (ex: "pode ir", "mais tempo")
+            if (command.contains(" ")) {
+                // Verifica se a frase completa existe no texto
+                text == command ||
+                text.contains(" $command ") ||
+                text.startsWith("$command ") ||
+                text.endsWith(" $command")
+            } else {
+                // Para comandos de palavra única, verifica match exato na lista de palavras
+                words.contains(command)
+            }
         }
     }
 

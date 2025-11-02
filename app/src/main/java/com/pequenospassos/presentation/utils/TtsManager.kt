@@ -34,6 +34,9 @@ class TtsManager @Inject constructor(
     private val _isSpeaking = MutableStateFlow(false)
     val isSpeaking: StateFlow<Boolean> = _isSpeaking.asStateFlow()
 
+    // MVP-14 Fase 5: Mapa de callbacks para cada utterance
+    private val utteranceCallbacks = mutableMapOf<String, () -> Unit>()
+
     init {
         initializeTts()
     }
@@ -65,11 +68,19 @@ class TtsManager @Inject constructor(
 
                             override fun onDone(utteranceId: String?) {
                                 _isSpeaking.value = false
+                                // MVP-14 Fase 5: Executar callback se existir
+                                utteranceId?.let { id ->
+                                    utteranceCallbacks.remove(id)?.invoke()
+                                }
                             }
 
                             override fun onError(utteranceId: String?) {
                                 _isSpeaking.value = false
                                 println("TtsManager: Erro ao falar utterance $utteranceId")
+                                // MVP-14 Fase 5: Remover callback em caso de erro
+                                utteranceId?.let { id ->
+                                    utteranceCallbacks.remove(id)
+                                }
                             }
                         })
 
@@ -98,6 +109,27 @@ class TtsManager @Inject constructor(
 
         tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
         println("TtsManager: Falando - '$text'")
+    }
+
+    /**
+     * Fala um texto e executa callback quando terminar.
+     * MVP-14 Fase 5.
+     *
+     * @param text Texto a ser falado
+     * @param onComplete Callback executado quando TTS terminar
+     */
+    fun speakWithCallback(text: String, onComplete: () -> Unit) {
+        if (!_isReady.value || text.isBlank()) {
+            println("TtsManager: TTS não pronto ou texto vazio")
+            onComplete() // Executa callback mesmo se não falar
+            return
+        }
+
+        val utteranceId = "tts_callback_${System.currentTimeMillis()}"
+        utteranceCallbacks[utteranceId] = onComplete
+
+        tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
+        println("TtsManager: Falando com callback - '$text'")
     }
 
     /**

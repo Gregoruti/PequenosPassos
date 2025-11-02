@@ -163,12 +163,78 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR
 
 ---
 
-#### 🚀 Próximas Fases
+#### ✅ FASE 5: Integração Completa no Pop-up (COMPLETA E VALIDADA)
 
-- **Fase 5:** Integração no pop-up de tempo extra (TaskExecutionViewModel + Screen)
-- **Fase 6:** Polimentos e versão final (permissões, feedback sonoro, v2.2.0)
+**Adicionado:**
+- ✨ **Integração completa ASR + VoiceCommandParser no pop-up de tempo extra**
+  - TaskExecutionViewModel integra AsrManager e VoiceCommandParser
+  - Context injetado via @ApplicationContext
+  - StateFlows para isListeningVoice e voiceRecognitionError
+  - Observação de configurações (askExtraTimeAtStep, enableVoiceResponse)
+- ✨ **TTS fala ANTES de ASR iniciar**
+  - Método speakWithCallback() no TtsManager
+  - Callback executado quando TTS termina (UtteranceProgressListener)
+  - Evita que ASR "ouça" o próprio TTS
+- ✨ **UI com feedback visual completo**
+  - Mensagem "🎤 Estou te escutando..." quando ASR ativo
+  - Mensagem de erro se comando não reconhecido
+  - Botões SEMPRE visíveis e ativos (não desabilitam durante escuta)
+  - Título limpo (removido ícone de microfone que aparecia recortado)
+- ✨ **Timeout de 30 segundos** (aumentado de 3s)
+  - Tempo confortável para criança pensar e responder
+  - Botões continuam ativos após timeout
+- ✨ **62 comandos de voz** refinados
+  - 32 comandos positivos (avançar)
+  - 30 comandos negativos (mais tempo)
+  - Matching de palavra completa (evita matches parciais)
+  - Lista de palavras da pergunta (4 palavras ignoradas)
 
-**Progresso:** 4/6 fases completas (66.7%)
+**Métodos Implementados:**
+- `startVoiceListening()` - Inicia ASR com timeout de 30s
+- `processVoiceCommand()` - Analisa comando e executa ação
+- `onManualButtonClick()` - Cancela ASR se usuário clicar em botão
+- `speakWithCallback()` - TTS com callback ao terminar
+
+**Fluxo Completo:**
+1. Timer termina → Pop-up aparece
+2. TTS fala mensagem → Callback ao terminar
+3. ASR inicia (se enableVoiceResponse = true)
+4. Escuta por 30 segundos
+5. Texto reconhecido → VoiceCommandParser analisa
+6. POSITIVE → Avança | NEGATIVE → +30s | UNKNOWN → Erro + Botões
+7. Botões sempre ativos para escolha manual
+
+**Correções e Melhorias:**
+- 🐛 Corrigido: "quero" agora é POSITIVE (era NEGATIVE incorretamente)
+- 🐛 Corrigido: Palavras afirmativas ("podemos", "vamos", "continuar", "avançar", "próximo") agora são POSITIVE
+- 🐛 Corrigido: Matching de palavra completa (evita "pode" dar match com "podemos")
+- ✨ Melhorado: ASR só inicia após TTS terminar
+- ✨ Melhorado: Timeout aumentado de 3s para 30s
+- ✨ Melhorado: Ícone de microfone removido do título (aparecia recortado)
+
+**Arquivos modificados:**
+- `presentation/screens/execution/TaskExecutionViewModel.kt` (~100 linhas)
+- `presentation/screens/execution/TaskExecutionScreen.kt` (~50 linhas)
+- `presentation/utils/TtsManager.kt` (~30 linhas callback)
+- `presentation/utils/VoiceCommandParser.kt` (~80 linhas refinamento)
+
+**Validação:**
+- ✅ 12/12 testes passando em dispositivo real (Samsung Galaxy S10e - Android 12)
+- ✅ TTS e ASR sincronizados perfeitamente
+- ✅ Botões sempre ativos funcionando
+- ✅ Comandos de voz reconhecendo corretamente
+
+**Build:** SUCCESS  
+**Progresso:** 5/6 fases completas (83.3%)  
+**Status:** 100% funcional e validado em dispositivo real
+
+---
+
+#### 🚀 Próxima Fase
+
+- **Fase 6:** Polimentos e Versão Final (permissões, feedback sonoro, v2.2.0, release)
+
+**Progresso:** 5/6 fases completas (83.3%)
 
 ---
 

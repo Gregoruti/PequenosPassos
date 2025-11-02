@@ -1,5 +1,6 @@
 package com.pequenospassos.presentation.screens.execution
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.pequenospassos.domain.model.Step
@@ -10,13 +11,19 @@ import com.pequenospassos.domain.usecase.GetTaskByIdUseCase
 import com.pequenospassos.domain.usecase.GetStepsByTaskUseCase
 import com.pequenospassos.domain.usecase.GetChildProfileUseCase
 import com.pequenospassos.presentation.utils.TtsManager
+import com.pequenospassos.presentation.utils.AsrManager
+import com.pequenospassos.presentation.utils.VoiceCommandParser
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,12 +42,13 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class TaskExecutionViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getTaskByIdUseCase: GetTaskByIdUseCase,
     private val getStepsByTaskUseCase: GetStepsByTaskUseCase,
     private val getChildProfileUseCase: GetChildProfileUseCase,
     private val taskRepository: TaskRepository,
     private val ttsManager: TtsManager,
-    private val appSettingsRepository: AppSettingsRepository // INJETADO
+    private val appSettingsRepository: AppSettingsRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(TaskExecutionState())
@@ -49,6 +57,38 @@ class TaskExecutionViewModel @Inject constructor(
     private var timerJob: Job? = null
     private var currentTask: Task? = null
     private var steps: List<Step> = emptyList()
+    
+    // MVP-14 Fase 5: ASR e Voice Command
+    private lateinit var asrManager: AsrManager
+    private val voiceCommandParser = VoiceCommandParser()
+    
+    // MVP-14 Fase 5: Estado de escuta de voz
+    private val _isListeningVoice = MutableStateFlow(false)
+    val isListeningVoice: StateFlow<Boolean> = _isListeningVoice.asStateFlow()
+    
+    // MVP-14 Fase 5: Mensagem de erro de reconhecimento de voz
+    private val _voiceRecognitionError = MutableStateFlow<String?>(null)
+    val voiceRecognitionError: StateFlow<String?> = _voiceRecognitionError.asStateFlow()
+
+    // MVP-14 Fase 5: Observa configuração de "Perguntar se deseja mais tempo"
+    private var askExtraTimeAtStep: Boolean = true
+
+    // MVP-14 Fase 5: Observa configuração de "Resposta em Áudio"
+    private var enableVoiceResponse: Boolean = false
+
+    init {
+        // MVP-14 Fase 5: Observar configurações
+        viewModelScope.launch {
+            appSettingsRepository.getSettings().collect { settings ->
+                askExtraTimeAtStep = settings?.askExtraTimeAtStep ?: true
+            }
+        }
+        viewModelScope.launch {
+            appSettingsRepository.getEnableVoiceResponse().collect { enabled ->
+                enableVoiceResponse = enabled
+            }
+        }
+    }
 
     /**
      * Lista de mensagens alternativas para quando o tempo se esgota.
@@ -74,6 +114,19 @@ class TaskExecutionViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _state.value = _state.value.copy(isLoading = true, errorMessage = null)
+                
+                // MVP-14 Fase 5: Inicializar ASR na primeira carga
+                if (!::asrManager.isInitialized) {
+                    asrManager = AsrManager(context)
+                    asrManager.initialize(
+                        onSuccess = {
+                            println("[TaskExecutionVM] AsrManager inicializado com sucesso")
+                        },
+                        onError = { error ->
+                            println("[TaskExecutionVM] Erro ao inicializar ASR: $error")
+                        }
+                    )
+                }
 
                 // Coletar o perfil da criança
                 val childProfile = getChildProfileUseCase().firstOrNull()
@@ -156,15 +209,27 @@ class TaskExecutionViewModel @Inject constructor(
             }
             // Timer chegou a zero
             if (_state.value.remainingSeconds == 0) {
-                // Consultar configuração askExtraTimeAtStep
-                val askExtra = appSettingsRepository.getSettings().firstOrNull()?.askExtraTimeAtStep ?: true
+                // MVP-14 Fase 5: Consultar configuração askExtraTimeAtStep
+                val askExtra = askExtraTimeAtStep
+
                 if (askExtra) {
                     val message = getRandomTimeUpMessage(_state.value.childName)
                     _state.value = _state.value.copy(
                         showTimeUpDialog = true,
                         timeUpMessage = message
                     )
-                    ttsManager.speak(message)
+
+                    // MVP-14 Fase 5: Falar mensagem e depois iniciar ASR
+                    if (enableVoiceResponse) {
+                        // Usar callback para iniciar ASR APÓS TTS terminar
+                        ttsManager.speakWithCallback(message) {
+                            println("[TaskExecutionVM] TTS terminou, iniciando ASR...")
+                            startVoiceListening()
+                        }
+                    } else {
+                        // Sem ASR, apenas falar
+                        ttsManager.speak(message)
+                    }
                 } else {
                     // Avançar automaticamente para o próximo passo
                     nextStep()
@@ -272,10 +337,111 @@ class TaskExecutionViewModel @Inject constructor(
         }
     }
 
+    // ========================================
+    // MVP-14 FASE 5: RECONHECIMENTO DE VOZ
+    // ========================================
+
+    /**
+     * Inicia reconhecimento de voz para capturar comando.
+     * MVP-14 Fase 5.
+     */
+    private fun startVoiceListening() {
+        _isListeningVoice.value = true
+        _voiceRecognitionError.value = null
+
+        println("[TaskExecutionVM] 🎤 Iniciando reconhecimento de voz (30 segundos)")
+
+        asrManager.startListeningWithTimeout(
+            timeoutSeconds = 30, // MVP-14: Aumentado de 3 para 30 segundos
+            listener = object : AsrManager.VoiceRecognitionListener {
+                override fun onResult(text: String) {
+                    println("[TaskExecutionVM] ✅ Texto reconhecido: '$text'")
+                    processVoiceCommand(text)
+                }
+
+                override fun onPartialResult(text: String) {
+                    println("[TaskExecutionVM] 📝 Parcial: '$text'")
+                    // Opcional: Atualizar UI com texto parcial
+                }
+
+                override fun onError(error: String) {
+                    println("[TaskExecutionVM] ❌ Erro ASR: $error")
+                    _voiceRecognitionError.value = "Erro no reconhecimento: $error"
+                    _isListeningVoice.value = false
+                    // Pop-up continua aberto, botões manuais disponíveis
+                }
+
+                override fun onTimeout() {
+                    println("[TaskExecutionVM] ⏱️ Timeout - sem fala detectada")
+                    _isListeningVoice.value = false
+                    // Pop-up continua aberto, botões manuais disponíveis
+                }
+            }
+        )
+    }
+
+    /**
+     * Processa comando de voz reconhecido.
+     * MVP-14 Fase 5.
+     */
+    private fun processVoiceCommand(recognizedText: String) {
+        val result = voiceCommandParser.parse(recognizedText)
+
+        _isListeningVoice.value = false
+
+        when (result) {
+            VoiceCommandParser.CommandResult.POSITIVE -> {
+                println("[TaskExecutionVM] ✅ Comando POSITIVO - Avançar")
+                // Fecha pop-up e avança para próximo step
+                _state.value = _state.value.copy(showTimeUpDialog = false)
+                nextStep()
+            }
+            VoiceCommandParser.CommandResult.NEGATIVE -> {
+                println("[TaskExecutionVM] ⏱️ Comando NEGATIVO - Mais 30 segundos")
+                // Fecha pop-up e adiciona tempo
+                _state.value = _state.value.copy(showTimeUpDialog = false)
+                addExtraTime(30)
+            }
+            VoiceCommandParser.CommandResult.UNKNOWN -> {
+                println("[TaskExecutionVM] ❓ Comando DESCONHECIDO: '$recognizedText'")
+                _voiceRecognitionError.value = "Não entendi '$recognizedText'. Use os botões abaixo."
+                // Pop-up continua aberto, botões manuais disponíveis
+            }
+        }
+    }
+
+    /**
+     * Chamado quando usuário clica em botão manual.
+     * Cancela escuta de voz se estiver ativa.
+     * MVP-14 Fase 5.
+     */
+    fun onManualButtonClick(action: String) {
+        // Se está escutando, para o ASR
+        if (_isListeningVoice.value) {
+            println("[TaskExecutionVM] 🛑 Usuário clicou em botão - cancelando ASR")
+            asrManager.stopListening()
+            _isListeningVoice.value = false
+        }
+
+        // Executa ação
+        when (action) {
+            "NEXT" -> {
+                _state.value = _state.value.copy(showTimeUpDialog = false)
+                nextStep()
+            }
+            "MORE_TIME" -> {
+                _state.value = _state.value.copy(showTimeUpDialog = false)
+                addExtraTime(30)
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         timerJob?.cancel()
         ttsManager.stop() // Para qualquer fala em andamento
+        // MVP-14 Fase 5: Liberar recursos do ASR
+        asrManager.release()
     }
 }
 
