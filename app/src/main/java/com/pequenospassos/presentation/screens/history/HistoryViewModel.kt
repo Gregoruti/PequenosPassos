@@ -301,12 +301,13 @@ class HistoryViewModel @Inject constructor(
     /**
      * Estado do checkbox "Resposta em Áudio".
      * Controla se o ASR deve ser ativado no pop-up de tempo extra.
+     * Padrão: true (ativado por padrão)
      */
     val enableVoiceResponse: StateFlow<Boolean> = appSettingsRepository.getEnableVoiceResponse()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
+            initialValue = true // Ativado por padrão
         )
 
     /**

@@ -94,9 +94,35 @@ interface TaskDao {
     suspend fun getTaskCount(): Int
 
     /**
+     * Alias para getTaskCount() - usado para verificar se banco precisa ser populado.
+     *
+     * @return Quantidade de tarefas
+     * @since MVP-15 (03/11/2025) - Tarefas Pré-Instaladas
+     */
+    suspend fun getTasksCount(): Int = getTaskCount()
+
+    /**
      * Deleta todas as tarefas (útil para reset/testes).
      */
     @Query("DELETE FROM tasks")
     suspend fun deleteAll()
+
+    /**
+     * Busca todas as tarefas de forma síncrona (para export).
+     * Usado apenas em operações de I/O em background.
+     *
+     * @return Lista de todas as tarefas
+     * @since v2.5.0 - Export/Import
+     */
+    @Query("SELECT * FROM tasks ORDER BY time ASC")
+    suspend fun getAllTasksSync(): List<Task>
+
+    /**
+     * Deleta todas as tarefas (para modo REPLACE_ALL de import).
+     *
+     * @since v2.5.0 - Export/Import
+     */
+    @Query("DELETE FROM tasks")
+    suspend fun deleteAllTasks()
 }
 

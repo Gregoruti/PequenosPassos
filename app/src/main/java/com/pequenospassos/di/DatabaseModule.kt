@@ -2,7 +2,10 @@ package com.pequenospassos.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.pequenospassos.data.database.AppDatabase
+import com.pequenospassos.data.database.DefaultTasksPopulator
 import com.pequenospassos.data.database.dao.AchievementDao
 import com.pequenospassos.data.database.dao.AppSettingsDao
 import com.pequenospassos.data.database.dao.ChildProfileDao
@@ -62,6 +65,27 @@ object DatabaseModule {
                 AppDatabase.MIGRATION_5_6, // MVP-09: Migration 5→6
                 AppDatabase.MIGRATION_6_7  // MVP-09: Migration 6→7
             )
+            .addCallback(object : RoomDatabase.Callback() {
+                override fun onCreate(db: SupportSQLiteDatabase) {
+                    super.onCreate(db)
+                    println("✅ AppDatabase.onCreate: Banco criado pela primeira vez!")
+                    println("✅ Iniciando população de 11 tarefas padrão + 143 passos...")
+
+                    // Popular banco com tarefas padrão
+                    // Precisa criar instância temporária do banco para obter DAOs
+                    val database = Room.databaseBuilder(
+                        context,
+                        AppDatabase::class.java,
+                        AppDatabase.DATABASE_NAME
+                    ).build()
+
+                    val populator = DefaultTasksPopulator(
+                        database.taskDao(),
+                        database.stepDao()
+                    )
+                    populator.populate()
+                }
+            })
             // Para debugging local e quando aceitar perda de dados, descomente:
             // .fallbackToDestructiveMigration()
             .build()

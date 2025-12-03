@@ -26,7 +26,7 @@ import kotlinx.coroutines.delay
  *
  * Permite registrar informações básicas da criança:
  * - Nome (obrigatório)
- * - Sexo (obrigatório) - Masculino/Feminino
+ * - Sexo (obrigatório) - Masculino/Feminino (padrão: Masculino)
  * - Data de nascimento (opcional)
  * - Observações (opcional)
  *
@@ -37,11 +37,16 @@ import kotlinx.coroutines.delay
  * - ✅ Campos tornados opcionais (exceto nome e sexo)
  * - ✅ Integração com ViewModel e Repository
  *
+ * ATUALIZAÇÕES v2.5.0:
+ * - ✅ Perfil padrão definido como Masculino (Gender.MALE)
+ * - Artigos, roupas e brinquedos nas atividades seguem padrão masculino
+ *
  * @param navController Controlador de navegação
  * @param viewModel ViewModel injetado via Hilt
  *
  * @since MVP-07 (18/10/2025)
  * @updated MVP-08 (23/10/2025) - Correções de salvamento
+ * @updated v2.5.0 (02/12/2025) - Perfil padrão Masculino
  * @author PequenosPassos Development Team
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,7 +59,7 @@ fun ChildRegistrationScreen(
     val existingProfile by viewModel.existingProfile.collectAsStateWithLifecycle()
 
     var childName by remember { mutableStateOf("") }
-    var selectedGender by remember { mutableStateOf<Gender?>(null) }
+    var selectedGender by remember { mutableStateOf<Gender?>(Gender.MALE) } // v2.5.0: Padrão Masculino
     var birthDate by remember { mutableStateOf("") }
     var observations by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }

@@ -125,10 +125,11 @@ class AppSettingsRepositoryImpl @Inject constructor(
     /**
      * Retorna Flow observável da preferência enableVoiceResponse.
      * MVP-14 Fase 1.
+     * Valor padrão: true (ativado por padrão)
      */
     override fun getEnableVoiceResponse(): Flow<Boolean> {
         return dao.getEnableVoiceResponseFlow()
-            .map { it ?: false } // Retorna false se null (sem registro ainda)
+            .map { it ?: true } // Retorna true se null (ativado por padrão)
     }
 
     override suspend fun getDefaultSettings(): AppSettings {

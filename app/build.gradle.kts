@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     kotlin("kapt")
     id("dagger.hilt.android.plugin")
+    kotlin("plugin.serialization") version "1.9.20"
 }
 
 android {
@@ -19,8 +20,8 @@ android {
         applicationId = "com.example.pequenospassos"
         minSdk = 24
         targetSdk = 36
-        versionCode = 220 // MVP-14 Fase 6: v2.2.0
-        versionName = "2.2.0" // MVP-14 Completo: ASR em Pop-ups
+        versionCode = 250 // v2.5.0 Fase 1: Export/Import Estrutura
+        versionName = "2.5.0" // Fase 1: Estrutura Export/Import + Perfil Padrão Masculino
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -80,6 +81,9 @@ dependencies {
 
     // Desugaring for java.time support on API < 26 - MVP-09
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
+    // Kotlinx Serialization for Export/Import - v2.5.0
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
     // ViewModel Compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)

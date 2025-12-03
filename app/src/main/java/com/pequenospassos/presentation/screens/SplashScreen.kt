@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.pequenospassos.BuildConfig
 import com.pequenospassos.R
 import kotlinx.coroutines.delay
 
@@ -81,10 +80,40 @@ fun SplashScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Versão 2.2.0", // MVP-14 Completo: ASR em Pop-ups
+                text = "Versão 2.5.0", // Fase 1: Export/Import Estrutura + Perfil Padrão Masculino
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.Gray,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Feedbacks:",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "2100394@aluno.univesp.br",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color.DarkGray,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(2.dp))
+
+            Text(
+                text = "gregoruti@gmail.com",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color.DarkGray,
                 textAlign = TextAlign.Center
             )
         }

@@ -10,7 +10,7 @@
 O **Pequenos Passos** é um aplicativo Android desenvolvido para auxiliar crianças com necessidades especiais (TEA, TDAH, dificuldades de aprendizagem) a executarem tarefas do dia a dia de forma estruturada, visual e interativa.
 
 ### 1.2 Público-Alvo
-- Crianças de 4 a 12 anos
+- Crianças da primeira infância até 6 anos
 - Pais e cuidadores
 - Terapeutas e educadores
 

@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -122,6 +123,50 @@ fun TaskManagementScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+                        // v2.5.0: Gestão de Conteúdo (Export/Import)
+                        item {
+                            Text(
+                                text = "Gestão de Conteúdo",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        // Botão Exportar Tarefas
+                        item {
+                            OutlinedButton(
+                                onClick = { /* TODO: viewModel.exportAllTasks() */ },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(Icons.Default.Share, contentDescription = null)
+                                Spacer(Modifier.width(8.dp))
+                                Text("Exportar Todas as Tarefas")
+                            }
+                        }
+
+                        // Botão Importar Tarefas
+                        item {
+                            OutlinedButton(
+                                onClick = { /* TODO: viewModel.showImportDialog() */ },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = null)
+                                Spacer(Modifier.width(8.dp))
+                                Text("Importar Tarefas")
+                            }
+                        }
+
+                        // Espaçador e título da lista
+                        item {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Suas Tarefas",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
                         items(tasks) { taskWithMetadata ->
                             TaskManagementCard(
                                 taskWithMetadata = taskWithMetadata,

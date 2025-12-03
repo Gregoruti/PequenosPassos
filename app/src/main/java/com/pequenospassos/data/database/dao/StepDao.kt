@@ -111,5 +111,25 @@ interface StepDao {
      */
     @Query("DELETE FROM steps")
     suspend fun deleteAll()
+
+    /**
+     * Busca steps de uma tarefa de forma síncrona (para export).
+     * Usado apenas em operações de I/O em background.
+     *
+     * @param taskId ID da tarefa
+     * @return Lista de steps da tarefa
+     * @since v2.5.0 - Export/Import
+     */
+    @Query("SELECT * FROM steps WHERE taskId = :taskId ORDER BY `order` ASC")
+    suspend fun getStepsByTaskSync(taskId: Long): List<Step>
+
+    /**
+     * Insere um step (alias para compatibilidade).
+     *
+     * @param step Step a inserir
+     * @since v2.5.0 - Export/Import
+     */
+    @Insert
+    suspend fun insert(step: Step): Long
 }
 

@@ -1,11 +1,14 @@
 package com.pequenospassos.presentation.screens.execution
 
+import android.content.Context
 import com.pequenospassos.domain.model.Step
 import com.pequenospassos.domain.model.Task
+import com.pequenospassos.domain.model.AppSettings
 import com.pequenospassos.domain.usecase.GetStepsByTaskUseCase
 import com.pequenospassos.domain.usecase.GetTaskByIdUseCase
 import com.pequenospassos.domain.usecase.GetChildProfileUseCase
 import com.pequenospassos.domain.repository.TaskRepository
+import com.pequenospassos.domain.repository.AppSettingsRepository
 import com.pequenospassos.presentation.utils.TtsManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,23 +23,44 @@ import org.mockito.Mockito
 /**
  * Testes unitários para TaskExecutionViewModel.
  *
+ * Arquivo: app/src/test/java/.../TaskExecutionViewModelTest.kt
+ * Tipo: Unit Test
+ * Objetivo: Validar comportamento do ViewModel de execução de tarefas
+ * Correlações: TaskExecutionViewModel.kt, AppSettings.kt, AppSettingsRepository.kt
+ *
+ * Histórico de alterações:
+ * - 2025-11-07 (Claude Sonnet 4.5): v2.4.0 - Correção de testes após adição de AppSettingsRepository
+ *   - Adicionado mock para Context
+ *   - Adicionado mock para AppSettingsRepository
+ *   - Corrigida criação de AppSettings mock com todos os campos obrigatórios
+ *   - Ajustados mocks para usar getSettings() e getEnableVoiceResponse()
+ * - 2025-10-17 (MVP-07): v1.9.3 - Adicionado campo taskStars para tela de conclusão
+ * - 2025-10-17 (MVP-07): v1.9.0 - Correções de execução (imageUrl, durationSeconds)
+ *
+ * Última atualização: 2025-11-07 (v2.4.0)
+ * Status: ✅ Compilando sem erros
+ *
  * Valida:
  * - Carregamento de tarefa e steps com todos os campos (v1.9.0)
  * - Timer com durationSeconds correto (v1.9.0)
  * - Navegação entre steps
  * - Conclusão de tarefa
  * - Campo taskStars para tela de conclusão (v1.9.3)
+ * - Integração com AppSettingsRepository (v2.4.0)
  *
  * @since v1.9.0 - Correções de execução
+ * @updated v2.4.0 - Correção de testes com AppSettingsRepository
  */
 @ExperimentalCoroutinesApi
 class TaskExecutionViewModelTest {
 
+    private lateinit var context: Context
     private lateinit var getTaskByIdUseCase: GetTaskByIdUseCase
     private lateinit var getStepsByTaskUseCase: GetStepsByTaskUseCase
     private lateinit var getChildProfileUseCase: GetChildProfileUseCase
     private lateinit var taskRepository: TaskRepository
     private lateinit var ttsManager: TtsManager
+    private lateinit var appSettingsRepository: AppSettingsRepository
     private lateinit var viewModel: TaskExecutionViewModel
 
     private val testDispatcher = StandardTestDispatcher()
@@ -45,18 +69,36 @@ class TaskExecutionViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
 
+        context = Mockito.mock(Context::class.java)
         getTaskByIdUseCase = Mockito.mock(GetTaskByIdUseCase::class.java)
         getStepsByTaskUseCase = Mockito.mock(GetStepsByTaskUseCase::class.java)
         getChildProfileUseCase = Mockito.mock(GetChildProfileUseCase::class.java)
         taskRepository = Mockito.mock(TaskRepository::class.java)
         ttsManager = Mockito.mock(TtsManager::class.java)
+        appSettingsRepository = Mockito.mock(AppSettingsRepository::class.java)
+
+        // Mock configurações padrão
+        val mockSettings = AppSettings(
+            id = "settings",
+            isFirstRun = false,
+            totalStars = 0,
+            currentDate = "2025-11-07",
+            lastSyncTimestamp = System.currentTimeMillis(),
+            notificationsEnabled = true,
+            askExtraTimeAtStep = true,
+            enableVoiceResponse = false
+        )
+        Mockito.`when`(appSettingsRepository.getSettings()).thenReturn(flowOf(mockSettings))
+        Mockito.`when`(appSettingsRepository.getEnableVoiceResponse()).thenReturn(flowOf(false))
 
         viewModel = TaskExecutionViewModel(
+            context,
             getTaskByIdUseCase,
             getStepsByTaskUseCase,
             getChildProfileUseCase,
             taskRepository,
-            ttsManager
+            ttsManager,
+            appSettingsRepository
         )
     }
 

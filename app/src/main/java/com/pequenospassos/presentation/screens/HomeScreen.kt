@@ -277,8 +277,8 @@ private fun AvailableTasksSection(availableTasksCount: Int) {
             Text(
                 text = when {
                     availableTasksCount == 0 -> "🎉 Todas as tarefas de hoje foram completadas!"
-                    availableTasksCount == 1 -> "📝 Você tem 1 atividade para fazer hoje!"
-                    else -> "📝 Você tem $availableTasksCount atividades para fazer hoje!"
+                    availableTasksCount == 1 -> "📝 Você tem 1 atividade para fazer!" // Refinamento Fase 6: removido "hoje"
+                    else -> "📝 Você tem $availableTasksCount atividades para fazer!" // Refinamento Fase 6: removido "hoje"
                 },
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -339,7 +339,7 @@ private fun LogoSection() {
     ) {
         // Imagem do logo (aumentada em 50%: 120dp -> 180dp)
         Image(
-            painter = painterResource(id = R.drawable.logo_pequenos_passos),
+            painter = painterResource(id = R.drawable.icone_com_nome_pequenos_passos),
             contentDescription = "Logo Pequenos Passos",
             modifier = Modifier.size(180.dp)
         )

@@ -202,6 +202,7 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                 )
             }
 
+
             // Refinamento Fase 6: Subtítulo Configurações
             Spacer(modifier = Modifier.height(16.dp))
             Text(
@@ -241,20 +242,22 @@ fun HistoryScreen(navController: NavController, viewModel: HistoryViewModel = hi
                     enabled = askExtraTimeChecked // Só habilita se pop-up de tempo extra estiver ativo
                 )
                 Spacer(Modifier.width(8.dp))
-                Column {
-                    Text(
-                        text = "Resposta em Áudio",
-                        fontWeight = if (enableVoiceResponse && askExtraTimeChecked) FontWeight.Bold else FontWeight.Normal,
-                        color = if (!askExtraTimeChecked) Color.Gray else MaterialTheme.colorScheme.onSurface
-                    )
-                    if (askExtraTimeChecked && enableVoiceResponse) {
-                        Text(
-                            text = "🎤 O app vai escutar sua resposta por 3 segundos",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                    }
-                }
+                Text(
+                    text = "Resposta em Áudio",
+                    fontWeight = if (enableVoiceResponse && askExtraTimeChecked) FontWeight.Bold else FontWeight.Normal,
+                    color = if (!askExtraTimeChecked) Color.Gray else MaterialTheme.colorScheme.onSurface
+                )
+            }
+
+            // Botão "Sobre" para mostrar SplashScreen
+            Spacer(modifier = Modifier.height(16.dp))
+            OutlinedButton(
+                onClick = { navController.navigate("splash") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.Info, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Sobre")
             }
         }
     }
