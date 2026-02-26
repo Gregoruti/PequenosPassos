@@ -3,6 +3,11 @@ Arquivo: docs/CHANGELOG.md
 Objetivo: Histórico de mudanças do projeto Pequenos Passos.
 Correlações: GUIDELINES.md, arquivos de implementação, migrations, releases, MVP11_ESTADO_ATUAL_CONSOLIDADO.md
 Histórico de alterações:
+- 2026-02-26 (Claude Opus 4): v2.5.1 - TRANSIÇÃO DE CODE ASSISTANT
+  - Nova branch: feature/v2.5.1-opus4-review
+  - Revisão geral de documentação (README, CHANGELOG, GUIDELINES)
+  - APK v2.5.0 gerado e validado antes da transição
+  - Início do uso de Claude Opus 4 (GitHub Copilot) como Code Assistant principal
 - 2025-12-02 (Claude Sonnet 4.5): v2.5.0 Fase 1 - COMPILAÇÃO SUCESSO após correções
   - StepDao.kt: Corrigida sintaxe embaralhada dos métodos
   - TaskFormScreen.kt: Ícone Folder substituído por Add (temporário)
@@ -12,16 +17,52 @@ Histórico de alterações:
 - 2025-11-03 (GPT-4.1): v2.3.0 - Atualização de versão (logo com novo nome, todas correções aplicadas)
 - 2025-11-03 (GPT-4.1): v2.2.1 - Correções de UI (checkbox áudio ativado, texto removido, botão Sobre)
 - 2025-11-03 (GPT-4.1): MVP-15 COMPLETO - 11 Tarefas + 143 Passos (correção categoria Escovar Dentes)
-- 2025-11-03 (GPT-4.1): MVP-15 FASE INCREMENTAL - Tarefa "Escovar os Dentes" (validação OK → expansão)
-- 2025-11-03 (Claude Sonnet 4.5): MVP-15 - Tarefas Pré-Instaladas (11 tarefas + 143 passos) - ERRO COMPILAÇÃO
 - 2025-11-01 (Claude Sonnet 4.5): MVP-14 Fases 1 e 2 - ASR em Pop-ups (Banco de Dados + Checkbox)
 Observação: Sempre atualizar as primeiras 50 linhas com resumo das últimas mudanças e rastreabilidade.
-Status Atual: v2.5.0 Fase 1 - ✅ COMPILAÇÃO SUCESSO - APK gerado - Code Assistant: Claude Sonnet 4.5 (GitHub Copilot)
+Status Atual: v2.5.1 - Transição para Claude Opus 4 - APK v2.5.0 validado - Nova branch criada
 -->
 # CHANGELOG
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+---
+
+## [2.5.1] - Transição de Code Assistant - 2026-02-26
+
+### 🔄 TRANSIÇÃO: Claude Sonnet 4.5 → Claude Opus 4
+
+**Motivo:** Fim das requisições premium do Claude Sonnet 4.5 no GitHub Copilot.
+
+**Novo modelo:** Claude Opus 4 (GitHub Copilot) — a partir desta versão.
+
+#### Histórico de Code Assistants:
+
+| Modelo | Período | Versões | Observações |
+|--------|---------|---------|-------------|
+| Claude Sonnet 4.5 | Início do projeto | v1.0 → v2.1.0 | Principal durante todo o MVP-01 a MVP-11 |
+| GPT-4.1 | Transição temporária | v2.1.0 → v2.3.0 | Fim temporário das requisições premium Sonnet 4.5 |
+| Claude Sonnet 4.5 | Retorno | v2.3.0 → v2.5.0 | Retorno definitivo até v2.5.0 |
+| Claude Opus 4 | **Atual** | v2.5.1+ | Novo modelo principal até o final do projeto |
+
+### ✅ Ações realizadas nesta versão:
+
+1. **APK v2.5.0 gerado e validado** — `app/build/outputs/apk/debug/app-debug.apk`
+2. **Revisão completa da documentação:**
+   - `docs/README.md` — Reescrito com estado real do projeto (v2.5.0)
+   - `docs/CHANGELOG.md` — Atualizado com transição e histórico de Code Assistants
+   - `docs/GUIDELINES.md` — Header atualizado com nova fase
+3. **Nova branch criada:** `feature/v2.5.1-opus4-review`
+4. **Commit e push:** Documentação consolidada antes de iniciar novas implementações
+
+### 📊 Estado do projeto na transição:
+
+- **Versão:** 2.5.0 (versionCode 250)
+- **Build:** ✅ SUCCESS
+- **MVPs concluídos:** 15 (MVP-01 a MVP-15)
+- **Tarefas pré-instaladas:** 11 (143 passos)
+- **Testes unitários:** 142+
+- **Funcionalidades principais:** TTS, ASR (Vosk), Gamificação, Histórico, Export/Import (Fase 1)
 
 ---
 

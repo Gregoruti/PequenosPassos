@@ -4,12 +4,16 @@ Tipo: Diretrizes e boas práticas do projeto
 Objetivo: Centralizar padrões de desenvolvimento, versionamento, documentação e rastreabilidade do Pequenos Passos.
 Correlações: CHANGELOG.md, arquivos de implementação, scripts .bat, resumos de MVPs
 Histórico de alterações:
+- 2026-02-26 (Claude Opus 4): v2.5.1 - TRANSIÇÃO DE CODE ASSISTANT para Claude Opus 4
+  - Revisão geral de documentação (README, CHANGELOG, GUIDELINES)
+  - APK v2.5.0 gerado antes da transição
+  - Nova branch: feature/v2.5.1-opus4-review
 - 2025-11-07 (Claude Sonnet 4.5): v2.4.0 - Versão de apresentação (emails de feedback na SplashScreen)
 - 2025-10-31 (user): Correção de Falha Crítica em Room/Migration
 - 2025-10-27 (user): Reforço: Sempre mencionar mudanças e rastreabilidade nas primeiras 50 linhas dos arquivos afetados.
 - 2025-10-24 (user): Atualização de práticas de commit e documentação.
 Observação: Atualizar as primeiras 50 linhas dos arquivos críticos após cada alteração relevante.
-Status Atual: v2.4.0 - Versão de apresentação com contatos para feedback
+Status Atual: v2.5.1 - Code Assistant: Claude Opus 4 (GitHub Copilot)
 -->
 
 # GUIDELINES - Pequenos Passos
