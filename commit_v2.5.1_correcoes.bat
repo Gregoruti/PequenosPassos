@@ -14,26 +14,7 @@ echo Arquivos adicionados!
 echo.
 
 echo [3/5] Criando commit local...
-git commit -m "fix(v2.5.1): 4 Correcoes criticas de UX - TTS, rotacao, landscape, debounce
-
-Correcao 1: TTS concordancia genero feminino (duas estrelas)
-- TaskCompletionScreen.kt: numero por extenso feminino (uma, duas, tres...)
-
-Correcao 2: TTS nao repete ao rotacionar (2 iteracoes)
-- TaskCompletionScreen.kt: rememberSaveable + remocao DisposableEffect
-- TaskExecutionViewModel.kt: lastSpokenStepIndex + taskTitleAlreadySpoken
-
-Correcao 3: Imagem visivel em landscape
-- TaskExecutionScreen.kt: verticalScroll + heightIn adaptativo por orientacao
-
-Correcao 4: Debounce avanco de passos (1.5s)
-- TaskExecutionViewModel.kt: ADVANCE_DEBOUNCE_MS entre avancos
-
-Documentacao:
-- CHANGELOG.md: 4 correcoes detalhadas + erro Gradle documentado
-- GUIDELINES.md: Secao 10.4 Erros Conhecidos de Compilacao
-- V2.5.1_CORRECOES_PASSO_A_PASSO.md: Historico completo
-- Headers atualizados nos 3 arquivos de codigo (rastreabilidade)"
+git commit -m "fix(v2.5.1): 4 Correcoes criticas de UX - TTS rotacao landscape debounce"
 echo Commit local criado!
 echo.
 
@@ -49,5 +30,4 @@ echo.
 echo ============================================
 echo  COMMIT v2.5.1 CONCLUIDO COM SUCESSO!
 echo ============================================
-pause
 
