@@ -4,6 +4,7 @@ Tipo: Diretrizes e boas práticas do projeto
 Objetivo: Centralizar padrões de desenvolvimento, versionamento, documentação e rastreabilidade do Pequenos Passos.
 Correlações: CHANGELOG.md, arquivos de implementação, scripts .bat, resumos de MVPs
 Histórico de alterações:
+- 2026-02-28 (Claude Opus 4): v2.5.1 - Correções 1 e 2 concluídas + documentação de erros Gradle/Kotlin Daemon
 - 2026-02-26 (Claude Opus 4): v2.5.1 - TRANSIÇÃO DE CODE ASSISTANT para Claude Opus 4
   - Revisão geral de documentação (README, CHANGELOG, GUIDELINES)
   - APK v2.5.0 gerado antes da transição
@@ -410,6 +411,42 @@ Vou executar o script de commit:
 ```
 
 **Esta seção deve ser lida e seguida rigorosamente por qualquer AI Assistant trabalhando neste projeto.**
+
+#### 5.3.7 ⚠️ Terminal Silencioso do GitHub Copilot Agent
+
+**PROBLEMA RECORRENTE (documentado em 26/02/2026):**
+
+O terminal integrado do GitHub Copilot Agent (run_in_terminal) pode ficar **completamente silencioso** — executa comandos mas não retorna nenhum output. Isso ocorre:
+- Em sessões longas de chat
+- Após múltiplas execuções de terminal
+- Independentemente do comando (echo, git, gradlew, etc.)
+
+**Sintoma:**
+```
+# Output do terminal aparece vazio:
+Output:
+```
+```
+# Mesmo para comandos simples como:
+echo "teste"
+```
+
+**WORKAROUNDS:**
+1. **Usar scripts `.bat` executados MANUALMENTE pelo usuário** (mais confiável)
+2. Criar o `.bat` via ferramenta de criação de arquivo (funciona normalmente)
+3. Instruir o usuário a executar `.\nome_do_script.bat` no PowerShell
+4. Focar em edições de arquivo e documentação (não dependem do terminal)
+5. Não insistir em múltiplas tentativas de terminal — isso desperdiça tokens
+
+**REGRA PARA AI ASSISTANTS:**
+```
+SE (terminal não retornar output após 1 tentativa) ENTÃO
+    NÃO insistir em novas tentativas
+    CRIAR script .bat com todos os comandos necessários
+    INSTRUIR o usuário a executar manualmente
+    CONTINUAR com tarefas que não dependem do terminal
+FIM SE
+```
 
 ### 5.4 Estratégia de Branches ⭐ NOVO
 
@@ -936,6 +973,33 @@ O projeto possui scripts `.bat` prontos para facilitar operações comuns:
 - ✅ Comandos padronizados
 - ✅ Menos chance de erro de digitação
 - ✅ Inclui tratamento de erros
+
+### 10.4 Erros Conhecidos de Compilação ⚠️
+
+#### 10.4.1 Cache Corrompido do Gradle/Kotlin Daemon
+
+**Erro:** `Daemon compilation failed: null` + `Could not close incremental caches` + `file-to-id.tab`
+
+**Causa:** Cache incremental do Kotlin Daemon fica corrompido (ex: arquivo bloqueado por outro processo, interrupção de compilação anterior).
+
+**Solução:**
+```powershell
+.\gradlew --stop        # Parar todos os Gradle Daemons
+.\gradlew clean         # Limpar cache de build
+.\gradlew assembleDebug # Recompilar do zero
+```
+
+**Prevenção:** Não interromper compilações em andamento. Se o Android Studio estiver aberto, fechar o Gradle Sync antes de compilar via terminal.
+
+**Referência:** Documentado em CHANGELOG.md v2.5.1 (2026-02-28).
+
+#### 10.4.2 Room/Kapt - `Failed to create MD5 hash`
+
+**Erro:** `Failed to create MD5 hash for file '...RewardDao.kapt_metadata' as it does not exist.`
+
+**Causa:** Mesmo que o 10.4.1 — cache corrompido pós-interrupção.
+
+**Solução:** Mesma do 10.4.1 (stop → clean → assembleDebug).
 
 ---
 

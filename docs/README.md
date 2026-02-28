@@ -254,6 +254,8 @@ O APK de debug fica em: `app/build/outputs/apk/debug/app-debug.apk`
 | Claude Sonnet 4.5 | Retorno | v2.3.0 a v2.5.0 |
 | Claude Opus 4 | Atual | v2.5.1+ |
 
+> **Nota:** Todos os modelos via GitHub Copilot. Transições ocorreram por fim de requisições premium dos respectivos modelos.
+
 ### Processo de Desenvolvimento
 1. Criar branch `feature/mvp-XX`
 2. Desenvolver seguindo Clean Architecture

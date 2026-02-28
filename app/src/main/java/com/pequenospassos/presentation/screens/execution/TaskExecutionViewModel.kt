@@ -36,9 +36,16 @@ import javax.inject.Inject
  * - Navegação entre steps
  * - Conclusão da tarefa
  * - MVP-09: Marcação de tarefa completada no dia
+ * - MVP-14: Reconhecimento de voz (ASR) em pop-ups
+ *
+ * Correções v2.5.1 (2026-02-28):
+ * - Correção 2: Adicionados lastSpokenStepIndex e taskTitleAlreadySpoken
+ *   para evitar repetição de TTS ao rotacionar o dispositivo
+ * - Correção 4: Debounce de 1.5s no nextStep() para evitar avanço múltiplo de passos
  *
  * @since MVP-07 (17/10/2025)
  * @updated MVP-09 (24/10/2025) - Controle diário de tarefas
+ * @updated v2.5.1 (28/02/2026) - Correção TTS rotação
  */
 @HiltViewModel
 class TaskExecutionViewModel @Inject constructor(
@@ -58,6 +65,14 @@ class TaskExecutionViewModel @Inject constructor(
     private var currentTask: Task? = null
     private var steps: List<Step> = emptyList()
     
+    // Correção v2.5.1: Evitar repetição de TTS ao rotacionar
+    private var lastSpokenStepIndex: Int = -1
+    private var taskTitleAlreadySpoken: Boolean = false
+
+    // Correção v2.5.1 (Correção 4): Debounce para evitar avanço múltiplo de passos
+    private var lastAdvanceTime: Long = 0L
+    private val ADVANCE_DEBOUNCE_MS = 1500L // 1.5 segundos entre avanços
+
     // MVP-14 Fase 5: ASR e Voice Command
     private lateinit var asrManager: AsrManager
     private val voiceCommandParser = VoiceCommandParser()
@@ -177,13 +192,19 @@ class TaskExecutionViewModel @Inject constructor(
                     childName = childName
                 )
 
-                // Ler título da tarefa
-                ttsManager.speak(task.title)
+                // Correção v2.5.1: Só falar título e primeiro passo se ainda não foi falado
+                if (!taskTitleAlreadySpoken) {
+                    // Ler título da tarefa
+                    ttsManager.speak(task.title)
 
-                // Aguardar um pouco e ler o primeiro passo
-                delay(2000) // Esperar 2 segundos após falar o título
-                val firstStepText = "${childName}, ${steps[0].title}"
-                ttsManager.speakQueued(firstStepText)
+                    // Aguardar um pouco e ler o primeiro passo
+                    delay(2000) // Esperar 2 segundos após falar o título
+                    val firstStepText = "${childName}, ${steps[0].title}"
+                    ttsManager.speakQueued(firstStepText)
+
+                    taskTitleAlreadySpoken = true
+                    lastSpokenStepIndex = 0
+                }
 
                 // Iniciar timer
                 startTimer()
@@ -260,8 +281,17 @@ class TaskExecutionViewModel @Inject constructor(
 
     /**
      * Avança para o próximo step ou conclui a tarefa.
+     * Correção v2.5.1 (Correção 4): Debounce de 1.5s entre avanços.
      */
     fun nextStep() {
+        // Correção v2.5.1: Debounce — ignorar toques rápidos
+        val now = System.currentTimeMillis()
+        if (now - lastAdvanceTime < ADVANCE_DEBOUNCE_MS) {
+            println("[TaskExecutionVM] ⏳ Debounce: avanço ignorado (${now - lastAdvanceTime}ms < ${ADVANCE_DEBOUNCE_MS}ms)")
+            return
+        }
+        lastAdvanceTime = now
+
         timerJob?.cancel()
 
         val nextIndex = _state.value.currentStepIndex + 1
@@ -280,9 +310,12 @@ class TaskExecutionViewModel @Inject constructor(
                 showTimeUpDialog = false
             )
 
-            // Ler o próximo passo com o nome da criança
-            val stepText = "${_state.value.childName}, ${nextStep.title}"
-            ttsManager.speak(stepText)
+            // Correção v2.5.1: Ler o próximo passo apenas se ainda não foi falado
+            if (nextIndex != lastSpokenStepIndex) {
+                val stepText = "${_state.value.childName}, ${nextStep.title}"
+                ttsManager.speak(stepText)
+                lastSpokenStepIndex = nextIndex
+            }
 
             startTimer()
         }

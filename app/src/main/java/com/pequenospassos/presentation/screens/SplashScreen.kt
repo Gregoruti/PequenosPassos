@@ -80,7 +80,7 @@ fun SplashScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Versão 2.5.0", // Fase 1: Export/Import Estrutura + Perfil Padrão Masculino
+                text = "Versão 2.5.1", // Correções TTS + Transição Claude Opus 4
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.Gray,

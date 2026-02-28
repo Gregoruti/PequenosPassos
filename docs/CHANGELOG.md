@@ -19,12 +19,60 @@ Histórico de alterações:
 - 2025-11-03 (GPT-4.1): MVP-15 COMPLETO - 11 Tarefas + 143 Passos (correção categoria Escovar Dentes)
 - 2025-11-01 (Claude Sonnet 4.5): MVP-14 Fases 1 e 2 - ASR em Pop-ups (Banco de Dados + Checkbox)
 Observação: Sempre atualizar as primeiras 50 linhas com resumo das últimas mudanças e rastreabilidade.
-Status Atual: v2.5.1 - Transição para Claude Opus 4 - APK v2.5.0 validado - Nova branch criada
+Status Atual: v2.5.1 - TODAS 4 CORREÇÕES CONCLUÍDAS ✅ - Compilação e instalação OK
 -->
 # CHANGELOG
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+---
+
+## [2.5.1] - Correções Críticas de UX - 2026-02-28
+
+### 🔧 Correção 1: TTS "duas estrelas" (concordância de gênero) ✅
+- **Arquivo:** `TaskCompletionScreen.kt`
+- **Problema:** TTS falava "dois estrelas" em vez de "duas estrelas"
+- **Solução:** Converter número para texto por extenso no feminino (uma, duas, três...)
+- **Status:** ✅ Implementado e testado
+
+### 🔧 Correção 2: TTS não repete ao rotacionar ✅
+- **Arquivos:** `TaskCompletionScreen.kt`, `TaskExecutionViewModel.kt`
+- **Problema:** Ao girar o celular, `LaunchedEffect(Unit)` re-executava e o TTS repetia a fala
+- **Solução (Iteração 1):**
+  - `TaskCompletionScreen.kt`: Adicionado `rememberSaveable { ttsAlreadySpoken }` para sobreviver à recomposição
+  - `TaskExecutionViewModel.kt`: Adicionados `lastSpokenStepIndex` e `taskTitleAlreadySpoken` para rastrear falas já realizadas
+- **Bug encontrado na Iteração 1:** Ao rotacionar, `DisposableEffect(Unit).onDispose` chamava `ttsManager.stop()`, interrompendo a fala em andamento. Como `ttsAlreadySpoken = true`, a fala não era retomada.
+- **Solução (Iteração 2):**
+  - Removido `DisposableEffect(Unit) { onDispose { ttsManager.stop() } }` de `TaskCompletionScreen.kt`
+  - TTS é parado naturalmente ao navegar para outra tela (via ViewModel.onCleared)
+- **Status:** ✅ Implementado, compilado e instalado (2 iterações)
+
+### 🔧 Correção 3: Imagem em landscape ✅
+- **Arquivo:** `TaskExecutionScreen.kt`
+- **Problema:** Imagem do step desaparecia ao girar para landscape (Column sem scroll + weight(1f) insuficiente)
+- **Solução:**
+  - Adicionado `verticalScroll(rememberScrollState())` à Column principal
+  - Substituído `Modifier.weight(1f)` por `Modifier.heightIn(min, max)` adaptativo
+  - Detecta orientação via `LocalConfiguration.current.orientation`
+  - Portrait: imagem 150-350dp | Landscape: imagem 120-200dp
+  - Removido `Spacer(Modifier.weight(1f))` quando sem imagem (incompatível com scroll)
+- **Status:** ✅ Implementado, compilado e instalado
+
+### 🔧 Correção 4: Debounce avanço de passos ✅
+- **Arquivo:** `TaskExecutionViewModel.kt`
+- **Problema:** Toques rápidos no botão "Próximo" pulavam vários passos de uma vez
+- **Solução:**
+  - Adicionado debounce de 1.5s (`ADVANCE_DEBOUNCE_MS`) entre avanços no `nextStep()`
+  - Se o usuário tocar novamente antes de 1.5s, o toque é ignorado com log
+  - Não interfere no avanço automático (via timer/ASR)
+- **Status:** ✅ Implementado, compilado e instalado
+
+### ⚠️ Erro de Build: Cache corrompido do Gradle/Kotlin Daemon
+- **Erro:** `Daemon compilation failed: null` + `Could not close incremental caches`
+- **Causa:** Cache incremental do Kotlin Daemon corrompido (arquivo `file-to-id.tab` bloqueado)
+- **Solução:** `.\gradlew --stop` → `.\gradlew clean` → `.\gradlew assembleDebug`
+- **Nota:** Erro não relacionado ao código — documentado para referência futura
 
 ---
 

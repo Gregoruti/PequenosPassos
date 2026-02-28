@@ -20,8 +20,8 @@ android {
         applicationId = "com.example.pequenospassos"
         minSdk = 24
         targetSdk = 36
-        versionCode = 250 // v2.5.0 Fase 1: Export/Import Estrutura
-        versionName = "2.5.0" // Fase 1: Estrutura Export/Import + Perfil Padrão Masculino
+        versionCode = 251 // v2.5.1: Correções TTS (concordância gênero)
+        versionName = "2.5.1" // Correção: TTS "duas estrelas" + transição Claude Opus 4
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

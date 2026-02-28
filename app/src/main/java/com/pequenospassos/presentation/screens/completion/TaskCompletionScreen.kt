@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -32,7 +33,12 @@ import com.pequenospassos.presentation.utils.TtsManager
  * @param stars Quantidade de estrelas ganhas (1-5)
  * @param childName Nome da criança (opcional, padrão "Amiguinho")
  *
+ * Correções v2.5.1 (2026-02-28):
+ * - Correção 1: Concordância de gênero feminino no TTS ("duas estrelas" em vez de "dois")
+ * - Correção 2: TTS não repete ao rotacionar (rememberSaveable + remoção de DisposableEffect destrutivo)
+ *
  * @since v1.9.3 (20/10/2025)
+ * @updated v2.5.1 (28/02/2026)
  * @author PequenosPassos Development Team
  */
 @Composable
@@ -82,31 +88,43 @@ fun TaskCompletionScreen(
     // Animação de entrada
     var visible by remember { mutableStateOf(false) }
 
+    // Correção v2.5.1: Flag para evitar repetição de TTS ao rotacionar
+    var ttsAlreadySpoken by rememberSaveable { mutableStateOf(false) }
+
     // TTS: Ler mensagem de sucesso ao carregar a tela
     LaunchedEffect(Unit) {
         visible = true
-        // Aguardar um pouco para a tela aparecer
-        kotlinx.coroutines.delay(500)
-        // Remover emojis da mensagem para TTS (apenas texto)
-        val ttsMessageCongrats = randomCongrats.replace(Regex("[^\\p{L}\\p{N}\\s,!?.]"), "").trim()
-        val ttsMessageSuccess = randomSuccess.replace(Regex("[^\\p{L}\\p{N}\\s,!?.]"), "").trim()
+        if (!ttsAlreadySpoken) {
+            // Aguardar um pouco para a tela aparecer
+            kotlinx.coroutines.delay(500)
+            // Remover emojis da mensagem para TTS (apenas texto)
+            val ttsMessageCongrats = randomCongrats.replace(Regex("[^\\p{L}\\p{N}\\s,!?.]"), "").trim()
+            val ttsMessageSuccess = randomSuccess.replace(Regex("[^\\p{L}\\p{N}\\s,!?.]"), "").trim()
 
-        // Refinamento Fase 6: Mensagem de estrelas ganhas
-        val starsText = if (stars == 1) "estrela" else "estrelas"
-        val ttsMessageStars = "Você ganhou $stars $starsText!"
+            // Correção v2.5.1: Concordância de gênero feminino para TTS
+            val starsText = if (stars == 1) "estrela" else "estrelas"
+            val starsNumber = when (stars) {
+                1 -> "uma"
+                2 -> "duas"
+                3 -> "três"
+                4 -> "quatro"
+                5 -> "cinco"
+                else -> "$stars"
+            }
+            val ttsMessageStars = "Você ganhou $starsNumber $starsText!"
 
-        // Refinamento Fase 6: Falar TRÊS mensagens (parabéns + sucesso + estrelas)
-        ttsManager.speak(ttsMessageCongrats) // Primeira: Nome + parabéns
-        ttsManager.speakQueued(ttsMessageSuccess) // Segunda: Mensagem de sucesso
-        ttsManager.speakQueued(ttsMessageStars) // Terceira: Estrelas ganhas
-    }
-
-    // Limpar TTS ao sair da tela
-    DisposableEffect(Unit) {
-        onDispose {
-            ttsManager.stop()
+            // Refinamento Fase 6: Falar TRÊS mensagens (parabéns + sucesso + estrelas)
+            ttsManager.speak(ttsMessageCongrats) // Primeira: Nome + parabéns
+            ttsManager.speakQueued(ttsMessageSuccess) // Segunda: Mensagem de sucesso
+            ttsManager.speakQueued(ttsMessageStars) // Terceira: Estrelas ganhas
+            ttsAlreadySpoken = true
         }
     }
+
+    // Correção v2.5.1: NÃO usar ttsManager.stop() em DisposableEffect(Unit)
+    // pois ao rotacionar, o Compose destrói e recria a composição,
+    // disparando onDispose e interrompendo a fala.
+    // O TTS será parado naturalmente ao navegar para outra tela (via ViewModel ou navegação).
 
     val scale by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,

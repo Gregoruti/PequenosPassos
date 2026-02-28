@@ -1,8 +1,11 @@
 package com.pequenospassos.presentation.screens.execution
 
 import android.Manifest
+import android.content.res.Configuration
 import android.net.Uri
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -10,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,11 +36,15 @@ import com.pequenospassos.presentation.components.CircularTimer
  * - TTS para leitura do título do step
  * - Navegação: Conclusão → Home
  *
+ * Correções v2.5.1 (2026-02-28):
+ * - Correção 3: Scroll + imagem adaptativa em landscape (verticalScroll + heightIn)
+ *
  * @param navController Controlador de navegação
  * @param taskId ID da tarefa a ser executada
  * @param viewModel ViewModel injetado via Hilt
  *
  * @since MVP-07 (17/10/2025)
+ * @updated v2.5.1 (28/02/2026) - Correção landscape
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -133,11 +141,17 @@ fun TaskExecutionScreen(
                     }
                 }
             } else if (state.currentStep != null) {
-                // Conteúdo principal
+                // Correção v2.5.1: Detectar orientação para adaptar layout
+                val configuration = LocalConfiguration.current
+                val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                val scrollState = rememberScrollState()
+
+                // Conteúdo principal com scroll (Correção 3: suporte a landscape)
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(24.dp),
+                        .padding(24.dp)
+                        .verticalScroll(scrollState),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
@@ -164,11 +178,15 @@ fun TaskExecutionScreen(
                     }
 
                     // Imagem do step (se disponível)
+                    // Correção v2.5.1: Altura adaptativa para landscape vs portrait
                     if (!state.currentStep?.imageUrl.isNullOrEmpty()) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .weight(1f),
+                                .heightIn(
+                                    min = if (isLandscape) 120.dp else 150.dp,
+                                    max = if (isLandscape) 200.dp else 350.dp
+                                ),
                             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                         ) {
                             AsyncImage(
@@ -177,7 +195,6 @@ fun TaskExecutionScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Fit,
                                 onError = {
-                                    // Log de erro para debug
                                     println("TaskExecution: Erro ao carregar imagem: ${state.currentStep?.imageUrl}")
                                 },
                                 onSuccess = {
@@ -186,9 +203,7 @@ fun TaskExecutionScreen(
                             )
                         }
                     } else {
-                        // Debug: verificar se imageUrl está null ou vazia
                         println("TaskExecution: Step ${state.currentStepIndex + 1} - imageUrl: '${state.currentStep?.imageUrl}'")
-                        Spacer(modifier = Modifier.weight(1f))
                     }
 
                     // Timer com barra de progresso horizontal
