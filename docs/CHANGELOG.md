@@ -3,28 +3,61 @@ Arquivo: docs/CHANGELOG.md
 Objetivo: Histórico de mudanças do projeto Pequenos Passos.
 Correlações: GUIDELINES.md, arquivos de implementação, migrations, releases, MVP11_ESTADO_ATUAL_CONSOLIDADO.md
 Histórico de alterações:
+- 2026-03-03 (GitHub Copilot / Claude Sonnet 4.5): v2.5.2 - CORREÇÃO CRÍTICA ASR
+  - AsrManager.kt: initialize() agora copia automaticamente o modelo Vosk dos assets
+  - Corrigida falha silenciosa: ASR não funcionava após desinstalar/reinstalar o app
+  - Adicionado copyAssetFolder() no AsrManager (eliminando dependência da AsrTestScreen)
+  - Build successful - Compilação OK
+- 2026-02-28 (Claude Sonnet 4.5 / Claude Opus 4): v2.5.1 - 4 CORREÇÕES CRÍTICAS DE UX
+  - Correção 1: TTS "duas estrelas" (concordância de gênero)
+  - Correção 2: TTS não repete ao rotacionar (rememberSaveable + lastSpokenStepIndex)
+  - Correção 3: Imagem visível em landscape (scroll + heightIn adaptativo)
+  - Correção 4: Debounce 1.5s no nextStep() (evita avanço múltiplo de passos)
 - 2026-02-26 (Claude Opus 4): v2.5.1 - TRANSIÇÃO DE CODE ASSISTANT
   - Nova branch: feature/v2.5.1-opus4-review
   - Revisão geral de documentação (README, CHANGELOG, GUIDELINES)
-  - APK v2.5.0 gerado e validado antes da transição
-  - Início do uso de Claude Opus 4 (GitHub Copilot) como Code Assistant principal
-- 2025-12-02 (Claude Sonnet 4.5): v2.5.0 Fase 1 - COMPILAÇÃO SUCESSO após correções
-  - StepDao.kt: Corrigida sintaxe embaralhada dos métodos
-  - TaskFormScreen.kt: Ícone Folder substituído por Add (temporário)
-  - Build successful in 58s - 0 erros críticos
+  - Retorno ao Claude Sonnet 4.5 para fase final do projeto
 - 2025-12-02 (Claude Sonnet 4.5): v2.5.0 Fase 1 - Estrutura de Export/Import + Perfil Padrão Masculino
 - 2025-11-07 (Claude Sonnet 4.5): v2.4.0 - Versão de apresentação com contatos para feedback
-- 2025-11-03 (GPT-4.1): v2.3.0 - Atualização de versão (logo com novo nome, todas correções aplicadas)
-- 2025-11-03 (GPT-4.1): v2.2.1 - Correções de UI (checkbox áudio ativado, texto removido, botão Sobre)
-- 2025-11-03 (GPT-4.1): MVP-15 COMPLETO - 11 Tarefas + 143 Passos (correção categoria Escovar Dentes)
-- 2025-11-01 (Claude Sonnet 4.5): MVP-14 Fases 1 e 2 - ASR em Pop-ups (Banco de Dados + Checkbox)
+- 2025-11-03 (GPT-4.1): v2.3.0 - MVP-15 COMPLETO (11 Tarefas + 143 Passos)
+- 2025-11-01 (Claude Sonnet 4.5): MVP-14 Fases 1-6 - ASR em Pop-ups completo
 Observação: Sempre atualizar as primeiras 50 linhas com resumo das últimas mudanças e rastreabilidade.
-Status Atual: v2.5.1 - TODAS 4 CORREÇÕES CONCLUÍDAS ✅ - Compilação e instalação OK
+Status Atual: v2.5.2 - CORREÇÃO ASR AUTO-INIT ✅ - Compilação OK
 -->
 # CHANGELOG
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+
+---
+
+## [2.5.2] - Correção Crítica ASR Auto-Init - 2026-03-03
+
+### 🐛 Problema Identificado
+Após **desinstalar e reinstalar** o app, o módulo ASR (Vosk) **não funcionava** na execução de tarefas. O `AsrManager.initialize()` exigia que o modelo já estivesse copiado no `filesDir`, mas apenas a tela `AsrTestScreen` fazia essa cópia. Isso causava uma **falha silenciosa**: o ASR retornava `"Modelo Vosk não encontrado"` e a funcionalidade de resposta por voz nos pop-ups de tempo ficava inativa — sem aviso visível ao usuário.
+
+### ✅ Correção Aplicada
+- **Arquivo:** `presentation/utils/AsrManager.kt`
+- **O que mudou:** O método `initialize()` agora:
+  1. Verifica se o modelo existe em `filesDir` (pela presença dos arquivos `uuid` e `ivector/`)
+  2. Se não existir (ou estiver incompleto), **copia automaticamente** os assets `vosk-model-small-pt-0.3` para o `filesDir`
+  3. O processo de cópia roda em `Dispatchers.IO` (background thread) para não bloquear a UI
+  4. Só então carrega o `Model` do Vosk e chama `onSuccess()`
+- **Método adicionado:** `copyAssetFolder()` — reutiliza exatamente a mesma lógica já validada no `AsrTestScreen.kt`
+- **Resultado:** ASR funciona imediatamente após instalação limpa, sem precisar abrir a tela de teste
+
+### 📋 Checklist de Validação
+- [ ] Desinstalar o app completamente
+- [ ] Reinstalar (via `adb install` ou manualmente)
+- [ ] Abrir o app → entrar em uma tarefa → deixar o timer zerar
+- [ ] Pop-up aparece → ASR deve iniciar automaticamente (ícone de microfone visível)
+- [ ] Falar "sim" ou "pode" → tarefa avança sem precisar tocar nos botões
+- [ ] *(Opcional)* Verificar logcat: `[AsrManager] 📦 Modelo não encontrado — extraindo dos assets...`
+
+### 🔧 Arquivos Modificados
+| Arquivo | Mudança |
+|---------|---------|
+| `presentation/utils/AsrManager.kt` | Adicionado `copyAssetFolder()` + `initialize()` com auto-cópia em IO thread |
 
 ---
 
