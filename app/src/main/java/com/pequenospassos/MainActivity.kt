@@ -14,6 +14,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.pequenospassos.presentation.screens.AsrTestScreen
 import com.pequenospassos.presentation.screens.HomeScreen
+import com.pequenospassos.presentation.screens.PermissionsOnboardingScreen
 import com.pequenospassos.presentation.screens.SplashScreen
 import com.pequenospassos.presentation.screens.TtsTestScreen
 import com.pequenospassos.presentation.screens.childregistration.ChildRegistrationScreen
@@ -59,6 +60,7 @@ fun PequenosPassosApp() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") { SplashScreen(navController) }
+        composable("permissions_onboarding") { PermissionsOnboardingScreen(navController) }
         composable("home") { HomeScreen(navController) }
         composable("history") { HistoryScreen(navController) }
         composable("tts_test") { TtsTestScreen(navController) }

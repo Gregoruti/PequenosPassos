@@ -4,17 +4,21 @@ Tipo: Diretrizes e boas práticas do projeto
 Objetivo: Centralizar padrões de desenvolvimento, versionamento, documentação e rastreabilidade do Pequenos Passos.
 Correlações: CHANGELOG.md, arquivos de implementação, scripts .bat, resumos de MVPs
 Histórico de alterações:
-- 2026-02-28 (Claude Opus 4): v2.5.1 - Correções 1 e 2 concluídas + documentação de erros Gradle/Kotlin Daemon
-- 2026-02-26 (Claude Opus 4): v2.5.1 - TRANSIÇÃO DE CODE ASSISTANT para Claude Opus 4
-  - Revisão geral de documentação (README, CHANGELOG, GUIDELINES)
-  - APK v2.5.0 gerado antes da transição
-  - Nova branch: feature/v2.5.1-opus4-review
-- 2025-11-07 (Claude Sonnet 4.5): v2.4.0 - Versão de apresentação (emails de feedback na SplashScreen)
+- 2026-03-03 (GitHub Copilot / Claude Sonnet 4.5): v2.5.2
+  - Adicionada Seção 10.5: Travamentos do Agente no Android Studio + IDE
+  - Documentadas causas, sintomas e workarounds para travamentos recorrentes
+  - Atualizado header com status atual e rastreabilidade
+  - Implementada tela PermissionsOnboardingScreen (1ª execução do app)
+  - SplashScreen agora verifica isFirstRun e roteia para onboarding ou home
+- 2026-02-28 (Claude Sonnet 4.5 / Claude Opus 4): v2.5.1
+  - Seção 5.3.7: Terminal silencioso do GitHub Copilot Agent
+  - Seção 5.3.6: Instrução para AI Assistants sobre &&/&
+  - Seção 10.4: Erros conhecidos de compilação Gradle/Kotlin Daemon
 - 2025-10-31 (user): Correção de Falha Crítica em Room/Migration
-- 2025-10-27 (user): Reforço: Sempre mencionar mudanças e rastreabilidade nas primeiras 50 linhas dos arquivos afetados.
-- 2025-10-24 (user): Atualização de práticas de commit e documentação.
-Observação: Atualizar as primeiras 50 linhas dos arquivos críticos após cada alteração relevante.
-Status Atual: v2.5.1 - Code Assistant: Claude Opus 4 (GitHub Copilot)
+- 2025-10-27 (user): Reforço rastreabilidade nas primeiras 50 linhas dos arquivos
+Observação: Sempre atualizar as primeiras 50 linhas dos arquivos críticos após cada alteração.
+Status Atual: v2.5.2 - Code Assistant: GitHub Copilot / Claude Sonnet 4.5
+Tela de permissões: PermissionsOnboardingScreen.kt ✅ — aparece apenas na 1ª instalação
 -->
 
 # GUIDELINES - Pequenos Passos
@@ -1001,6 +1005,145 @@ O projeto possui scripts `.bat` prontos para facilitar operações comuns:
 
 **Solução:** Mesma do 10.4.1 (stop → clean → assembleDebug).
 
+#### 10.4.3 Encoding inválido de arquivos `.bat` gerados pelo Agente
+
+**Erro:**
+```powershell
+.\script.bat : Falha na execução do programa: O executável especificado não é um aplicativo válido para esta plataforma de SO.
+```
+
+**Causa:** Arquivo `.bat` criado pelo agente com encoding UTF-8 BOM ou UTF-16, que o Windows não consegue executar como batch.
+
+**Solução:**
+```powershell
+# Recriar o arquivo manualmente OU executar os comandos diretamente:
+git add .
+git commit -m "mensagem"
+git push
+```
+
+**Prevenção para AI Assistants:** Ao criar arquivos `.bat`, gerar conteúdo ASCII puro. Se o arquivo não executar, executar os comandos individualmente via terminal.
+
+---
+
+### 10.5 ⚠️ Travamentos do GitHub Copilot Agent com Android Studio / IDE
+
+**PROBLEMA CRÍTICO RECORRENTE (documentado em 2026-03-03):**
+
+O GitHub Copilot Agent pode **"travar"** durante sessões longas, manifestando-se de diferentes formas. Esta seção documenta causas, sintomas e workarounds.
+
+#### 10.5.1 Sintoma: Terminal não retorna output
+
+**Descrição:** O agente executa `run_in_terminal` mas não recebe resposta (output vazio).
+
+**Causa:** Sessão de terminal expirada ou buffer travado no contexto do agente.
+
+**Workaround:**
+1. NÃO repetir a mesma chamada de terminal múltiplas vezes
+2. Criar arquivo `.bat` com os comandos necessários
+3. Instruir o usuário a executar `.\script.bat` manualmente
+4. Continuar com edições de arquivo (não dependem do terminal)
+
+#### 10.5.2 Sintoma: Agente "trava" esperando output de compilação longa
+
+**Descrição:** `.\gradlew assembleDebug` demora 1-3 minutos. O agente pode interpretar o silêncio como travamento e tentar novamente, criando processos duplicados.
+
+**Causa:** Timeout implícito do agente ao aguardar resposta.
+
+**Workaround:**
+1. Executar compilação manualmente: `.\gradlew assembleDebug`
+2. Aguardar `BUILD SUCCESSFUL` antes de pedir nova ação ao agente
+3. Fechar o Android Studio durante compilação via terminal (evita conflito de locks)
+
+#### 10.5.3 Sintoma: Agente repete erros já documentados (&&, &, etc.)
+
+**Descrição:** Mesmo após múltiplas correções, o agente volta a usar `&&` ou `&` no PowerShell.
+
+**Causa:** O modelo de linguagem não "aprende" entre sessões. Cada sessão começa do zero — apenas o contexto da conversa atual é considerado.
+
+**Workaround e Instrução para o Agente:**
+```
+REGRA ABSOLUTA PARA ESTE PROJETO:
+- NUNCA usar && ou & em comandos PowerShell
+- SEMPRE usar ; (ponto-e-vírgula) ou comandos separados
+- SEMPRE usar .\ antes de .bat e .\gradlew
+- SE terminal travar: criar .bat e instruir execução manual
+```
+
+#### 10.5.4 Sintoma: Agente perde contexto de arquivos longos
+
+**Descrição:** Em arquivos com mais de ~300 linhas, o agente pode não "ver" conteúdo além das primeiras 50 linhas, causando edições incorretas ou duplicação de código.
+
+**Causa:** Janela de contexto limitada — o modelo prioriza o início do arquivo.
+
+**Estratégia de mitigação — Cabeçalhos obrigatórios (50 linhas):**
+
+Todo arquivo importante do projeto DEVE ter nas primeiras 50 linhas:
+```kotlin
+/**
+ * [NOME DO ARQUIVO] - [OBJETIVO RESUMIDO]
+ *
+ * Arquivo: caminho/relativo/do/arquivo.kt
+ * Tipo: Screen | ViewModel | Repository | UseCase | etc.
+ * Objetivo: [O QUE FAZ em 1-2 linhas]
+ * Correlações: [arquivos direta/indiretamente relacionados]
+ *
+ * Histórico de alterações (mais recente primeiro):
+ * - AAAA-MM-DD (Autor): [O QUE MUDOU — breve]
+ * - AAAA-MM-DD (Autor): [O QUE MUDOU — breve]
+ *
+ * Última atualização: AAAA-MM-DD
+ * Status: Funcional | Em desenvolvimento | Depreciado
+ * Build: OK | PENDING | FALHOU
+ */
+```
+
+**Por que isso ajuda:**
+- O agente lê as primeiras 50 linhas com prioridade máxima
+- Resumo rápido de dependências evita edições em arquivos errados
+- Histórico de mudanças visível sem precisar ler o arquivo inteiro
+- Reduz risco de regressão ao modificar código relacionado
+
+#### 10.5.5 Sintoma: Gradle Sync "travado" no Android Studio
+
+**Descrição:** O Android Studio fica com o Gradle Sync em progresso indefinidamente.
+
+**Causa:** Conflito de locks entre o Android Studio e o terminal — ambos tentam usar o Gradle Daemon simultaneamente.
+
+**Solução:**
+```powershell
+# 1. No Android Studio: File → Invalidate Caches → Invalidate and Restart
+# 2. OU via terminal:
+.\gradlew --stop
+# Fechar Android Studio
+.\gradlew assembleDebug
+# Reabrir Android Studio
+```
+
+**Prevenção:**
+- Não compilar via terminal enquanto o Android Studio está com Gradle Sync ativo
+- Usar **File → Sync Project with Gradle Files** no Android Studio antes de compilar via terminal
+- Sempre fechar o Android Studio ao compilar APKs via terminal para distribuição
+
+#### 10.5.6 Checklist para sessões produtivas com o Agente
+
+Antes de iniciar uma sessão de desenvolvimento com o GitHub Copilot Agent:
+
+- [ ] Android Studio fechado (se for compilar via terminal)
+- [ ] Terminal PowerShell aberto em `D:\Softwares\PequenosPassos`
+- [ ] Última versão do código: `git pull`
+- [ ] Projeto compilando: `.\gradlew assembleDebug`
+- [ ] Dispositivo conectado (se for instalar): `adb devices`
+- [ ] Arquivos de docs abertos para contexto: GUIDELINES.md, CHANGELOG.md
+- [ ] Problema a resolver documentado claramente antes de pedir ao agente
+
+**Dicas para evitar travamentos:**
+1. **Sessões curtas e focadas** — uma tarefa por vez
+2. **Confirme o output** do terminal antes de pedir nova ação
+3. **Se o agente travar**, fechar e abrir nova sessão com contexto resumido
+4. **Mantenha os cabeçalhos de 50 linhas atualizados** — o agente depende deles
+5. **Compilação manual** — execute `.\gradlew assembleDebug` você mesmo após edições grandes
+
 ---
 
 ## 11. Documentação Obrigatória
@@ -1027,17 +1170,26 @@ Sempre que um novo MVP é desenvolvido:
 
 ## 13. Estratégia de Navegação
 
-### 13.1 Estrutura Atual
+### 13.1 Estrutura Atual (v2.5.2)
 ```
-SplashScreen (3s)
-    ↓
-HomeScreen
-    ├── Botão "Cadastro" → [Em desenvolvimento]
-    ├── Botão "Teste Rápido" → [Em desenvolvimento]
-    ├── Botão "Atividades" → [Em desenvolvimento]
-    └── Botão "Debug" → DebugScreen
-                          ├── TTS Test → TtsTestScreen
-                          └── ASR Test → AsrTestScreen
+SplashScreen (5s)
+    │
+    ├─ 1ª instalação (isFirstRun=true) ──→ PermissionsOnboardingScreen
+    │                                           │  Slide 1: Microfone (ASR)
+    │                                           │  Slide 2: Câmera/Galeria
+    │                                           │  Slide 3: Confirmar permissões
+    │                                           └──→ HomeScreen
+    │
+    └─ Demais aberturas ──────────────────────→ HomeScreen
+            ├── Botão "Cadastro"    → ChildRegistrationScreen
+            ├── Botão "Atividades"  → TaskListScreen
+            │                            └── Card tarefa → TaskExecutionScreen
+            │                                                └── Conclusão → TaskCompletionScreen
+            ├── Botão "Editar"      → TaskManagementScreen
+            │                            └── Editar tarefa → TaskFormScreen
+            └── Botão "Histórico"   → HistoryScreen
+                                         ├── Testar TTS → TtsTestScreen
+                                         └── Testar ASR → AsrTestScreen
 ```
 
 ### 13.2 Expansão Planejada (MVP-07)
@@ -1048,7 +1200,7 @@ HomeScreen
 
 ---
 
-## 14. Roadmap de MVPs
+## 14. Roadmap de MVPs (atualizado v2.5.2)
 
 - **MVP-01**: Estrutura Base ✅
 - **MVP-02**: Entidades ✅
@@ -1056,10 +1208,16 @@ HomeScreen
 - **MVP-04**: Repositórios ✅
 - **MVP-05**: Use Cases ✅
 - **MVP-06**: Theme e Design System ✅
-- **MVP-07**: Telas de Interface 📋 (PRÓXIMO)
-- **MVP-08**: ViewModels e Integração 📋
-- **MVP-09**: Testes E2E 📋
-- **MVP-10**: Polimento e Release 📋
+- **MVP-07**: Telas de Interface ✅
+- **MVP-08**: Estatísticas e Histórico ✅
+- **MVP-09**: Controle Diário (estrelas, tarefas completadas) ✅
+- **MVP-10**: Renomear Debug → Histórico + ferramentas ✅
+- **MVP-11**: Melhorias HomeScreen + foto de perfil ✅
+- **MVP-12**: Tarefas pré-instaladas (15 atividades, 143 passos) ✅
+- **MVP-13**: Export/Import + Perfil padrão masculino ✅ (fase 1)
+- **MVP-14**: ASR em Pop-ups (reconhecimento de voz nos steps) ✅
+- **MVP-15**: Polimento UX (concordância TTS, landscape, debounce) ✅
+- **v2.5.2**: Correções ASR (auto-init modelo Vosk) + PermissionsOnboarding ✅
 
 ---
 

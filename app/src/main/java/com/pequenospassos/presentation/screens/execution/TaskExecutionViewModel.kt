@@ -43,9 +43,16 @@ import javax.inject.Inject
  *   para evitar repetição de TTS ao rotacionar o dispositivo
  * - Correção 4: Debounce de 1.5s no nextStep() para evitar avanço múltiplo de passos
  *
+ * Correções v2.5.2 (2026-03-03):
+ * - ASR inicializa no init{} do ViewModel, não dentro de loadTask()
+ * - Adicionado isAsrReady para rastrear estado real da inicialização
+ * - startVoiceListening() aguarda até 10s pelo ASR antes de reportar erro
+ * - Elimina erro "ASR não inicializado" na primeira execução após instalação
+ *
  * @since MVP-07 (17/10/2025)
  * @updated MVP-09 (24/10/2025) - Controle diário de tarefas
  * @updated v2.5.1 (28/02/2026) - Correção TTS rotação
+ * @updated v2.5.2 (03/03/2026) - Correção ASR inicialização antecipada
  */
 @HiltViewModel
 class TaskExecutionViewModel @Inject constructor(
@@ -74,9 +81,12 @@ class TaskExecutionViewModel @Inject constructor(
     private val ADVANCE_DEBOUNCE_MS = 1500L // 1.5 segundos entre avanços
 
     // MVP-14 Fase 5: ASR e Voice Command
-    private lateinit var asrManager: AsrManager
+    private val asrManager: AsrManager = AsrManager(context)
     private val voiceCommandParser = VoiceCommandParser()
-    
+
+    // v2.5.2: Flag para saber se o ASR terminou de inicializar
+    private var isAsrReady = false
+
     // MVP-14 Fase 5: Estado de escuta de voz
     private val _isListeningVoice = MutableStateFlow(false)
     val isListeningVoice: StateFlow<Boolean> = _isListeningVoice.asStateFlow()
@@ -107,6 +117,20 @@ class TaskExecutionViewModel @Inject constructor(
                 enableVoiceResponse = enabled
             }
         }
+
+        // v2.5.2: Inicializar ASR imediatamente no init{} do ViewModel.
+        // Assim o modelo Vosk começa a ser carregado (e copiado se necessário)
+        // antes mesmo do timer do primeiro passo expirar.
+        asrManager.initialize(
+            onSuccess = {
+                isAsrReady = true
+                println("[TaskExecutionVM] ✅ ASR pronto para uso")
+            },
+            onError = { error ->
+                isAsrReady = false
+                println("[TaskExecutionVM] ⚠️ ASR não disponível: $error")
+            }
+        )
     }
 
     /**
@@ -133,19 +157,6 @@ class TaskExecutionViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _state.value = _state.value.copy(isLoading = true, errorMessage = null)
-                
-                // MVP-14 Fase 5: Inicializar ASR na primeira carga
-                if (!::asrManager.isInitialized) {
-                    asrManager = AsrManager(context)
-                    asrManager.initialize(
-                        onSuccess = {
-                            println("[TaskExecutionVM] AsrManager inicializado com sucesso")
-                        },
-                        onError = { error ->
-                            println("[TaskExecutionVM] Erro ao inicializar ASR: $error")
-                        }
-                    )
-                }
 
                 // Coletar o perfil da criança
                 val childProfile = getChildProfileUseCase().firstOrNull()
@@ -390,6 +401,9 @@ class TaskExecutionViewModel @Inject constructor(
     /**
      * Inicia reconhecimento de voz para capturar comando.
      * MVP-14 Fase 5.
+     *
+     * v2.5.2: Aguarda até 10s pelo ASR estar pronto antes de reportar erro.
+     * Necessário pois na 1ª execução o modelo pode estar sendo copiado dos assets.
      */
     private fun startVoiceListening() {
         // MVP-14 Fase 6: Verificar permissão de microfone
@@ -404,33 +418,53 @@ class TaskExecutionViewModel @Inject constructor(
 
         println("[TaskExecutionVM] 🎤 Iniciando reconhecimento de voz (30 segundos)")
 
-        asrManager.startListeningWithTimeout(
-            timeoutSeconds = 30, // MVP-14: Aumentado de 3 para 30 segundos
-            listener = object : AsrManager.VoiceRecognitionListener {
-                override fun onResult(text: String) {
-                    println("[TaskExecutionVM] ✅ Texto reconhecido: '$text'")
-                    processVoiceCommand(text)
+        // v2.5.2: Se ASR ainda não está pronto, aguarda até 10s em background
+        viewModelScope.launch {
+            if (!isAsrReady) {
+                println("[TaskExecutionVM] ⏳ ASR ainda inicializando, aguardando até 10s...")
+                val maxWaitMs = 10_000L
+                val stepMs = 500L
+                var waited = 0L
+                while (!isAsrReady && waited < maxWaitMs) {
+                    delay(stepMs)
+                    waited += stepMs
                 }
-
-                override fun onPartialResult(text: String) {
-                    println("[TaskExecutionVM] 📝 Parcial: '$text'")
-                    // Opcional: Atualizar UI com texto parcial
-                }
-
-                override fun onError(error: String) {
-                    println("[TaskExecutionVM] ❌ Erro ASR: $error")
-                    _voiceRecognitionError.value = "Erro no reconhecimento: $error"
+                if (!isAsrReady) {
+                    println("[TaskExecutionVM] ❌ ASR não ficou pronto em ${maxWaitMs}ms")
+                    _voiceRecognitionError.value = "Reconhecimento de voz não disponível"
                     _isListeningVoice.value = false
-                    // Pop-up continua aberto, botões manuais disponíveis
+                    return@launch
                 }
-
-                override fun onTimeout() {
-                    println("[TaskExecutionVM] ⏱️ Timeout - sem fala detectada")
-                    _isListeningVoice.value = false
-                    // Pop-up continua aberto, botões manuais disponíveis
-                }
+                println("[TaskExecutionVM] ✅ ASR ficou pronto após ${waited}ms, iniciando...")
             }
-        )
+
+            asrManager.startListeningWithTimeout(
+                timeoutSeconds = 30,
+                listener = object : AsrManager.VoiceRecognitionListener {
+                    override fun onResult(text: String) {
+                        println("[TaskExecutionVM] ✅ Texto reconhecido: '$text'")
+                        processVoiceCommand(text)
+                    }
+
+                    override fun onPartialResult(text: String) {
+                        println("[TaskExecutionVM] 📝 Parcial: '$text'")
+                    }
+
+                    override fun onError(error: String) {
+                        println("[TaskExecutionVM] ❌ Erro ASR: $error")
+                        _voiceRecognitionError.value = "Erro no reconhecimento: $error"
+                        _isListeningVoice.value = false
+                        // Pop-up continua aberto, botões manuais disponíveis
+                    }
+
+                    override fun onTimeout() {
+                        println("[TaskExecutionVM] ⏱️ Timeout - sem fala detectada")
+                        _isListeningVoice.value = false
+                        // Pop-up continua aberto, botões manuais disponíveis
+                    }
+                }
+            )
+        }
     }
 
     /**
